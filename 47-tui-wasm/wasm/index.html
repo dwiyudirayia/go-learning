@@ -1,0 +1,25 @@
+<!doctype html>
+<!--
+  Halaman ini menjalankan Go (WASM) di browser.
+  Langkah:
+    1. GOOS=js GOARCH=wasm go build -o main.wasm ./47-tui-wasm/wasm
+    2. cp "$(go env GOROOT)/lib/wasm/wasm_exec.js" .   (Go 1.24+; sebelumnya di misc/wasm/)
+    3. sajikan folder ini: python3 -m http.server 8080  -> buka http://localhost:8080
+-->
+<html>
+  <head><meta charset="utf-8" /><title>Go WASM</title></head>
+  <body>
+    <h3>Go + WebAssembly</h3>
+    <p id="out">memuat WASM...</p>
+    <script src="wasm_exec.js"></script>
+    <script>
+      const go = new Go();
+      WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((res) => {
+        go.run(res.instance); // menjalankan main() Go -> mendaftarkan goAdd/goGreet
+        // Panggil fungsi Go dari JavaScript:
+        document.getElementById("out").textContent =
+          goGreet("Dunia") + " goAdd(2,3) = " + goAdd(2, 3);
+      });
+    </script>
+  </body>
+</html>

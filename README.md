@@ -1,8 +1,10 @@
 # Belajar Golang: Dari Dasar sampai Mahir 🚀
 
-Kurikulum belajar Go **menyeluruh & bertahap** — dari fundamental, concurrency, CLI, backend/REST (Fiber), microservices/gRPC, production-readiness, **distributed systems patterns**, sampai **integrasi LLM (Claude)**. **40 modul**, semua berisi kode yang bisa dijalankan, penjelasan konsep, studi kasus nyata, dan latihan.
+Kurikulum belajar Go **menyeluruh & bertahap** — dari fundamental, concurrency, CLI, backend/REST (Fiber), microservices/gRPC, production-readiness, distributed systems, integrasi LLM, sampai **penguasaan & spesialisasi**. **48 modul**, semua berisi kode yang bisa dijalankan, penjelasan konsep, studi kasus nyata, dan latihan.
 
 > 🎯 Ditujukan untuk yang **sudah paham programming** (bahasa lain) dan ingin menguasai idiom khas Go dengan cepat. Setiap modul tetap dijelaskan dari nol per konsep.
+
+> 📚 **Bingung mulai dari mana / cara belajarnya?** Baca **[LEARNING.md](LEARNING.md)** — panduan belajar: urutan, estimasi waktu, jalur sesuai tujuan, & cara belajar tiap modul.
 
 ---
 
@@ -145,6 +147,18 @@ Ikuti **berurutan** — tiap modul membangun di atas yang sebelumnya. Centang `[
 - [x] **39-cloud-native** — Helm chart, K8s controller pattern, serverless
 - [x] **40-llm-integration** — integrasi API Claude: tool use, streaming, RAG (dengan mock)
 
+### Fase 13 — Penguasaan & Pendalaman
+- [x] **41-capstone** — 📦 Studi kasus BESAR: URL shortener menggabungkan Fiber+DB+JWT+cache+observability+config+graceful shutdown
+- [x] **42-go-internals** — scheduler (GMP), garbage collector, memory model, escape analysis, `go:` directives
+- [x] **43-advanced-generics** — type sets, iterator (`iter.Seq`, range-over-func), struktur data generik, functional options
+
+### Fase 14 — Spesialisasi
+- [x] **44-auth-advanced** — OAuth2/OIDC flow, RBAC/ABAC, session, multi-tenancy
+- [x] **45-event-sourcing-cqrs** — event store, aggregate, projection, read/write model terpisah
+- [x] **46-service-integrations** — pola integrasi Stripe/S3/email (interface + mock + webhook)
+- [x] **47-tui-wasm** — Bubble Tea (TUI) & Go → WebAssembly (browser)
+- [x] **48-grpc-gateway** — satu proto → REST + gRPC sekaligus
+
 ---
 
 ## 💡 Cara Belajar yang Efektif
@@ -186,6 +200,14 @@ Ikuti **berurutan** — tiap modul membangun di atas yang sebelumnya. Centang `[
 | 38 | `golang.org/x/sync` (errgroup, singleflight, semaphore) |
 | 39 | Helm + K8s controller pattern |
 | 40 | [anthropic-sdk-go](https://github.com/anthropics/anthropic-sdk-go) (Claude API) |
+| 41 | 📦 Capstone (Fiber+SQLite+JWT+Redis+shutdown) |
+| 42 | runtime, `unsafe`, escape analysis |
+| 43 | generics lanjut, `iter.Seq` (Go 1.23) |
+| 44 | RBAC/ABAC + OAuth2 (crypto/hmac) |
+| 45 | event sourcing & CQRS |
+| 46 | pola integrasi + webhook HMAC |
+| 47 | [Bubble Tea](https://github.com/charmbracelet/bubbletea) (TUI) + WASM |
+| 48 | gRPC + REST gateway |
 
 Semua versi terkunci di `go.mod`/`go.sum`.
 
