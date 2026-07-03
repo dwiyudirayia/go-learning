@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package inventory;
+
+option go_package = "go-learning/17-studi-kasus-microservices/proto;inventorypb";
+
+// Inventory service: dipakai internal oleh order-service via gRPC.
+service Inventory {
+  rpc GetProduct(ProductID) returns (Product);
+  rpc ReserveStock(ReserveRequest) returns (ReserveResponse);
+}
+
+message ProductID { int64 id = 1; }
+
+message Product {
+  int64 id = 1;
+  string name = 2;
+  int64 stock = 3;
+  int64 price = 4;
+}
+
+message ReserveRequest {
+  int64 product_id = 1;
+  int64 qty = 2;
+}
+
+message ReserveResponse {
+  bool ok = 1;
+  int64 remaining_stock = 2;
+}

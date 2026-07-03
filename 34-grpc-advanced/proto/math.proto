@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package math;
+
+option go_package = "go-learning/34-grpc-advanced/proto;mathpb";
+
+service Math {
+  // Client streaming: client kirim BANYAK angka -> server balas SATU total.
+  rpc Sum(stream NumberRequest) returns (SumResponse);
+
+  // Bidirectional streaming: client & server saling kirim aliran pesan.
+  rpc Echo(stream EchoMessage) returns (stream EchoMessage);
+
+  // Unary yang menghormati deadline (untuk demo timeout/cancellation).
+  rpc SlowUnary(SlowRequest) returns (SlowResponse);
+}
+
+message NumberRequest { int64 value = 1; }
+message SumResponse { int64 sum = 1; }
+message EchoMessage { string text = 1; }
+message SlowRequest { int32 delay_ms = 1; }
+message SlowResponse { string result = 1; }

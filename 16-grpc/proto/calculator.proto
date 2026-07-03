@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package calculator;
+
+// go_package: import path Go untuk kode hasil generate + nama package (calcpb).
+option go_package = "go-learning/16-grpc/proto;calcpb";
+
+// Calculator mendemokan RPC unary dan server-streaming.
+service Calculator {
+  // Unary: satu request -> satu response.
+  rpc Add(AddRequest) returns (AddResponse);
+
+  // Latihan 1: RPC unary Multiply (memakai ulang message Add).
+  rpc Multiply(AddRequest) returns (AddResponse);
+
+  // Server streaming: satu request -> aliran banyak response.
+  rpc Fibonacci(FibRequest) returns (stream FibResponse);
+}
+
+message AddRequest {
+  int64 a = 1;
+  int64 b = 2;
+}
+
+message AddResponse {
+  int64 result = 1;
+}
+
+message FibRequest {
+  int32 n = 1; // hasilkan n bilangan Fibonacci pertama
+}
+
+message FibResponse {
+  int64 value = 1;
+}

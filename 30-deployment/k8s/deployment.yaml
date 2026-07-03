@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goapp
+  labels:
+    app: goapp
+spec:
+  replicas: 3 # 3 pod untuk ketersediaan & skala
+  selector:
+    matchLabels:
+      app: goapp
+  template:
+    metadata:
+      labels:
+        app: goapp
+    spec:
+      containers:
+        - name: goapp
+          image: goapp:1.0.0 # ganti dengan registry-mu, mis. ghcr.io/user/goapp:1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            # Secret & config sebaiknya dari Secret/ConfigMap (Modul 19).
+            - name: APP_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: goapp-secrets
+                  key: jwt-secret
+          # Liveness: restart pod bila proses macet.
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          # Readiness: hentikan traffic saat belum siap / sedang shutdown (Modul 20).
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          # Batas resource -> penjadwalan adil & cegah 1 pod menghabiskan node.
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "128Mi"
+      # Beri waktu graceful shutdown (Modul 20) sebelum SIGKILL.
+      terminationGracePeriodSeconds: 30

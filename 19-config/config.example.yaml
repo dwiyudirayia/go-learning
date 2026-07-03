@@ -1,0 +1,13 @@
+# Contoh file konfigurasi. Salin jadi config.yaml lalu sesuaikan.
+# Nilai di sini menimpa default, tapi bisa ditimpa lagi oleh environment variable.
+app_name: "task-manager"
+env: "dev" # dev | staging | production
+port: 8080
+
+database:
+  dsn: "app.db"
+  max_open_conns: 25
+
+jwt:
+  # JANGAN commit secret asli. Di produksi isi lewat env: APP_JWT_SECRET=...
+  secret: ""

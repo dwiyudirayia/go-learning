@@ -1,0 +1,20 @@
+# Binari & artefak build
+/bin/
+*.exe
+*.test
+*.out
+coverage.out
+
+# File database/sementara hasil menjalankan contoh (mis. modul 14 & 15)
+*.db
+*.sqlite
+*.sqlite3
+
+# Env & secret
+.env
+.env.local
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

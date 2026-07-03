@@ -1,0 +1,7 @@
+# Kurangi konteks build & cegah file tak perlu masuk image.
+.git
+*.md
+**/*_test.go
+bin/
+*.db
+.env

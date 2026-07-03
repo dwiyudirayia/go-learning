@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: goapp
+spec:
+  selector:
+    app: goapp # arahkan ke pod dengan label ini
+  ports:
+    - port: 80 # port service
+      targetPort: 8080 # port container
+  type: ClusterIP # internal; pakai Ingress/LoadBalancer untuk akses publik

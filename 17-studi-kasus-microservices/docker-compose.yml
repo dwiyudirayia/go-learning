@@ -1,0 +1,27 @@
+# Menjalankan kedua microservice sekaligus.
+# Jalankan dari folder ini: docker compose up --build
+# Lalu: curl -X POST localhost:3000/orders -d '{"product_id":1,"qty":2}'
+#
+# Context build = ../.. (root repo) agar Dockerfile bisa akses go.mod & seluruh modul.
+
+services:
+  inventory:
+    build:
+      context: ../..
+      dockerfile: 17-studi-kasus-microservices/inventory-service/Dockerfile
+    environment:
+      GRPC_ADDR: ":50052"
+    # Tidak perlu expose ke host; hanya diakses order-service via jaringan internal compose.
+
+  order:
+    build:
+      context: ../..
+      dockerfile: 17-studi-kasus-microservices/order-service/Dockerfile
+    environment:
+      # "inventory" = nama service di atas; DNS internal compose menyelesaikannya.
+      INVENTORY_ADDR: "inventory:50052"
+      PORT: "3000"
+    ports:
+      - "3000:3000" # order-service dibuka ke host
+    depends_on:
+      - inventory

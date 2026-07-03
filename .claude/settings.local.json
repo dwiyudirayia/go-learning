@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go version *)",
+      "Bash(go mod *)",
+      "Bash(go vet *)",
+      "Bash(go run *)",
+      "Bash(go env *)",
+      "Bash(ls -la \"$\\(go env GOROOT\\)/bin\")",
+      "Bash(cat \"$\\(go env GOROOT\\)/VERSION\")",
+      "Read(//usr/local/go/src/internal/goarch/**)",
+      "Bash(mkdir -p /tmp/claude-1000/-mnt-c-AMB-Learning-go-learning/4581117a-e172-4d92-91a9-ee9e3bae8e86/scratchpad/hw)",
+      "Bash(curl -sL --max-time 30 \"https://go.dev/dl/?mode=json&include=all\")"
+    ]
+  }
+}

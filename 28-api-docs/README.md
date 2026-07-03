@@ -1,0 +1,65 @@
+# 28 — API Documentation (OpenAPI/Swagger)
+
+API tanpa dokumentasi = sulit dipakai orang lain (frontend, mobile, partner). **OpenAPI** (dulu Swagger) adalah standar mendeskripsikan REST API dalam format mesin, lalu menghasilkan dokumentasi interaktif & SDK client otomatis.
+
+Jalankan:
+```bash
+go run ./28-api-docs
+# http://localhost:8080/docs         -> Swagger UI (coba API dari browser)
+# http://localhost:8080/openapi.json -> spesifikasi
+```
+Verifikasi otomatis: `go test ./28-api-docs`
+
+## 1. Spesifikasi OpenAPI
+
+File `openapi.json` mendeskripsikan endpoint, request/response, & schema:
+```json
+"/books": {
+  "post": {
+    "requestBody": { "...": "BookInput" },
+    "responses": { "201": {...}, "400": { "...": "Error" } }
+  }
+}
+```
+Dari spec ini kamu bisa **generate**: dokumentasi (Swagger UI), client SDK (banyak bahasa), mock server, & test kontrak.
+
+### Dua pendekatan
+- **Spec-first** (modul ini): tulis OpenAPI dulu, lalu implementasi mengikuti. Bagus untuk kontrak antar tim.
+- **Code-first**: anotasi di kode Go, generate spec dengan [swaggo/swag](https://github.com/swaggo/swag) (`// @Summary ...`).
+
+Spec di-*embed* ke binary (`//go:embed openapi.json`) & disajikan di `/openapi.json`. Swagger UI (dari CDN) memuatnya di `/docs`.
+
+## 2. Format Error yang Konsisten
+
+Semua error memakai **satu bentuk** — klien tak perlu menebak:
+```json
+{ "error": { "code": "VALIDATION_ERROR", "message": "title & author wajib diisi" } }
+```
+`code` (stabil, untuk logika program) + `message` (untuk manusia). Test memverifikasi bentuk ini. Bandingkan dengan Modul 5 (pemetaan error) & Modul 13 (error handler terpusat).
+
+## 3. API Versioning
+
+`/api/v1/books` — saat ada **breaking change**, buat `/api/v2` tanpa merusak klien lama.
+| Strategi | Contoh |
+|----------|--------|
+| Path (paling umum) | `/api/v1/...`, `/api/v2/...` |
+| Header | `Accept: application/vnd.app.v2+json` |
+| Query | `?version=2` |
+
+## Praktik desain REST yang baik
+- **Noun, bukan verb**: `/books` (bukan `/getBooks`). Aksi lewat HTTP method.
+- **Status code tepat** (Modul 12): 200/201/204/400/401/404/409/500.
+- **Pagination** konsisten: `?limit=&offset=` atau cursor.
+- **Filtering/sorting**: `?author=X&sort=-created_at`.
+- **Idempotensi** untuk PUT/DELETE.
+- **HATEOAS** (opsional): sertakan link terkait.
+
+## Kapan & Di Mana Dipakai
+- API yang dikonsumsi tim/klien lain, API publik, dokumentasi yang harus selalu sinkron dengan kode.
+
+## Latihan
+1. Dokumentasikan endpoint `GET /books/{id}` di `openapi.json` + implementasinya.
+2. Tambah kode error `NOT_FOUND` (404) dengan format konsisten.
+3. Pakai `swaggo/swag` untuk meng-generate spec dari anotasi kode (code-first).
+4. Tambah `/api/v2/books` dengan field tambahan tanpa merusak v1.
+5. Generate client SDK dari spec (openapi-generator) untuk satu bahasa.

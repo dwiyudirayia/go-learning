@@ -1,0 +1,6 @@
+apiVersion: v2
+name: goapp
+description: Helm chart untuk aplikasi Go (modul 39)
+type: application
+version: 0.1.0        # versi chart
+appVersion: "1.0.0"  # versi aplikasi
