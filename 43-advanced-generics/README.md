@@ -79,3 +79,20 @@ Jangan generik-kan sesuatu yang cuma dipakai satu tipe (over-engineering).
 3. Tulis iterator `Zip[A,B]` menggabungkan dua urutan (pakai `iter.Seq2`).
 4. Tambah `WithLogger` option + validasi di `NewServer` (return error).
 5. Ganti Map/Filter Modul 6 (yang mengembalikan slice) dengan versi iterator lazy ini & bandingkan.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`Set.Difference` & `Set.Filter`** —
+   ```go
+   func (s Set[T]) Difference(o Set[T]) Set[T] { r:=NewSet[T](); for v:=range s { if !o.Has(v){ r.Add(v) } }; return r }
+   func (s Set[T]) Filter(pred func(T) bool) Set[T] { r:=NewSet[T](); for v:=range s { if pred(v){ r.Add(v) } }; return r }
+   ```
+2. **Iterator `Take[T]`** — bungkus `iter.Seq[T]`, hentikan setelah n:
+   ```go
+   func Take[T any](seq iter.Seq[T], n int) iter.Seq[T] {
+       return func(yield func(T) bool) { i:=0; for v:=range seq { if i>=n||!yield(v){return}; i++ } }
+   }
+   ```
+3. **`Zip[A,B]`** — pakai `iter.Seq2[A,B]`; tarik dari dua sumber paralel (butuh `next()` via `iter.Pull`). Berhenti saat salah satu habis.
+4. **`WithLogger` + validasi** — functional option yang mengembalikan error; `NewServer` menerapkan semua option lalu validasi (mis. logger tak nil) → return `(*Server, error)`.
+5. **Ganti Map/Filter Modul 6** — versi iterator **lazy**: tak mengalokasikan slice antara; elemen mengalir satu per satu. Bandingkan alokasi dengan versi slice (Modul 26) — lazy menang untuk pipeline panjang.

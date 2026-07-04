@@ -63,3 +63,15 @@ Client pakai `new EventSource("/events")`. Auto-reconnect bawaan. Cocok untuk **
 3. Tambah ping/pong heartbeat untuk mendeteksi koneksi mati.
 4. Skala ke banyak instance: broadcast lewat Redis Pub/Sub (Modul 22).
 5. Tambah endpoint SSE untuk "notifikasi order baru" yang dipicu event NATS (Modul 23).
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Nama user** — saat handshake, kirim pesan pertama berisi nama (atau baca query `?name=`). Simpan di struct `client{name string; conn *websocket.Conn}` dan format broadcast `fmt.Sprintf("[%s]: %s", c.name, msg)`.
+2. **Room/channel** — ganti `map[*client]bool` jadi `map[string]map[*client]bool` (key = room). Broadcast hanya loop anggota room tersebut. Mirip konsep subject di Modul 23.
+3. **Ping/pong heartbeat** — kirim ping periodik; jika tak ada pong dalam batas waktu, tutup koneksi:
+   ```go
+   ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+   if err := c.Ping(ctx); err != nil { c.Close(websocket.StatusPolicyViolation, "no pong") }
+   ```
+4. **Skala multi-instance** — tiap instance subscribe channel Redis; pesan lokal juga di-`PUBLISH` ke Redis, lalu tiap instance mem-broadcast ke klien-nya sendiri. Redis Pub/Sub jadi "bus" antar-instance (Modul 22).
+5. **SSE dari NATS** — handler SSE (`Content-Type: text/event-stream`) subscribe subject `order.created` (Modul 23); tiap event tulis `fmt.Fprintf(w, "data: %s\n\n", json)` lalu `flush`. Cocok untuk notifikasi satu-arah server→browser.

@@ -65,3 +65,11 @@ Perbandingan pakai `hmac.Equal` (**constant-time**) → cegah timing attack.
 3. Bungkus `PaymentGateway` dengan retry + circuit breaker (Modul 32).
 4. Tambah handler HTTP (Modul 12/13) yang menerima & memverifikasi webhook.
 5. Ganti `InMemoryStorage` dengan MinIO (S3-compatible) lewat aws-sdk-go-v2.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`SMSSender` + mock** — interface `SMSSender interface{ Send(to, body string) error }`; mock merekam panggilan untuk assert di test (pola Modul 08). Implementasi nyata mis. Twilio.
+2. **Idempotensi webhook** — simpan `event_id` yang sudah diproses (Redis SET/tabel, Modul 22/25); bila `event_id` sudah ada → balas 200 tanpa proses ulang. Cegah double-charge saat provider retry.
+3. **`PaymentGateway` + resiliency** — bungkus dengan retry + circuit breaker (Modul 32); panggilan pembayaran harus tahan jaringan flaky tapi tak double-charge (kombinasikan dengan idempotensi #2).
+4. **Handler webhook** — endpoint HTTP (Modul 13) yang **verifikasi HMAC-SHA256** signature + cek timestamp (anti-replay) sebelum memproses. Tolak bila signature tak cocok.
+5. **MinIO** — ganti `InMemoryStorage` dengan client S3-compatible (`aws-sdk-go-v2`, endpoint MinIO). Interface `Storage` membuat swap ini satu baris di `main`.

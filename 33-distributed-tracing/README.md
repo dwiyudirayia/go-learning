@@ -79,3 +79,11 @@ Idealnya ketiganya **berkorelasi** (log menyertakan `trace_id`).
 3. Sisipkan `trace_id` ke structured log (Modul 18) untuk korelasi.
 4. Tambah sampling 10% dan amati efeknya.
 5. Buat span error (`SetStatus(codes.Error)`) & lihat bagaimana ia ditandai.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Span pada gRPC** — pasang `otelgrpc.NewServerHandler()` / `NewClientHandler()` via `grpc.StatsHandler(...)`. Span server & client otomatis terhubung lewat context propagation.
+2. **Exporter OTLP + Jaeger** — ganti recorder test dengan `otlptracegrpc` exporter menunjuk `localhost:4317`; jalankan Jaeger all-in-one via Docker; buka UI-nya untuk lihat waterfall trace.
+3. **`trace_id` ke log** — `span.SpanContext().TraceID().String()` lalu `slog.With("trace_id", id)` (Modul 18). Log & trace jadi bisa dikorelasikan.
+4. **Sampling 10%** — `sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.1))`. Kurangi volume di produksi; head-based sampling.
+5. **Span error** — `span.SetStatus(codes.Error, "pesan")` + `span.RecordError(err)`. Di UI span ditandai merah → mudah temukan kegagalan.

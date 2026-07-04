@@ -65,7 +65,7 @@ Repo ini besar (48 modul). Panduan ini membantumu **fokus**: urutan, cara belaja
 
 1. **Satu modul per sesi.** Selesaikan (baca+jalan+latih) sebelum lanjut.
 2. **Jangan hafal — pahami polanya.** Interface+mock, layered arch, error handling — pola ini berulang di banyak modul.
-3. **Latihan itu wajib**, bukan opsional. Kerjakan di `jawaban-saya/`, bandingkan dengan `latihan/solusi.go`.
+3. **Latihan itu wajib**, bukan opsional. Tiap modul punya folder `jawaban-saya/` — kerjakan di sana. Untuk mencocokkan: modul **1–9** punya `latihan/solusi.go`; modul **10–48** punya bagian **"Solusi Latihan (Pembahasan)"** / **"Status Solusi Latihan"** di README. Kerjakan dulu, baru intip solusinya.
 4. **Kembali & ulang.** Modul lanjutan sering merujuk modul dasar — wajar bolak-balik.
 5. **Bangun proyekmu sendiri** setelah Fase 5. Praktik nyata > menonton.
 6. **Biasakan** `go test`, `go vet`, `go fmt` — persis kerja Go profesional.

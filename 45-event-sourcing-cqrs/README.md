@@ -76,3 +76,11 @@ Output membuktikan read model & write model **konsisten** (saldo 120 sama).
 3. Simpan event store ke SQLite (tabel `events`) alih-alih memori.
 4. Tambah **snapshot** tiap 100 event agar replay cepat.
 5. Publikasikan event ke NATS (Modul 23) agar service lain bereaksi (integrasi).
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`AccountClosed` + `Close`** — command handler tolak bila `saldo > 0` (return error); bila 0, `append(AccountClosed{})`. State ditentukan oleh replay event, bukan mutasi langsung.
+2. **Read model transaksi** — projection kedua yang membangun daftar mutasi per rekening dari event `Deposited`/`Withdrawn`. CQRS: banyak read model dari satu event stream.
+3. **Event store SQLite** — tabel `events(aggregate_id, seq, type, data, created_at)`; append = INSERT, load = `SELECT ... ORDER BY seq`. Ganti store memori dengan ini.
+4. **Snapshot** — tiap 100 event simpan state agregat; saat load, mulai dari snapshot terakhir + replay event sesudahnya. Replay jadi cepat untuk agregat berumur panjang.
+5. **Publish ke NATS** — setelah append, terbitkan event ke NATS (Modul 23) agar service lain (mis. notifikasi) bereaksi. Integrasi event-driven.

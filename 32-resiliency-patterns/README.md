@@ -73,3 +73,11 @@ Gabungan mereka = "defense in depth" untuk keandalan.
 3. Bungkus panggilan gRPC Modul 17 dengan circuit breaker + bulkhead.
 4. Tambah metrik (Modul 18): state circuit, jumlah reject bulkhead.
 5. Implementasikan auto-renew (lease) pada distributed lock untuk job yang lama.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`HalfOpenMaxCalls`** — di state half-open, izinkan N panggilan percobaan (hitung dengan counter/semaphore); bila semua sukses → close, bila ada gagal → open lagi. Lebih toleran dari 1 trial.
+2. **CB + retry** — retry (Modul 23) hanya membungkus panggilan bila circuit **closed/half-open**; bila **open**, langsung gagal cepat tanpa buang percobaan. Urutan: retry(di dalam) → circuit breaker(di luar).
+3. **Bungkus gRPC Modul 17** — panggilan ke inventory service dibungkus `breaker.Execute(func(){ ... })` + `bulkhead` (batasi concurrent call) agar satu dependency lambat tak menghabiskan semua goroutine.
+4. **Metrik** — Gauge `circuit_state` (0=closed,1=open,2=half), Counter `bulkhead_rejected_total`. Naikkan saat transisi & saat reject (Modul 18).
+5. **Auto-renew lease** — untuk job panjang, goroutine memperpanjang TTL lock secara berkala (`PEXPIRE`) sebelum kedaluwarsa, agar lock tak lepas di tengah kerja. Berhenti perpanjang saat job selesai.

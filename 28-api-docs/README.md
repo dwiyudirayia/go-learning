@@ -63,3 +63,11 @@ Semua error memakai **satu bentuk** — klien tak perlu menebak:
 3. Pakai `swaggo/swag` untuk meng-generate spec dari anotasi kode (code-first).
 4. Tambah `/api/v2/books` dengan field tambahan tanpa merusak v1.
 5. Generate client SDK dari spec (openapi-generator) untuk satu bahasa.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Dokumentasikan `GET /books/{id}`** — tambah path item di `openapi.json` dengan `parameters` (path `id`, integer) + response `200` (schema Book) & `404`. Implementasikan handler yang cocok.
+2. **Error `NOT_FOUND` konsisten** — definisikan schema error `{code, message}` sekali, referensikan (`$ref`) di semua response 4xx. Handler balas `{"code":"NOT_FOUND","message":"..."}` + status 404.
+3. **`swaggo/swag` (code-first)** — anotasi handler dengan komentar `// @Summary`, `// @Success 200 {object} Book`, jalankan `swag init` → generate spec + Swagger UI dari kode. Kebalikan dari design-first.
+4. **Versi v2 tanpa merusak v1** — daftarkan route `/api/v2/books` terpisah dengan schema baru (field tambahan). v1 tetap utuh → klien lama tak rusak (backward compatible).
+5. **Generate client SDK** — `openapi-generator-cli generate -i openapi.json -g go -o client/`. Dari satu spec dapat SDK banyak bahasa — kontrak jadi sumber kebenaran.

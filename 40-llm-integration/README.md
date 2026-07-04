@@ -111,3 +111,11 @@ pertanyaan -> retrieve dokumen relevan -> sisipkan sebagai konteks -> LLM -> jaw
 
 ---
 🎓 **SELESAI — 40 modul!** Dari `package main` pertama hingga aplikasi ber-AI. Kamu kini punya fondasi lengkap Go: fundamental, concurrency, backend, microservices, production-readiness, distributed systems, dan integrasi LLM. Lihat `README.md` root untuk peta penuh.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Ganti ke Haiku** — set model ke konstanta Haiku (`claude-haiku-4-5`) di request. Lebih cepat & murah untuk tugas ringan; bandingkan latensi vs Opus.
+2. **Tool `get_time`** — daftarkan tool dengan schema kosong; saat Claude memanggilnya, kembalikan `time.Now()`. Tool runner mengulang loop hingga Claude selesai (`stop_reason` bukan `tool_use`).
+3. **RAG embedding** — ganti pencarian kata-kunci dengan kosinus similarity atas vektor embedding (dummy/nyata). Ambil top-k dokumen terdekat sebagai konteks.
+4. **Structured output** — pakai `output_config.format` (JSON schema) agar balasan tervalidasi jadi struct Go; hindari parsing teks bebas yang rapuh.
+5. **`Chatter` + resiliency** — bungkus implementasi `Chatter` dengan retry + circuit breaker (Modul 32) agar panggilan LLM tahan gangguan jaringan/rate-limit. Interface `Chatter` membuat ini mudah (dekorator).

@@ -85,3 +85,21 @@ example/
 2. Tambah fungsi baru di `internal/greeting` + test-nya (`greeting_test.go`).
 3. Tambah target `make build` dan coba hasilkan binary ke `bin/`.
 4. Jelaskan (di komentar) kenapa `internal/greeting` tak bisa di-import dari luar `example/`.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Binary kedua `cmd/farewell/`** — buat `cmd/farewell/main.go` yang meng-import package yang sama:
+   ```go
+   package main
+   import "example/internal/greeting"
+   func main() { println(greeting.Farewell("Ana")) }
+   ```
+   Dua binary berbagi satu package `internal/greeting` = tidak ada duplikasi logika.
+2. **Fungsi baru + test** — tambah `func Farewell(name string) string` di `internal/greeting/greeting.go`, lalu `greeting_test.go`:
+   ```go
+   func TestFarewell(t *testing.T) {
+       if got := Farewell("Ana"); got != "Sampai jumpa, Ana!" { t.Errorf("got %q", got) }
+   }
+   ```
+3. **`make build`** — di `Makefile`: `build: \n\tgo build -o bin/hello ./cmd/hello \n\tgo build -o bin/farewell ./cmd/farewell`. Output rapi di `bin/` (jangan lupa `bin/` masuk `.gitignore`).
+4. **Kenapa `internal/` tak bisa di-import dari luar** — aturan compiler Go: package di bawah `internal/` hanya boleh di-import oleh kode yang berbagi **parent** dari folder `internal` itu. Jadi `example/internal/greeting` hanya bisa dipakai di dalam `example/`. Ini pagar privasi tingkat-package bawaan Go — dipakai agar API internal tak bocor jadi dependency publik.

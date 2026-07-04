@@ -57,3 +57,21 @@ Urutan menutup resource (kebalikan urutan membuka):
 3. Terapkan pola ini ke server Fiber Modul 13 (`app.ShutdownWithContext(ctx)`).
 4. Tambah readiness flag: `/readyz` mengembalikan 503 setelah sinyal diterima.
 5. Uji dengan `kill -TERM <pid>` (bukan hanya Ctrl+C).
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Tutup DB setelah `Shutdown`** — urutannya penting: stop terima request dulu, baru tutup resource:
+   ```go
+   srv.Shutdown(ctx)   // tunggu request in-flight selesai
+   db.Close()          // baru tutup pool
+   ```
+2. **Background worker ditunggu** — pakai `WaitGroup` + context cancel:
+   ```go
+   var wg sync.WaitGroup; wg.Add(1)
+   go func(){ defer wg.Done(); for { select { case <-ctx.Done(): return; case <-tick.C: kerja() } } }()
+   // saat shutdown:
+   cancel(); wg.Wait()
+   ```
+3. **Fiber** — pola sama, API-nya `app.ShutdownWithContext(ctx)` (Fiber v2). Panggil di goroutine sinyal, lalu tunggu selesai.
+4. **Readiness flag `/readyz`** — `var ready atomic.Bool` diset `true` saat start; saat sinyal masuk set `false` → handler balas 503. Load balancer berhenti mengirim traffic sebelum proses benar-benar mati (drain mulus).
+5. **Uji `kill -TERM`** — `signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)` menangkap keduanya. Jalankan server, `kill -TERM <pid>` di terminal lain → amati log shutdown rapi (bukan mati paksa).

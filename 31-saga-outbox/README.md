@@ -61,3 +61,11 @@ Untuk operasi yang dipicu ulang (retry, pesan ganda), sematkan **idempotency key
 3. Jalankan relay sebagai loop (goroutine + ticker, Modul 25) alih-alih sekali jalan.
 4. Integrasikan relay ke broker Modul 23 (publish sungguhan ke NATS/Kafka).
 5. Implementasikan saga **koreografi** memakai event (tanpa koordinator pusat).
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Langkah `notify` + kompensasi** — tambah step ke daftar saga dengan pasangan `do`/`undo`. Bila step setelahnya gagal, koordinator memanggil `undo` tiap step yang sudah sukses (urutan mundur).
+2. **`idempotency_key` unik** — kolom `UNIQUE` di tabel outbox; sebelum insert cek/`INSERT OR IGNORE`. Mencegah event ganda saat relay retry.
+3. **Relay sebagai loop** — `ticker := time.NewTicker(1*time.Second)`; tiap tick baca outbox `WHERE published = 0`, publish, tandai `published = 1`. Pola worker Modul 25.
+4. **Publish ke broker nyata** — ganti "publish" simulasi dengan `broker.Publish(topic, event)` (Modul 23). Outbox menjamin **atomic**: tulis state + event dalam satu transaksi DB, relay kirim belakangan (at-least-once).
+5. **Saga koreografi** — tanpa koordinator pusat: tiap service bereaksi terhadap event dan menerbitkan event berikutnya. Lebih longgar (loose coupling) tapi alur lebih sulit dilacak → andalkan tracing (Modul 33).

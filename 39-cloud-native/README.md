@@ -86,3 +86,11 @@ Go cocok untuk serverless: **cold start cepat** (binari kecil, tanpa runtime ber
 3. Ubah `Reconcile` agar mempertimbangkan pod "unhealthy" (ganti, bukan hanya jumlah).
 4. Bungkus `HandleOrder` dengan `aws-lambda-go` & build binari `bootstrap`.
 5. Tambah `templates/_helpers.tpl` untuk label bersama (best practice Helm).
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Render chart** — `helm template ./39-cloud-native/helm` mencetak manifest final tanpa memasang. Cara cepat validasi template sebelum `helm install`.
+2. **`values-prod.yaml`** — berisi `replicaCount: 5`; `helm template -f values-prod.yaml .` → bandingkan dengan default (replica beda). Satu chart, banyak environment.
+3. **`Reconcile` unhealthy** — selain hitung jumlah pod, cek status; ganti pod "unhealthy" (bukan hanya menambah bila kurang). Reconcile = arahkan state aktual → state diinginkan (pola controller K8s).
+4. **Lambda** — bungkus `HandleOrder` dengan `lambda.Start(handler)` (aws-lambda-go), build `GOOS=linux go build -o bootstrap`. Satu fungsi, deploy serverless.
+5. **`_helpers.tpl`** — definisikan `{{- define "app.labels" }}` untuk label bersama; panggil `{{ include "app.labels" . }}` di tiap template. DRY, best practice Helm.

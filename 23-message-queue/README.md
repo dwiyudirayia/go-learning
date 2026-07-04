@@ -131,3 +131,11 @@ Karena kode pakai interface `Broker`, kamu bisa mulai dengan yang simpel (NATS) 
 3. Tambah metrik (Modul 18): jumlah publish/ack/nack/reconnect.
 4. Tambah header/metadata pesan (mis. `trace_id`) di seluruh broker.
 5. Jalankan RabbitMQ via Docker, matikan container saat konsumen jalan, hidupkan lagi → amati reconnect otomatis.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Broker Redis** — implementasikan interface `Broker` dengan Redis: `Publish` = `rdb.Publish(ctx, topic, data)`; `Subscribe` = `rdb.Subscribe(ctx, topic).Channel()`. Untuk durability pakai **Redis Streams** (`XADD`/`XREADGROUP`) yang mendukung consumer group + ack.
+2. **DLQ setelah N nack** — hitung percobaan per pesan (header `x-retries`); bila `>= N`, alih-alih nack lagi, `Publish(topic+".failed", msg)` lalu ack pesan asli agar tak loop selamanya.
+3. **Metrik** — 4 Counter (Modul 18): `publish_total`, `ack_total`, `nack_total`, `reconnect_total`. Naikkan di titik masing-masing pada `resilience.go`.
+4. **Header/metadata** — bungkus payload jadi `struct{ Meta map[string]string; Body []byte }` (mis. `Meta["trace_id"]`). Semua broker meng-encode struct ini (JSON) sehingga trace_id ikut lintas service (korelasi dengan Modul 33).
+5. **Uji reconnect** — jalankan RabbitMQ via Docker, mulai konsumen, `docker stop rabbitmq` saat jalan → `superviseConsumer` masuk loop reconnect (backoff+jitter); `docker start` → konsumen tersambung lagi otomatis tanpa kehilangan langganan.

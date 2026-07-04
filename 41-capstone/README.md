@@ -80,3 +80,11 @@ Lalu jalankan `go test -v ./41-capstone` dan ikuti alurnya.
 3. Tambah invalidasi cache saat link dihapus (Modul 22).
 4. Tambah unit test `service` dengan **mock store & cache** (bukan DB nyata).
 5. Tambah `Dockerfile` (Modul 30) & jalankan dengan PostgreSQL + Redis via docker-compose.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`GET /api/links`** — endpoint terproteksi; baca `userID := c.Locals("userID")`, tambah `store.ListLinksByUser(userID)` (`SELECT ... WHERE user_id = ?`), kembalikan JSON array.
+2. **`DELETE /api/links/:code`** — ambil link by code, **cek kepemilikan** (`link.UserID == userID`) → kalau bukan, 403; kalau ya, `DELETE FROM links WHERE code = ?`.
+3. **Invalidasi cache saat hapus** — setelah delete di DB, `cache.Del(ctx, "url:"+code)` (Modul 22) agar redirect lama tak melayani dari cache basi.
+4. **Unit test service dengan mock** — definisikan interface `storeIface` & `cacheIface`, buat mock in-memory, uji `Shorten`/`Resolve` **tanpa** DB/Redis nyata (cepat, deterministik — Modul 08, 15).
+5. **Dockerfile + compose** — multi-stage build (Modul 30) + `docker-compose.yml` berisi service app, `postgres`, `redis`; app baca `DB_PATH`/`REDIS_ADDR` dari env (Modul 19). Ganti driver SQLite→pgx untuk Postgres.

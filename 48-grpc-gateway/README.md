@@ -66,3 +66,11 @@ Keuntungan versi generated: otomatis menangani path parameter, query string, str
 3. Pasang grpc-gateway sungguhan dengan anotasi `google.api.http` & generate.
 4. Tambahkan OpenAPI output (`--openapiv2_out`) & sajikan Swagger UI (Modul 28).
 5. Tambah middleware (auth, logging) yang berlaku untuk REST **dan** gRPC.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`ListGreetings` + REST** — tambah RPC di proto + implementasi; di gateway daftarkan `GET /v1/greetings` yang memanggil RPC & serialisasi array ke JSON.
+2. **Path parameter** — `GET /v1/greet/{name}`: baca `r.PathValue("name")` (net/http 1.22+), petakan ke `HelloRequest{Name: name}`.
+3. **grpc-gateway sungguhan** — anotasi `option (google.api.http) = { post: "/v1/greet" body: "*" }` di proto, generate dengan `protoc-gen-grpc-gateway`. Gateway otomatis, tak perlu tulis manual.
+4. **OpenAPI + Swagger UI** — `--openapiv2_out` menghasilkan spec (Modul 28); sajikan Swagger UI menunjuk spec itu. Satu proto → gRPC + REST + dokumentasi.
+5. **Middleware REST + gRPC** — auth/logging sebagai: interceptor di sisi gRPC **dan** middleware `http.Handler` di sisi gateway. Atau taruh logika di interceptor gRPC saja agar berlaku untuk keduanya (gateway toh memanggil gRPC).

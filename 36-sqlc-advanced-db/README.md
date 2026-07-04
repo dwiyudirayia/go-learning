@@ -97,3 +97,16 @@ Banyak tim modern memilih sqlc: kontrol SQL penuh **plus** keamanan tipe.
 3. Ganti engine ke `postgresql` di `sqlc.yaml` (perlu sintaks `$1` bukan `?`).
 4. Uji pool: turunkan `SetMaxOpenConns(1)` & jalankan query paralel — amati antrean.
 5. Tambah transaksi transfer (kurangi A, tambah B) yang rollback bila saldo kurang.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`UpdateAuthorName :exec`** — tulis di `query.sql`:
+   ```sql
+   -- name: UpdateAuthorName :exec
+   UPDATE authors SET name = ? WHERE id = ?;
+   ```
+   `sqlc generate` → method `UpdateAuthorName(ctx, arg)`.
+2. **`SearchAuthors :many`** — `WHERE name LIKE ?`; panggil dengan `"%"+q+"%"`. `:many` menghasilkan `[]Author`.
+3. **Ganti ke PostgreSQL** — di `sqlc.yaml` set `engine: postgresql`; placeholder jadi `$1,$2` (bukan `?`), pakai driver `pgx`. Query type-safe tetap.
+4. **Uji pool** — `db.SetMaxOpenConns(1)` lalu jalankan banyak query di goroutine paralel → mereka mengantre (serial). Bukti pool tuning berpengaruh nyata (Modul 26 untuk ukur).
+5. **Transaksi transfer** — `WithTx`: `UPDATE ... balance-=amt WHERE id=A`; cek saldo; `UPDATE ... balance+=amt WHERE id=B`. Bila saldo kurang → `return err` → `tx.Rollback()` (defer). Atomik.

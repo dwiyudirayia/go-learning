@@ -68,3 +68,11 @@ Ini versi lebih ketat dari Modul 15 (yang layered). Bandingkan keduanya: 15 = pr
 3. Tambah use case `UpdateNote` + `DeleteNote`.
 4. Tambah port kedua `Notifier` (mis. kirim event saat note dibuat) + adapter NATS (Modul 23).
 5. Tulis test untuk adapter `rest` memakai `httptest`.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Adapter Postgres/GORM** — buat tipe baru yang mengimplementasikan interface `NoteRepository` (port). Di `main`, cukup ganti `repo := NewMemRepo()` → `repo := NewGormRepo(db)`. Inti (use case) **tak berubah** — itulah gunanya port/adapter.
+2. **Adapter gRPC (driving)** — server gRPC memanggil use case yang sama seperti handler REST. Dua "driving adapter" (REST + gRPC), satu inti bisnis.
+3. **`UpdateNote` + `DeleteNote`** — tambah method di interface use case + implementasi; adapter tinggal memetakan request→use case.
+4. **Port `Notifier` + adapter NATS** — definisikan `type Notifier interface{ NoteCreated(Note) }`; inti memanggilnya tanpa tahu implementasinya. Adapter NATS (Modul 23) publish event; test pakai mock Notifier.
+5. **Test adapter `rest`** — `httptest.NewRequest` + `httptest.NewRecorder`, inject use case (atau mock repo), assert status & body JSON. Adapter diuji terpisah dari inti.

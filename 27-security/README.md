@@ -70,3 +70,11 @@ grpc.NewServer(grpc.Creds(creds))
 3. Buat sertifikat self-signed (`crypto/tls`, `crypto/x509`) & jalankan `ListenAndServeTLS`.
 4. Tambah `govulncheck` ke CI (Modul CI) untuk memindai kerentanan.
 5. Terapkan security headers & rate limit ke studi kasus Modul 15.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Revoke refresh token** — simpan daftar token dicabut (atau whitelist token aktif) di Redis: `SADD revoked <jti>` dengan TTL = sisa umur token. Saat refresh, tolak bila `SISMEMBER revoked <jti>`.
+2. **Rate limit berbeda untuk `/login`** — pasang limiter lebih ketat (mis. 5/menit per IP) khusus route login, terpisah dari limiter global. Cegah brute-force.
+3. **TLS self-signed** — generate dengan `crypto/x509` + `crypto/ecdsa`, tulis `cert.pem`/`key.pem`, lalu `srv.ListenAndServeTLS("cert.pem","key.pem")`. Untuk dev; produksi pakai Let's Encrypt/`autocert`.
+4. **`govulncheck` di CI** — tambah step: `go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...`. Gagalkan build bila ada kerentanan pada dependency.
+5. **Terapkan ke Modul 15** — pasang middleware security headers (`X-Content-Type-Options`, `Strict-Transport-Security`, dll) + rate limit di server REST studi kasus. Keamanan = lapisan default, bukan tambalan.

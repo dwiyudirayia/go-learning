@@ -70,3 +70,24 @@ Cache-aside (modul ini) paling sederhana & fleksibel.
 3. Tambah metrik hit/miss ratio (integrasikan Prometheus, Modul 18).
 4. Ganti miniredis ke Redis sungguhan via env `REDIS_ADDR` (Modul 19).
 5. Implementasikan `singleflight` (`golang.org/x/sync/singleflight`) agar miss bersamaan hanya 1× ke DB.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`GetMany` dengan `MGet`** — satu round-trip untuk banyak key:
+   ```go
+   keys := []string{"product:1","product:2"}
+   vals, _ := rdb.MGet(ctx, keys...).Result() // []any, nil untuk yang miss
+   ```
+   Kumpulkan yang miss → ambil dari DB → `MSet` balik.
+2. **TTL jitter (anti stampede)** — acak sedikit TTL agar tak semua expired serempak:
+   ```go
+   ttl := base + time.Duration(rand.Intn(60))*time.Second
+   rdb.Set(ctx, key, val, ttl)
+   ```
+3. **Metrik hit/miss** — dua Counter (Modul 18): `cacheHits.Inc()` saat ketemu, `cacheMiss.Inc()` saat tidak. Ratio = hits/(hits+miss).
+4. **Redis sungguhan via env** — `addr := getenv("REDIS_ADDR","localhost:6379")`; kalau kosong pakai miniredis (test), kalau ada pakai `redis.NewClient(&redis.Options{Addr: addr})`. Kode aplikasi tak berubah (Modul 19).
+5. **`singleflight`** — saat 100 request miss bersamaan, hanya 1 yang menembus DB:
+   ```go
+   v, err, _ := g.Do(key, func()(any,error){ return loadFromDB(key) })
+   ```
+   `g` adalah `singleflight.Group`. Sisanya menunggu hasil yang sama → DB tak terbebani (Modul 38).

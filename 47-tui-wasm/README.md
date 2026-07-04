@@ -79,3 +79,11 @@ func main() {
 3. Tambah fungsi WASM `goReverse(s)` & panggil dari `index.html`.
 4. Bangun WASM dengan **TinyGo** & bandingkan ukuran binari.
 5. Buat TUI yang memanggil REST API (Modul 13) & menampilkan hasilnya.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Todo list** — ganti model counter dengan slice item + Bubbles `textinput` (tambah item) & `list` (tampil). `Update` menangani key Enter (tambah) & `d` (hapus).
+2. **View berwarna** — `lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Bold(true).Render(s)` di dalam `View()`. Styling deklaratif.
+3. **WASM `goReverse`** — daftarkan fungsi: `js.Global().Set("goReverse", js.FuncOf(func(_ js.Value, args []js.Value) any { return reverse(args[0].String()) }))`; panggil dari `index.html`. Build `GOOS=js GOARCH=wasm`.
+4. **TinyGo** — `tinygo build -o main.wasm -target wasm ./...`; binari jauh lebih kecil dari toolchain Go standar (cocok untuk web), dengan trade-off dukungan stdlib terbatas.
+5. **TUI panggil REST** — dalam `Update`, jalankan `tea.Cmd` yang melakukan HTTP GET (Modul 13) secara async; hasilnya kembali sebagai `tea.Msg` → render di `View`. Jangan blok event loop.

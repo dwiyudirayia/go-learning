@@ -65,3 +65,15 @@ Untuk ekspresi cron sungguhan (`"0 */5 * * *"`), pakai [robfig/cron](https://git
 3. Simpan dead letter ke file/DB, bukan hanya menghitung.
 4. Integrasikan dengan NATS (Modul 23): job masuk dari event, bukan `Enqueue` langsung.
 5. Pakai `robfig/cron` untuk jadwal "tiap hari jam 2 pagi".
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Prioritas job** — dua channel; worker cek `high` dulu:
+   ```go
+   select { case j := <-high: run(j); default: select { case j := <-high: run(j); case j := <-normal: run(j) } }
+   ```
+   (nested select agar `high` selalu didahulukan).
+2. **Backoff eksponensial + jitter** — `delay := base * time.Duration(1<<attempt)` lalu tambah `rand` sebagian delay. Batasi dengan `maxDelay` (cap).
+3. **Dead letter ke DB** — alih-alih hanya `deadLetters++`, `INSERT INTO dead_jobs(payload, error, failed_at)`. Bisa di-retry manual belakangan.
+4. **Integrasi NATS** — konsumen NATS (Modul 23) memanggil `queue.Enqueue(job)` saat event masuk, bukan enqueue langsung dari HTTP. Job jadi reaktif terhadap event.
+5. **`robfig/cron`** — `c := cron.New(); c.AddFunc("0 2 * * *", tugasHarian); c.Start()`. Spec `0 2 * * *` = tiap hari 02:00. Lebih ekspresif dari `time.Ticker` untuk jadwal kalender.

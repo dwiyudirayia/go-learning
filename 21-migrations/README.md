@@ -145,3 +145,19 @@ migrate -database "$DB" -path migrations force <versi_yang_benar>
 3. Tambah perintah pada CLI aplikasimu (Cobra, Modul 11): `app migrate up` yang memanggil `Up(db)`.
 4. Ganti target ke PostgreSQL: import `database/postgres`, pakai URL `postgres://...`.
 5. Simulasikan migrasi gagal → amati status **dirty** → perbaiki dengan `force`.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Buat migrasi baru** — `migrate create -ext sql -dir migrations 004_create_comments` menghasilkan pasangan `.up.sql` & `.down.sql`. Isi `up` dengan `CREATE TABLE comments(...)`, `down` dengan `DROP TABLE comments`.
+2. **CLI dasar** —
+   ```bash
+   migrate -database "sqlite://demo.db" -path migrations up
+   migrate -database "sqlite://demo.db" -path migrations version
+   migrate -database "sqlite://demo.db" -path migrations down 1
+   ```
+3. **Perintah Cobra `app migrate up`** — bungkus fungsi `Up(db)` modul ini sebagai subcommand Cobra (Modul 11):
+   ```go
+   migrateUp := &cobra.Command{Use: "up", RunE: func(_ *cobra.Command, _ []string) error { return Up(db) }}
+   ```
+4. **Ganti ke PostgreSQL** — import `_ "github.com/golang-migrate/migrate/v4/database/postgres"` dan pakai URL `postgres://user:pass@host:5432/db?sslmode=disable`. File SQL sama, hanya driver & dialek yang beda.
+5. **Simulasi `dirty`** — buat migrasi yang sengaja gagal (SQL salah). Setelah gagal, `version` menunjukkan status **dirty**. Perbaiki: betulkan SQL, lalu `migrate force <versi_sebelumnya>` untuk membersihkan flag dirty, baru `up` lagi. Pelajaran: migrasi harus **atomik & idempoten** sebisa mungkin.

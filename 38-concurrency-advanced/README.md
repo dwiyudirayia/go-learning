@@ -80,3 +80,16 @@ Cocok untuk objek yang sering dibuat-buang di jalur panas (buffer, encoder). ⚠
 3. Ukur efek `sync.Pool` dengan benchmark (`-benchmem`, Modul 26).
 4. Buat `errgroup.SetLimit(n)` untuk batasi goroutine sekaligus.
 5. Gabungkan `errgroup` + `context.WithTimeout` untuk deadline seluruh batch.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`errgroup` + `semaphore`** — ganti worker pool manual (Modul 7) :
+   ```go
+   g, ctx := errgroup.WithContext(ctx)
+   for _, job := range jobs { job := job; g.Go(func() error { return proses(ctx, job) }) }
+   err := g.Wait() // error pertama membatalkan sisanya
+   ```
+2. **`singleflight` ke cache** — bungkus loader cache-miss (Modul 22) dengan `g.Do(key, load)` agar miss bersamaan hanya 1× ke DB.
+3. **`sync.Pool` benchmark** — bandingkan alokasi buffer dengan & tanpa `Pool` via `-benchmem` (Modul 26). Pool mengurangi tekanan GC pada objek yang sering dibuat-buang.
+4. **`errgroup.SetLimit(n)`** — batasi goroutine berjalan bersamaan jadi n (mirip semaphore built-in). `g.SetLimit(10)` sebelum loop `g.Go`.
+5. **`errgroup` + timeout** — `ctx, cancel := context.WithTimeout(ctx, 5*time.Second)`; `errgroup.WithContext(ctx)` → seluruh batch punya deadline; yang lewat batas dibatalkan serempak.

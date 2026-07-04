@@ -78,3 +78,11 @@ gqlgen unggul untuk proyek besar (type-safe, codegen). graphql-go (modul ini) le
 3. Tambah field `Book.author` (relasi balik) — hati-hati siklus resolver.
 4. Terapkan **DataLoader** untuk field `books` (atasi N+1).
 5. Migrasikan ke **gqlgen** (schema-first) dan bandingkan pengalamannya.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Query `author(id)`** — tambah field root `author` dengan arg `id: Int!`; resolver ambil satu author by id (mirip `book`).
+2. **Mutation `deleteBook(id)`** — tambah field mutation; resolver hapus dari store, kembalikan `Boolean` sukses atau id yang dihapus.
+3. **Field `Book.author`** — resolver `Book.author` mengambil author dari `book.AuthorID`. Hati-hati siklus: `Author.books` → `Book.author` bisa loop; batasi kedalaman atau jangan resolusikan balik otomatis.
+4. **DataLoader (atasi N+1)** — kumpulkan semua `authorID` dalam satu tick, query `WHERE id IN (...)` sekali, bagikan hasil. Ubah N query jadi 1 (pola batch di README).
+5. **Migrasi ke gqlgen** — schema-first: tulis `.graphql`, `gqlgen generate` menghasilkan tipe & interface resolver. Lebih type-safe & boilerplate berkurang dibanding schema programatik.

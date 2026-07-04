@@ -67,3 +67,31 @@ httpRequestsTotal.WithLabelValues("GET", "/hello", "200").Inc()
 3. Ganti log level via env `LOG_LEVEL` (debug/info/warn).
 4. Tambah `slog.With("request_id", id)` untuk menyertakan request ID di semua log satu request.
 5. Tambah endpoint `/healthz` (liveness) & `/readyz` (readiness) — lihat Modul 20.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Gauge `db_connections_active`** — Gauge bisa naik & turun (beda dari Counter):
+   ```go
+   dbConns := promauto.NewGauge(prometheus.GaugeOpts{Name: "db_connections_active"})
+   dbConns.Inc()  // saat koneksi dipakai
+   dbConns.Dec()  // saat dilepas   (atau dbConns.Set(float64(pool.Stats().InUse)))
+   ```
+2. **Label `status` pada histogram** — ubah jadi `*HistogramVec` dan sertakan label saat observe:
+   ```go
+   reqDur := promauto.NewHistogramVec(prometheus.HistogramOpts{Name: "http_duration_seconds"}, []string{"status"})
+   reqDur.WithLabelValues(strconv.Itoa(code)).Observe(elapsed.Seconds())
+   ```
+   Hati-hati kardinalitas: pakai kelas status (`2xx`,`4xx`,`5xx`), jangan kode mentah tak terbatas.
+3. **`LOG_LEVEL` via env** — petakan string ke `slog.Level`:
+   ```go
+   var lvl slog.Level
+   lvl.UnmarshalText([]byte(os.Getenv("LOG_LEVEL"))) // "debug"/"info"/"warn"/"error"
+   h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: lvl})
+   ```
+4. **Request ID di semua log** — buat child logger lalu taruh di context:
+   ```go
+   reqLog := logger.With("request_id", id)
+   ctx := context.WithValue(r.Context(), logKey{}, reqLog)
+   ```
+   Semua log dari `reqLog` otomatis membawa `request_id` — korelasi satu request jadi mudah.
+5. **`/healthz` & `/readyz`** — lihat Modul 20: `/healthz` selalu 200 bila proses hidup; `/readyz` cek dependency (DB ping) dan balas 503 bila belum siap / sedang shutdown.

@@ -82,3 +82,11 @@ Praktik: tag image dengan versi/commit (bukan `latest`), promosikan artefak yang
 
 ---
 🎓 **SELESAI SEMUA!** 30 modul dari sintaks dasar hingga deployment produksi. Kamu kini punya fondasi lengkap sebagai Go backend engineer. Lihat `README.md` root untuk peta penuh.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Jalankan image lokal** — `docker build -t goapp:1.0.0 . && docker run -p 8080:8080 goapp:1.0.0`. Uji `curl localhost:8080/healthz`. Image distroless → kecil & minim permukaan serangan.
+2. **ConfigMap & Secret** — `configmap.yaml` untuk config non-rahasia, `secret.yaml` (base64) untuk rahasia; referensikan di Deployment via `envFrom` / `valueFrom.secretKeyRef`. Jangan hardcode di image.
+3. **HPA** — `HorizontalPodAutoscaler` dengan `metrics: cpu, averageUtilization: 70`. Pod bertambah saat CPU naik. Butuh `resources.requests.cpu` terisi agar HPA bisa menghitung.
+4. **GitHub Actions → GHCR** — workflow: `docker/login-action` ke `ghcr.io`, `docker/build-push-action` dengan tag `ghcr.io/<user>/goapp:${{ github.sha }}`. CI/CD otomatis tiap push.
+5. **Helm chart** — `helm create` lalu parametrikan image tag, replica, resources di `values.yaml`. Satu chart, beda `values-{dev,prod}.yaml` per environment (lihat Modul 39).

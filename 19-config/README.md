@@ -61,3 +61,20 @@ if c.Env == "production" && len(c.JWT.Secret) < 16 {
 3. Dukung format file `.json` selain `.yaml` (Viper mendeteksi dari ekstensi).
 4. Tambah `Watch` (Viper `WatchConfig`) untuk reload config saat file berubah.
 5. Integrasikan config ini ke server Modul 15 (ganti `os.Getenv` manual).
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`LogLevel` + validasi** — tambah field lalu validasi setelah `Unmarshal`:
+   ```go
+   valid := map[string]bool{"debug":true,"info":true,"warn":true,"error":true}
+   if !valid[cfg.LogLevel] { return nil, fmt.Errorf("log_level tak valid: %q", cfg.LogLevel) }
+   ```
+2. **`RedisAddr` + default** — `viper.SetDefault("redis_addr", "localhost:6379")` sebelum `ReadInConfig`. Default berlaku kalau tak ada di file/env.
+3. **Dukung `.json`** — Viper mendeteksi format dari ekstensi otomatis. Cukup `viper.SetConfigName("config")` + `viper.AddConfigPath(".")` tanpa `SetConfigType`; taruh `config.json` → jalan. Atau set eksplisit `viper.SetConfigType("json")`.
+4. **Hot-reload `WatchConfig`** —
+   ```go
+   viper.OnConfigChange(func(e fsnotify.Event){ _ = viper.Unmarshal(&cfg); log.Println("config reload") })
+   viper.WatchConfig()
+   ```
+   Bungkus `cfg` dengan mutex/atomic bila dibaca goroutine lain saat reload.
+5. **Integrasi ke Modul 15** — ganti semua `os.Getenv(...)` di server REST dengan `cfg.Port`, `cfg.JWTSecret`, dst. Satu sumber kebenaran config → mudah diuji (inject struct `Config`, bukan baca env global).

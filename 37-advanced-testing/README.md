@@ -91,3 +91,11 @@ Tambahan lintas piramida: **fuzzing** (temukan edge case) & **load** (validasi p
 3. Buat integration test nyata dengan testcontainers + Postgres (butuh Docker).
 4. Jalankan k6 terhadap server Modul 15, catat p95 & error rate.
 5. Tambah golden file test untuk output yang kompleks.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Jalankan fuzzer** — `go test -fuzz FuzzParseRange -fuzztime 20s ./37-advanced-testing`. Bila menemukan input yang crash/melanggar invariant, Go menyimpannya di `testdata/fuzz/` sebagai corpus regresi.
+2. **Fuzz fungsi lain** — mis. fungsi parse JSON/URL: `f.Fuzz(func(t, s string){ ParseX(s) })` — pastikan tak panic pada input acak. (Modul 2 reverse: cek `utf8.ValidString` sebelum invariant `reverse(reverse(s))==s`.)
+3. **testcontainers + Postgres** — `postgres.RunContainer(ctx)` memberi DB nyata sekali pakai; test skip otomatis bila Docker tak ada (`testing.Short()` / cek env). Realistis tapi lebih lambat.
+4. **k6** — skrip JS `http.get('http://localhost:8080/...')`; `k6 run script.js` → laporan p95 latency & error rate. Load test terhadap server Modul 15.
+5. **Golden file** — simpan output diharapkan di `testdata/x.golden`; test bandingkan output aktual, flag `-update` untuk regenerasi. Cocok untuk output besar/kompleks (HTML, JSON).

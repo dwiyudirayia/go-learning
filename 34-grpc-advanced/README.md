@@ -84,3 +84,11 @@ case <-ctx.Done(): return nil, status.Error(codes.DeadlineExceeded, "...")
 3. Tambah RPC server-streaming yang menghormati `ctx.Done()`.
 4. Buat **gRPC-Gateway** (REST proxy di atas gRPC) dengan `protoc-gen-grpc-gateway`.
 5. Tambah retry client-side dengan `grpc.WithDefaultServiceConfig` (retry policy).
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Interceptor recovery** — `defer func(){ if r:=recover(); r!=nil { err = status.Errorf(codes.Internal, "panic: %v", r) } }()` di dalam unary interceptor. Panic satu RPC tak menjatuhkan server.
+2. **Interceptor tracing** — pakai `otelgrpc` (Modul 33) di chain interceptor. Rantai: recovery → tracing → logging → handler.
+3. **Server-streaming hormati `ctx.Done()`** — dalam loop `stream.Send`, cek `select { case <-stream.Context().Done(): return ctx.Err(); default: }` agar berhenti saat klien pergi.
+4. **gRPC-Gateway** — lihat Modul 48: hasilkan REST proxy dari `.proto` dengan `protoc-gen-grpc-gateway` (produksi) atau tulis manual (contoh 48).
+5. **Retry client-side** — `grpc.WithDefaultServiceConfig` berisi JSON `retryPolicy` (`maxAttempts`, `retryableStatusCodes: ["UNAVAILABLE"]`). Retry transparan di layer transport.

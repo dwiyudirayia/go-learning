@@ -80,3 +80,11 @@ Jangan optimasi kode yang bukan bottleneck — buang waktu & bikin kode rumit.
 3. Buat fungsi dengan goroutine leak, temukan lewat `/debug/pprof/goroutine`.
 4. Profil `SumSquares` dengan `-cpuprofile`, buka dengan `go tool pprof`.
 5. Optimasi sebuah fungsi di modul lain (mis. reverse string Modul 2) & buktikan dengan benchmark.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`BenchmarkBuildFastNoGrow`** — salin benchmark tanpa `sb.Grow(n)`. Jalankan `go test -bench . -benchmem` → versi tanpa Grow punya lebih banyak `allocs/op` (realokasi berulang saat buffer tumbuh).
+2. **Escape analysis** — `go build -gcflags='-m' ./26-profiling 2>&1 | grep escapes`. Nilai yang alamatnya dikembalikan / disimpan di interface biasanya "escapes to heap".
+3. **Goroutine leak** — buat goroutine yang `<-make(chan int)` (blok selamanya). Buka `/debug/pprof/goroutine?debug=1` → jumlah goroutine terus naik. Perbaiki dengan `context` cancel.
+4. **CPU profile** — `go test -bench BenchmarkSumSquares -cpuprofile cpu.out` lalu `go tool pprof cpu.out` → `top`, `list SumSquares` untuk lihat baris terpanas.
+5. **Optimasi reverse (Modul 2)** — benchmark versi `[]rune` vs versi dua-pointer in-place; buktikan mana lebih sedikit alokasi. Aturannya: **ukur dulu**, jangan tebak.

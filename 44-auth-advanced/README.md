@@ -79,3 +79,11 @@ Satu aplikasi melayani banyak organisasi (tenant). Setiap data diberi `tenant_id
 3. Tambah `tenant_id` ke Subject/Resource + policy multi-tenancy.
 4. Implementasikan session store (Redis, Modul 22) + logout (hapus session).
 5. Integrasikan `golang.org/x/oauth2` dengan provider GitHub sungguhan.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **`PolicyBusinessHours`** — policy ABAC yang mengembalikan izin hanya bila `time.Now().Hour()` di 9..17. Gabung dengan policy lain (semua harus lolos = AND).
+2. **Middleware Fiber** — `if !rbac.Can(subject, action, resource) { return c.SendStatus(403) }` sebelum handler (Modul 13). Otorisasi terpusat.
+3. **`tenant_id` multi-tenancy** — tambahkan `TenantID` ke `Subject` & `Resource`; policy tolak bila `subject.TenantID != resource.TenantID`. Isolasi data antar-tenant.
+4. **Session store Redis** — simpan session di Redis (Modul 22) dengan TTL; logout = `DEL session:<id>`. Lebih mudah revoke dibanding JWT stateless.
+5. **OAuth2 GitHub nyata** — `oauth2.Config{ClientID, ClientSecret, Endpoint: github.Endpoint, Scopes:["read:user"]}`; alur: redirect → callback tukar `code` jadi token → panggil API GitHub. (Modul memakai mock provider via httptest agar bisa diuji tanpa kredensial.)

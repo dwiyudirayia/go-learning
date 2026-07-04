@@ -77,3 +77,11 @@ Instruksi compiler: `//go:embed` (Modul 21), `//go:generate` (jalankan codegen v
 3. Set `GOGC=off` lalu jalankan demo GC — amati bedanya (`GOGC=off go run ...`).
 4. Set `GOMAXPROCS=1` & bandingkan perilaku worker pool (Modul 7).
 5. Pasang `fieldalignment` (`go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest`) & jalankan pada repo.
+
+## ✅ Solusi Latihan (Pembahasan)
+
+1. **Escape analysis lintas modul** — `go build -gcflags='-m' ./NN-... 2>&1 | grep 'escapes to heap'`. Nilai yang di-return by pointer atau masuk interface umumnya escape ke heap.
+2. **Rapikan struct** — urutkan field dari besar→kecil (mis. `int64, int64, bool` bukan `bool, int64, bool`) untuk kurangi padding; buktikan `unsafe.Sizeof` mengecil (contoh modul: 24B→16B).
+3. **`GOGC=off`** — `GOGC=off go run ./42-go-internals` menonaktifkan GC → heap terus tumbuh, tak ada jeda GC. Bandingkan `NumGC` di `runtime.MemStats`. Untuk paham trade-off throughput vs memori.
+4. **`GOMAXPROCS=1`** — `GOMAXPROCS=1 go run ./07-concurrency` memaksa 1 OS thread → goroutine berjalan konkuren tapi tak paralel; worker pool jadi serial secara efektif.
+5. **`fieldalignment`** — `go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest` lalu `fieldalignment ./...`; `-fix` untuk auto-urutkan field. Otomatisasi latihan #2.
