@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 MOD ?= 01-basics
 
-.PHONY: help run test test-race cover fmt vet tidy proto clean tools
+.PHONY: help run advanced realcase-up realcase-down test test-race cover fmt vet tidy proto clean tools
 
 help: ## Tampilkan daftar perintah
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
@@ -10,6 +10,15 @@ help: ## Tampilkan daftar perintah
 
 run: ## Jalankan satu modul. Contoh: make run MOD=01-basics
 	go run ./$(MOD)
+
+advanced: ## Jalankan demo teknik advanced. Contoh: make advanced MOD=07-concurrency (modul 08 & 37: pakai `go test`)
+	go run ./$(MOD)/advanced
+
+realcase-up: ## Nyalakan infra docker-compose real-case. Contoh: make realcase-up MOD=22-caching
+	docker compose -f $(MOD)/real-case/docker-compose.yml up -d
+
+realcase-down: ## Matikan & bersihkan infra real-case. Contoh: make realcase-down MOD=22-caching
+	docker compose -f $(MOD)/real-case/docker-compose.yml down -v
 
 test: ## Jalankan semua test
 	go test ./...

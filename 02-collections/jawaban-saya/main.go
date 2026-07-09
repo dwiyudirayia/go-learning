@@ -17,7 +17,14 @@ func main() {
 // Latihan 1: dari slice 1..10, buat slice baru berisi hanya bilangan genap.
 func latihan1() {
 	fmt.Println("\n-- Latihan 1: filter genap --")
-	// TODO: bangun []int 1..10, lalu filter yang genap dengan append.
+	slices := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	var evenNumbers []int
+	for _, n := range slices {
+		if n%2 == 0 {
+			evenNumbers = append(evenNumbers, n)
+		}
+	}
+	fmt.Println("Bilangan genap:", evenNumbers)
 }
 
 // Latihan 2: buktikan jebakan backing array (b := a[:2]; ubah b[0]; cetak a).

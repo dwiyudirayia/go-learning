@@ -6,6 +6,8 @@ Kurikulum belajar Go **menyeluruh & bertahap** — dari fundamental, concurrency
 
 > 📚 **Bingung mulai dari mana / cara belajarnya?** Baca **[LEARNING.md](LEARNING.md)** — panduan belajar: urutan, estimasi waktu, jalur sesuai tujuan, & cara belajar tiap modul.
 
+> 🧭 **Rujukan cepat Go** ada di **[`docs/`](docs/)** — idiom, cheatsheet sintaks, jebakan umum (pitfalls), konkurensi, tooling, & glosarium. Buka sesuai kebutuhan sambil belajar (tak perlu dihafal).
+
 ---
 
 ## ⚡ Mulai Cepat (3 langkah)
@@ -51,13 +53,18 @@ Setiap folder `NN-nama/` mengikuti pola yang **sama** supaya mudah diikuti:
 
 ```
 NN-nama/
-├── README.md          ← 📖 MULAI DARI SINI: konsep + "Kapan Dipakai" + soal latihan
+├── README.md          ← 📖 MULAI DARI SINI: konsep + "Kapan Dipakai" + Latihan + "Teknik Advanced"
 ├── main.go            ← 💻 MATERI: contoh berkomentar, jalankan `go run ./NN-nama`
-└── latihan/solusi.go  ← ✅ KUNCI JAWABAN latihan (coba sendiri dulu!)
+├── advanced/          ← 🚀 DEMO TEKNIK LANJUTAN (runnable, komentar detail): `go run ./NN-nama/advanced`
+├── real-case/         ← 🗄️ IMPLEMENTASI STACK PRODUKSI (Postgres/Redis/Kafka/…) + docker-compose
+├── latihan/solusi.go  ← ✅ KUNCI JAWABAN latihan (coba sendiri dulu!)
+└── jawaban-saya/      ← ✍️ WORKSPACE-mu: kerjakan latihan di sini SEBELUM melihat kunci
 ```
 
+- **`advanced/`** ada di **semua 48 modul** — contoh runnable tiap teknik di bagian "🚀 Teknik Advanced" README, dengan komentar penjelasan mendetail. (Modul 08 & 37 berupa `_test.go`: `go test ./NN-nama/advanced`.)
+- **`real-case/`** ada di **24 modul yang relevan infra** — implementasi memakai tech stack produksi sungguhan (bukan in-memory), lengkap dengan `docker-compose.yml`. Bersifat *env-guarded*: otomatis mencetak panduan bila infra tak diset, jadi tetap aman di CI. **Peta stack produksi tiap modul ada di [`REAL-CASE-STACKS.md`](REAL-CASE-STACKS.md).**
 - Modul backend (12–17) memakai **`_test.go`** sebagai verifikasi; jalankan `go test ./NN-nama/...`.
-- Ingin latihan sendiri? Buat folder `NN-nama/jawaban-saya/` (lihat contoh di `01-basics/jawaban-saya/`), tulis kodemu, lalu bandingkan dengan `latihan/solusi.go`.
+- Ingin latihan sendiri? Kerjakan di `NN-nama/jawaban-saya/` (template TODO sudah disediakan), lalu bandingkan dengan `latihan/solusi.go`.
 
 ---
 

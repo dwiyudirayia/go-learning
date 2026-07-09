@@ -13,8 +13,29 @@ Repo ini besar (48 modul). Panduan ini membantumu **fokus**: urutan, cara belaja
 4. UBAH   coba ubah sesuatu & jalankan lagi (belajar aktif!)     ~10 menit
 5. LATIH  kerjakan latihan di README (di jawaban-saya/)          ~20 menit
 6. CEK    go test ./NN-nama      (lihat bagaimana diuji)
+7. DALAMI go run ./NN-nama/advanced  (teknik lanjutan; bab "🚀 Teknik Advanced")
 ```
 > **Belajar aktif > pasif.** Mengubah kode & melihat efeknya jauh lebih melekat daripada sekadar membaca. Rusak dulu, perbaiki, pahami.
+
+> 💡 **Buntu di sintaks/istilah?** Jangan berhenti — buka **[`docs/`](docs/)** (lihat di bawah) sebagai rujukan cepat, lalu lanjut.
+
+---
+
+## 📎 Rujukan cepat — folder `docs/`
+
+Modul mengajarkan **berurutan**; `docs/` untuk **melihat cepat** kapan pun butuh (tak perlu dihafal). Buka sesuai kebutuhan:
+
+| Buka ini… | …saat |
+|-----------|-------|
+| [docs/CHEATSHEET.md](docs/CHEATSHEET.md) | lupa sintaks (slice, map, goroutine, generics) |
+| [docs/IDIOM.md](docs/IDIOM.md) | ingin menulis kode yang "terasa Go" + *kenapa* |
+| [docs/PITFALLS.md](docs/PITFALLS.md) | kode berperilaku aneh / bug halus (typed-nil, aliasing, race) |
+| [docs/CONCURRENCY.md](docs/CONCURRENCY.md) | kerja dgn goroutine/channel/context (Fase 2 & modul 38) |
+| [docs/TESTING.md](docs/TESTING.md) | menulis/merancang test (table-driven, mock, fuzz, integrasi) — Fase 3 & modul 08/37 |
+| [docs/TOOLING.md](docs/TOOLING.md) | pakai `go test/vet/pprof`, modules, build tags |
+| [docs/GLOSSARY.md](docs/GLOSSARY.md) | ketemu istilah asing (receiver, method set, GMP, dll) |
+
+**Saran per fase:** Fase 1 → baca **IDIOM** & **CHEATSHEET** santai; tiap kali ketemu bug aneh → **PITFALLS**. Sebelum Fase 2 → baca **CONCURRENCY**. Kapan pun pakai toolchain → **TOOLING**.
 
 ---
 
