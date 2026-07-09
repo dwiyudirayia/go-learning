@@ -90,3 +90,17 @@ Praktik: tag image dengan versi/commit (bukan `latest`), promosikan artefak yang
 3. **HPA** — `HorizontalPodAutoscaler` dengan `metrics: cpu, averageUtilization: 70`. Pod bertambah saat CPU naik. Butuh `resources.requests.cpu` terisi agar HPA bisa menghitung.
 4. **GitHub Actions → GHCR** — workflow: `docker/login-action` ke `ghcr.io`, `docker/build-push-action` dengan tag `ghcr.io/<user>/goapp:${{ github.sha }}`. CI/CD otomatis tiap push.
 5. **Helm chart** — `helm create` lalu parametrikan image tag, replica, resources di `values.yaml`. Satu chart, beda `values-{dev,prod}.yaml` per environment (lihat Modul 39).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./30-deployment/advanced`
+
+
+- **Docker multi-stage** — build di image berisi toolchain, salin binary ke **distroless/scratch**. `CGO_ENABLED=0` untuk binary statik (SQLite pure-Go memungkinkan ini).
+- **Kecilkan binary** — `-ldflags="-s -w"` strip debug; hasilnya image beberapa MB.
+- **Probes K8s** — *liveness* (restart jika hang), *readiness* (cabut dari LB saat belum siap/lagi shutdown). Lihat [[20-graceful-shutdown]].
+- **Resource limits** — set requests/limits + `GOMEMLIMIT`/`GOMAXPROCS` selaras dengan limit container (`automaxprocs`).
+- **12-Factor** — config via env, stateless, log ke stdout.
+- **SIGTERM + preStop** — beri jeda agar endpoint dicabut sebelum proses mati (hindari 5xx saat rolling update).
+- **HPA** — autoscale berbasis CPU/metrik kustom.

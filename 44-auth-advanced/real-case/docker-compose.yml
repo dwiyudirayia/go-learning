@@ -1,0 +1,15 @@
+# OPA (Open Policy Agent) sebagai server kebijakan.
+#   docker compose up -d
+#   OPA_URL=http://127.0.0.1:8181 go run ./44-auth-advanced/real-case
+services:
+  opa:
+    image: openpolicyagent/opa:latest-rootless
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "/policies/authz.rego"
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./policies:/policies:ro

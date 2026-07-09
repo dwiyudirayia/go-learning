@@ -75,3 +75,16 @@ Urutan menutup resource (kebalikan urutan membuka):
 3. **Fiber** — pola sama, API-nya `app.ShutdownWithContext(ctx)` (Fiber v2). Panggil di goroutine sinyal, lalu tunggu selesai.
 4. **Readiness flag `/readyz`** — `var ready atomic.Bool` diset `true` saat start; saat sinyal masuk set `false` → handler balas 503. Load balancer berhenti mengirim traffic sebelum proses benar-benar mati (drain mulus).
 5. **Uji `kill -TERM`** — `signal.NotifyContext(ctx, syscall.SIGINT, syscall.SIGTERM)` menangkap keduanya. Jalankan server, `kill -TERM <pid>` di terminal lain → amati log shutdown rapi (bukan mati paksa).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./20-graceful-shutdown/advanced`
+
+
+- **`signal.NotifyContext` (Go 1.16+)** — cara idiomatik: `ctx, stop := signal.NotifyContext(ctx, SIGINT, SIGTERM)`; `ctx.Done()` memicu shutdown.
+- **Urutan benar** — (1) berhenti terima koneksi baru, (2) tunggu in-flight selesai (dengan timeout), (3) tutup resource hilir (DB, Redis, MQ) *setelah* itu.
+- **Timeout drain** — `srv.Shutdown(timeoutCtx)`; jika lewat batas, paksa tutup agar pod tak menggantung.
+- **Shutdown paralel** — `errgroup` untuk menutup banyak subsistem bersamaan dengan agregasi error.
+- **K8s** — SIGTERM → drain, honor `terminationGracePeriodSeconds`; `preStop` sleep beri waktu endpoint dicabut dari load balancer. Lihat [[30-deployment]].
+- **Readiness vs liveness** — set readiness=false saat shutdown agar traffic berhenti dialihkan sebelum proses mati.

@@ -91,3 +91,17 @@ Cache-aside (modul ini) paling sederhana & fleksibel.
    v, err, _ := g.Do(key, func()(any,error){ return loadFromDB(key) })
    ```
    `g` adalah `singleflight.Group`. Sisanya menunggu hasil yang sama → DB tak terbebani (Modul 38).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./22-caching/advanced`
+
+
+- **Pola cache** — *cache-aside* (baca: cek cache→miss→DB→isi cache) paling umum; *write-through*/*write-behind* untuk konsistensi tulis.
+- **TTL + jitter** — tambah jitter agar key tak kedaluwarsa serentak (*thundering herd*).
+- **Cache stampede** — banyak miss serentak → pakai `singleflight` agar hanya satu yang hit DB. Lihat [[38-concurrency-advanced]].
+- **Invalidasi** — hal tersulit di caching. Strategi: TTL, event-based invalidation, atau versioned keys.
+- **Redis lanjutan** — pipelining (kurangi round-trip), Lua script untuk operasi atomik, `SETNX` untuk lock.
+- **Distributed lock** — pola & jebakannya (Redlock). Lihat [[32-resiliency-patterns]].
+- **Uji tanpa Redis** — `miniredis` (in-memory), pola repo ini.

@@ -100,3 +100,17 @@ for _, id := range ids {
 **⚠️ Jebakan produksi:** jangan kembalikan slice internal apa adanya dari sebuah struct — pemanggil bisa mengubah data di baliknya. Kembalikan hasil `copy` bila perlu aman.
 
 **Cocok dipakai saat:** mengolah koleksi data (99% program). Map untuk lookup/caching/agregasi; slice untuk daftar berurut; rune saat menyentuh input teks user.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./02-collections/advanced`
+
+
+- **Slice tricks tanpa alokasi** — hapus elemen: `s = append(s[:i], s[i+1:]...)`; filter *in-place*: `out := s[:0]; for _, v := range s { if keep(v) { out = append(out, v) } }` (reuse backing array).
+- **Three-index slice `s[low:high:max]`** — batasi `cap` agar `append` berikutnya tak menimpa data yang di-share. Kunci mencegah aliasing bug saat membagi slice.
+- **Set idiomatik** — `map[string]struct{}{}` (zero-byte value). Cek: `_, ok := set[k]`. Lebih hemat dari `map[string]bool`.
+- **Preallocate** — `make([]T, 0, n)` & `make(map[K]V, n)` menghindari rehash/realloc berulang saat ukuran diketahui.
+- **`clear()` builtin (Go 1.21)** — kosongkan map/slice tanpa realokasi.
+- **Paket `slices` & `maps`** — `slices.SortFunc`, `slices.BinarySearch`, `slices.Contains`, `maps.Clone`, `maps.Keys` (iterator). Ganti kode manual lama.
+- **`strings.Builder`** untuk konkatenasi berulang (hindari `+=` O(n²)). Sebutkan `Builder.Grow(n)` untuk prealokasi.

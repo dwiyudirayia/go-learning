@@ -103,3 +103,17 @@ func (r *Repository[T]) Get(id int) (T, bool) { v, ok := r.data[id]; return v, o
 **⚠️ Jangan berlebihan:** kalau cuma butuh SATU tipe, atau butuh perilaku berbeda per tipe (→ pakai **interface**/method), jangan pakai generics. Generics ideal untuk **wadah data & algoritma yang benar-benar sama** lintas tipe.
 
 **Cocok dipakai saat:** membuat utility/library koleksi, transformasi data (mapping entity↔DTO), dan struktur data reusable. Untuk logika bisnis yang beragam per tipe, interface tetap pilihan utama.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./06-generics/advanced`
+
+
+- **Type sets & union** — constraint `interface { ~int | ~int64 | ~float64 }`. Tilde `~int` = semua tipe berbasis int (termasuk `type MyInt int`).
+- **`constraints.Ordered`** (golang.org/x/exp/constraints) untuk `<`/`>`; `comparable` builtin untuk `==`.
+- **Method tak boleh punya type parameter** — generik hanya di level fungsi/tipe. Solusi: jadikan fungsi bebas atau taruh type param di struct.
+- **Instantiasi eksplisit** saat inference gagal: `Max[int](a, b)`.
+- **Biaya runtime — GC shape stenciling** — Go men-*share* kode instansiasi per "bentuk GC" via dictionary, bukan monomorfisasi penuh. Kadang lebih lambat dari kode konkret; ukur sebelum menggeneralkan.
+- **`iter.Seq[T]` (Go 1.23)** — iterator lazy via range-over-func. Lihat [[43-advanced-generics]].
+- **Jangan overuse** — jika hanya satu tipe konkret, generics menambah kompleksitas tanpa untung.

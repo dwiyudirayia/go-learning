@@ -74,3 +74,17 @@ Kunci jawaban: kembangkan sendiri (arsitekturnya sudah disiapkan) — atau minta
 
 ## ✅ Status Solusi Latihan
 Latihan **1–4 sudah diselesaikan di kode ini**: `rm` (cmd/rm.go), `--priority` (cmd/add.go), `stats` (cmd/stats.go), dan test store (internal/store/store_test.go). Jalankan `go test ./11-cli-cobra/...`.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./11-cli-cobra/advanced`
+
+
+- **Persistent vs local flags** — `PersistentFlags()` diwarisi subcommand; `Flags()` lokal. `MarkFlagRequired`, flag groups (`MarkFlagsRequiredTogether`).
+- **`RunE` bukan `Run`** — kembalikan error agar exit code benar; `os.Exit` hanya di `main`, tidak di dalam command.
+- **`cmd.Context()`** — propagasi context (mis. dari `signal.NotifyContext`) ke seluruh command untuk cancel bersih.
+- **Viper binding** — `viper.BindPFlag` gabungkan flag + env + file config dengan presedensi jelas. Lihat [[19-config]].
+- **Shell completion** — Cobra generate completion bash/zsh/fish otomatis (`cmd completion zsh`).
+- **`PreRunE`/`PostRunE`** — validasi/setup sebelum eksekusi (mis. buka koneksi DB, cek auth).
+- **Exit code semantik** — 0 sukses, non-0 gagal; petakan jenis error → kode berbeda bila perlu.

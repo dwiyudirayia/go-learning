@@ -1,0 +1,16 @@
+# PostgreSQL untuk real-case sqlc/pgx.
+#   docker compose up -d
+#   POSTGRES_DSN='postgres://postgres:secret@127.0.0.1:5432/appdb' go run ./36-sqlc-advanced-db/real-case
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: appdb
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 2s
+      retries: 15

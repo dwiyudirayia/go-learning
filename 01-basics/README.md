@@ -66,3 +66,18 @@ defer resp.Body.Close() // dijamin tertutup walau ada return/panic di bawah
 ```
 
 **Cocok dipakai saat:** hampir SETIAP program Go — ini fondasi. `defer` khususnya wajib tiap kali kamu membuka resource (file, koneksi, lock).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./01-basics/advanced`
+
+
+Materi modul ini fondasi. Ini teknik lanjutan yang tetap "dasar" tapi sering luput:
+
+- **`iota` untuk enum & bitmask** — `type Level int; const (Debug Level = iota; Info; Warn)`. Untuk flag pakai geser bit: `const (Read = 1 << iota; Write; Exec)` lalu gabung `Read|Write`.
+- **Konstanta *untyped* & presisi arbitrer** — `const Big = 1 << 62` boleh, evaluasi saat compile. Overflow konstanta ketahuan saat build, bukan runtime.
+- **Named return values + `defer`** — return bernama bisa dimodifikasi di `defer` (dipakai untuk membungkus error). Hati-hati *naked return* di fungsi panjang: kurangi keterbacaan.
+- **Labeled `break`/`continue`** — keluar dari loop bersarang: `Outer: for {...break Outer}`. Lebih bersih daripada flag boolean.
+- **Variable shadowing** — `:=` di scope baru (mis. dalam `if err := ...; err != nil`) bikin variabel baru. Ini jebakan klasik; `go vet -vettool=shadow` bisa mendeteksi.
+- **`switch` tanpa kondisi** = rantai `if-else` rapi; `fallthrough` untuk lanjut ke case berikut (jarang).

@@ -87,3 +87,16 @@ Idealnya ketiganya **berkorelasi** (log menyertakan `trace_id`).
 3. **`trace_id` ke log** — `span.SpanContext().TraceID().String()` lalu `slog.With("trace_id", id)` (Modul 18). Log & trace jadi bisa dikorelasikan.
 4. **Sampling 10%** — `sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.1))`. Kurangi volume di produksi; head-based sampling.
 5. **Span error** — `span.SetStatus(codes.Error, "pesan")` + `span.RecordError(err)`. Di UI span ditandai merah → mudah temukan kegagalan.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./33-distributed-tracing/advanced`
+
+
+- **OpenTelemetry** — span (unit kerja) dalam trace; propagasi context via header **W3C `traceparent`** lintas layanan/proses.
+- **Context propagation** — teruskan `ctx` ber-span; injeksi/ekstraksi di boundary HTTP/gRPC.
+- **Sampling** — head-based (putuskan di awal, murah) vs tail-based (putuskan setelah lihat trace penuh, tangkap yang error/lambat).
+- **Atribut, event, baggage** — atribut untuk filter; baggage bawa data lintas span (hati-hati ukuran & PII).
+- **Korelasi log-trace** — sertakan `trace_id` di log terstruktur agar loncat log↔trace. Lihat [[18-observability]].
+- **Uji** — `tracetest`/in-memory exporter untuk verifikasi span tanpa backend nyata.

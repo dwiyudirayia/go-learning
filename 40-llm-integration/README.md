@@ -119,3 +119,17 @@ pertanyaan -> retrieve dokumen relevan -> sisipkan sebagai konteks -> LLM -> jaw
 3. **RAG embedding** — ganti pencarian kata-kunci dengan kosinus similarity atas vektor embedding (dummy/nyata). Ambil top-k dokumen terdekat sebagai konteks.
 4. **Structured output** — pakai `output_config.format` (JSON schema) agar balasan tervalidasi jadi struct Go; hindari parsing teks bebas yang rapuh.
 5. **`Chatter` + resiliency** — bungkus implementasi `Chatter` dengan retry + circuit breaker (Modul 32) agar panggilan LLM tahan gangguan jaringan/rate-limit. Interface `Chatter` membuat ini mudah (dekorator).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./40-llm-integration/advanced`
+
+
+- **Streaming** — stream respons untuk input/output panjang (hindari timeout); pakai helper `finalMessage` bila tak perlu event per-token.
+- **Tool use loop** — model minta tool → kode eksekusi → kirim hasil → ulang sampai selesai. Rancang loop & batas iterasi.
+- **RAG** — chunking dokumen → embedding → retrieval top-k → suntik ke prompt. Kualitas retrieval > ukuran prompt.
+- **Prompt caching & token counting** — cache prefix panjang (system/context) untuk hemat biaya; hitung token sebelum kirim.
+- **Uji tanpa API key** — interface `Chatter` + `MockChatter` (pola repo ini) agar test deterministik & gratis.
+- **Resiliensi** — retry pada rate-limit, kelola context window, timeout.
+- **Model** — default `claude-opus-4-8`; **selalu baca skill `claude-api`** untuk ID model & parameter terbaru (jangan menebak).

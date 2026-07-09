@@ -73,3 +73,16 @@ Perbandingan pakai `hmac.Equal` (**constant-time**) → cegah timing attack.
 3. **`PaymentGateway` + resiliency** — bungkus dengan retry + circuit breaker (Modul 32); panggilan pembayaran harus tahan jaringan flaky tapi tak double-charge (kombinasikan dengan idempotensi #2).
 4. **Handler webhook** — endpoint HTTP (Modul 13) yang **verifikasi HMAC-SHA256** signature + cek timestamp (anti-replay) sebelum memproses. Tolak bila signature tak cocok.
 5. **MinIO** — ganti `InMemoryStorage` dengan client S3-compatible (`aws-sdk-go-v2`, endpoint MinIO). Interface `Storage` membuat swap ini satu baris di `main`.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./46-service-integrations/advanced`
+
+
+- **Interface + mock** — bungkus tiap 3rd-party (Stripe/S3/email) di interface; uji dengan mock (tanpa panggil API nyata / tanpa biaya).
+- **Webhook aman** — verifikasi **HMAC signature** (`hmac.Equal`, constant-time) + **anti-replay** (tolak timestamp lama/nonce dipakai ulang). Pola repo ini.
+- **Idempotency key** — kirim key agar retry ke pihak ketiga tak menggandakan (mis. double charge).
+- **Circuit breaker & timeout** — lindungi dari dependency eksternal lambat/mati [[32-resiliency-patterns]].
+- **Retry idempoten + backoff** — hanya retry operasi aman.
+- **Secrets & rate limits** — kelola API key aman [[27-security]]; hormati rate limit vendor.

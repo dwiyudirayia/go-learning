@@ -88,3 +88,17 @@ Struktur kode (repository, model) **tidak berubah** — hanya driver + DSN.
 
 ## ✅ Status Solusi Latihan
 Latihan **1, 3, 4 sudah diselesaikan** di fungsi `latihanDemo()` (main.go): model `Category` belongs-to, query raw JOIN, dan hard delete (`Unscoped`). Latihan 2 & 5 (repository interface, context timeout) sebagai tantangan lanjutan.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./14-database/advanced`
+
+
+- **Connection pool tuning** — `db.SetMaxOpenConns`, `SetMaxIdleConns`, `SetConnMaxLifetime`. Salah setel → connection exhaustion atau koneksi basi.
+- **Selalu `...Context`** — `QueryContext`/`ExecContext` agar query ikut batal saat request cancel.
+- **Transaksi aman** — pola `tx, _ := db.Begin(); defer tx.Rollback(); ...; tx.Commit()` (rollback jadi no-op setelah commit).
+- **`sql.Null*` & custom `Scanner`/`Valuer`** — tangani NULL & tipe kustom (mis. JSON column, enum).
+- **Cegah SQL injection** — SELALU parameterized (`?`/`$1`), jangan string concat.
+- **GORM lanjutan** — `Preload` (hindari N+1), `Select` kolom spesifik, hooks (`BeforeCreate`), soft delete, batch insert `CreateInBatches`. Awas N+1 tersembunyi.
+- **Naik level** — type-safe query via **sqlc** [[36-sqlc-advanced-db]]; skema via migrasi [[21-migrations]].

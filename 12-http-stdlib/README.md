@@ -96,3 +96,17 @@ http.ListenAndServe(":8080", handler)
 
 ## ✅ Status Solusi Latihan
 Latihan **1, 2, 4, 5 sudah diselesaikan**: search (`/books/search`), recover middleware, pagination (`?limit=&offset=`), dan test-nya (lihat `latihan.go` + `api_test.go`). Latihan 3 (validasi author) dibiarkan sebagai latihan singkat.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./12-http-stdlib/advanced`
+
+
+- **Routing Go 1.22 `ServeMux`** — pola dengan **method + wildcard**: `mux.HandleFunc("GET /users/{id}", h)`, ambil via `r.PathValue("id")`. Tak perlu router pihak ketiga untuk kasus sederhana.
+- **Middleware chaining** — `func(http.Handler) http.Handler`; rantai dengan helper `Chain(h, m1, m2)`. Simpan nilai di `context` (auth, request-id).
+- **Timeout berlapis** — `http.Server{ReadHeaderTimeout, ReadTimeout, WriteTimeout}` + `http.TimeoutHandler` per-route + `context.WithTimeout` per-request.
+- **Graceful shutdown** — `srv.Shutdown(ctx)` berhenti terima koneksi baru & tunggu in-flight. Lihat [[20-graceful-shutdown]].
+- **Streaming** — `http.ResponseController` (Go 1.20) untuk `Flush`/deadline per-request; SSE via flush berkala.
+- **Batasi body** — `http.MaxBytesReader` cegah abuse memori.
+- **`httptest`** untuk unit test handler tanpa jaringan nyata.

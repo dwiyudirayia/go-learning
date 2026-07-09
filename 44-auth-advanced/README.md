@@ -87,3 +87,16 @@ Satu aplikasi melayani banyak organisasi (tenant). Setiap data diberi `tenant_id
 3. **`tenant_id` multi-tenancy** — tambahkan `TenantID` ke `Subject` & `Resource`; policy tolak bila `subject.TenantID != resource.TenantID`. Isolasi data antar-tenant.
 4. **Session store Redis** — simpan session di Redis (Modul 22) dengan TTL; logout = `DEL session:<id>`. Lebih mudah revoke dibanding JWT stateless.
 5. **OAuth2 GitHub nyata** — `oauth2.Config{ClientID, ClientSecret, Endpoint: github.Endpoint, Scopes:["read:user"]}`; alur: redirect → callback tukar `code` jadi token → panggil API GitHub. (Modul memakai mock provider via httptest agar bisa diuji tanpa kredensial.)
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./44-auth-advanced/advanced`
+
+
+- **Model otorisasi** — **RBAC** (peran), **ABAC** (atribut/policy), **ReBAC** (relasi, ala Zanzibar/SpiceDB). Pilih sesuai kompleksitas.
+- **OAuth2 / OIDC** — Authorization Code + **PKCE** untuk klien publik; OIDC tambah identitas (ID token). Jangan pakai implicit flow (usang).
+- **JWT vs opaque token** — JWT stateless (sulit di-revoke) vs opaque (butuh introspection, mudah revoke). Kombinasi: access JWT pendek + refresh dengan rotasi.
+- **Policy engine** — OPA/Rego atau Casbin untuk aturan otorisasi terpusat & teruji, bukan `if role==...` tersebar.
+- **Session & refresh rotation** — deteksi reuse token (indikasi pencurian) → revoke seluruh keluarga.
+- **Least privilege & audit** — cakupan minimal + log keputusan otorisasi.

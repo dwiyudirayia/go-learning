@@ -137,3 +137,18 @@ func handler(w http.ResponseWriter, r *http.Request) {
 - **Lupa `wg.Add` sebelum `go`**, atau memanggil `Add` di dalam goroutine → race/hitungan salah.
 
 **Cocok dipakai saat:** server yang menangani banyak request, memanggil banyak service (microservices!), memproses data besar secara paralel, atau butuh timeout/cancellation. Ini yang membuat Go unggul untuk backend & sistem berskala.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run -race ./07-concurrency/advanced`
+
+
+- **`context` propagation** — `ctx` selalu argumen pertama; batalkan turunan otomatis membatalkan anak. `context.AfterFunc` (Go 1.21) jalankan callback saat cancel.
+- **`errgroup` dengan limit** — `g.SetLimit(n)` batasi goroutine bersamaan; `g.Wait()` kembalikan error pertama. Lihat [[38-concurrency-advanced]].
+- **`sync/atomic` bertipe (Go 1.19)** — `atomic.Int64`, `atomic.Pointer[T]` lebih aman dari fungsi lama.
+- **`sync.Once`, `sync.Pool`** — inisialisasi sekali; pool untuk reuse objek panas (kurangi GC).
+- **Semaphore via buffered channel** — `sem := make(chan struct{}, n)`; acquire `sem<-struct{}{}`, release `<-sem`.
+- **`select` non-blocking** — `select { case v:=<-ch: ...; default: ... }`.
+- **Memory model & happens-before** — sinkronisasi hanya via channel/`sync`/`atomic`. Selalu uji dengan `go test -race`; race = bug walau "kelihatan jalan".
+- **Hindari goroutine leak** — pastikan setiap goroutine punya jalan keluar (via `ctx.Done()` atau channel tutup).

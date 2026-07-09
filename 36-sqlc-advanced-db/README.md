@@ -110,3 +110,16 @@ Banyak tim modern memilih sqlc: kontrol SQL penuh **plus** keamanan tipe.
 3. **Ganti ke PostgreSQL** — di `sqlc.yaml` set `engine: postgresql`; placeholder jadi `$1,$2` (bukan `?`), pakai driver `pgx`. Query type-safe tetap.
 4. **Uji pool** — `db.SetMaxOpenConns(1)` lalu jalankan banyak query di goroutine paralel → mereka mengantre (serial). Bukti pool tuning berpengaruh nyata (Modul 26 untuk ukur).
 5. **Transaksi transfer** — `WithTx`: `UPDATE ... balance-=amt WHERE id=A`; cek saldo; `UPDATE ... balance+=amt WHERE id=B`. Bila saldo kurang → `return err` → `tx.Rollback()` (defer). Atomik.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./36-sqlc-advanced-db/advanced`
+
+
+- **Type-safe codegen** — tulis SQL, sqlc generate fungsi Go bertipe. Kompilasi menangkap salah kolom/tipe (beda dari string query mentah [[14-database]]).
+- **Keterbatasan dinamis** — sqlc kurang cocok untuk query yang strukturnya berubah runtime; pakai `sqlc.arg`/`sqlc.narg` atau builder terpisah.
+- **pgx pool tuning** — `pgxpool` untuk Postgres: atur `MaxConns`, health check; jauh lebih cepat dari `lib/pq`.
+- **Batch & `CopyFrom`** — insert massal efisien (`CopyFrom` = COPY protocol, tercepat untuk bulk).
+- **Transaksi `WithTx`** — bungkus Queries dalam tx untuk atomicity.
+- **Sinkron dengan migrasi** — skema sqlc harus cocok dengan [[21-migrations]]; regenerate saat skema berubah.

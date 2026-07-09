@@ -1,0 +1,9 @@
+# Konfigurasi scrape Prometheus untuk aplikasi Go.
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "go-app"
+    static_configs:
+      # host.docker.internal = host tempat app Go berjalan (:2112).
+      - targets: ["host.docker.internal:2112"]

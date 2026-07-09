@@ -97,3 +97,17 @@ Semua alamat/port dari env (`GRPC_ADDR`, `INVENTORY_ADDR`, `PORT`) — tak ada y
 
 ## ✅ Status Solusi Latihan
 Latihan **3 & 5 sudah diselesaikan**: timeout + retry pada panggilan gRPC (`reserveWithRetry`) dan health check (`GET /health`). Latihan 1, 2, 4, 6 (payment-service, interceptor, database, K8s) sebagai proyek lanjutan.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./17-studi-kasus-microservices/advanced`
+
+
+- **Propagasi deadline lintas hop** — teruskan `ctx` (dengan deadline) dari order → inventory agar batal berantai. Deadline mengecil tiap hop.
+- **Retry + backoff + idempotency** — retry hanya operasi idempoten; backoff+jitter; batasi *retry budget* agar tak memperparah overload.
+- **Circuit breaker** — lindungi dari dependency lambat/mati. Lihat [[32-resiliency-patterns]].
+- **Correlation ID / tracing** — sebarkan trace-id lintas layanan untuk debugging. Lihat [[33-distributed-tracing]].
+- **Graceful shutdown terkoordinasi** — berhenti terima request → selesaikan in-flight → tutup koneksi hilir.
+- **Outbox untuk konsistensi** — publikasi event andal via transactional outbox. Lihat [[31-saga-outbox]].
+- **Contract testing** — jaga kompatibilitas API antar tim.

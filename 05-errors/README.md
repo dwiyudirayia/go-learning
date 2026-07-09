@@ -140,3 +140,17 @@ func recoverMiddleware(next http.Handler) http.Handler {
 ```
 
 **Cocok dipakai saat:** SEMUA kode produksi. Pola `sentinel + %w + errors.Is/As` adalah cara standar Go memetakan kegagalan domain ke respons API. `recover` khusus untuk batas terluar (middleware/worker) agar satu bug tak menjatuhkan proses.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./05-errors/advanced`
+
+
+- **`errors.Join` (Go 1.20)** — gabung banyak error jadi satu; `errors.Is` menelusuri semuanya. Implementasi kustom via `Unwrap() []error`.
+- **`%w` vs `%v`** — `%w` mempertahankan rantai (bisa `errors.Is/As`); `%v` "menyegel" jadi teks (sengaja menyembunyikan detail internal dari caller).
+- **Sentinel vs typed error** — sentinel (`var ErrNotFound = errors.New(...)`) untuk kondisi tetap; typed error (struct) saat butuh data tambahan (`errors.As`).
+- **`fs.ErrNotExist` bukan `os.IsNotExist`** — cek modern: `errors.Is(err, fs.ErrNotExist)`. `os.IsNotExist` lawas & tak menembus wrap.
+- **panic/recover sebagai kontrol lokal** — boleh dalam satu paket (mis. parser rekursif), **jangan** bocor lintas API. Recover di boundary (middleware HTTP) untuk cegah crash server.
+- **Stack trace** — stdlib tak simpan stack. Pakai `slog` + `runtime` source, atau `%+v` dari library error tertentu.
+- **Jangan `if err != nil { return err }` telanjang** untuk error yang butuh konteks — bungkus: `return fmt.Errorf("baca config: %w", err)`.

@@ -74,3 +74,16 @@ Keuntungan versi generated: otomatis menangani path parameter, query string, str
 3. **grpc-gateway sungguhan** — anotasi `option (google.api.http) = { post: "/v1/greet" body: "*" }` di proto, generate dengan `protoc-gen-grpc-gateway`. Gateway otomatis, tak perlu tulis manual.
 4. **OpenAPI + Swagger UI** — `--openapiv2_out` menghasilkan spec (Modul 28); sajikan Swagger UI menunjuk spec itu. Satu proto → gRPC + REST + dokumentasi.
 5. **Middleware REST + gRPC** — auth/logging sebagai: interceptor di sisi gRPC **dan** middleware `http.Handler` di sisi gateway. Atau taruh logika di interceptor gRPC saja agar berlaku untuk keduanya (gateway toh memanggil gRPC).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./48-grpc-gateway/advanced`
+
+
+- **REST ↔ gRPC** — satu definisi proto layani gRPC & REST/JSON. Anotasi HTTP (`google.api.http`) memetakan path/method → RPC.
+- **Pemetaan error** — konversi `codes.*` gRPC → status HTTP (mis. `NotFound`→404, `InvalidArgument`→400) konsisten.
+- **Marshaling** — kontrol penamaan field JSON (`json_name`), emit default, enum sebagai string.
+- **Middleware & auth** — teruskan header/metadata (Authorization) dari HTTP ke gRPC.
+- **Streaming via HTTP** — server-stream bisa dipetakan (chunked/SSE); bidi tak natural di REST—pahami batasnya.
+- **Uji** — `bufconn` untuk gateway+backend in-memory (pola repo ini).

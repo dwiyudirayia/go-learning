@@ -99,3 +99,16 @@ Tambahan lintas piramida: **fuzzing** (temukan edge case) & **load** (validasi p
 3. **testcontainers + Postgres** — `postgres.RunContainer(ctx)` memberi DB nyata sekali pakai; test skip otomatis bila Docker tak ada (`testing.Short()` / cek env). Realistis tapi lebih lambat.
 4. **k6** — skrip JS `http.get('http://localhost:8080/...')`; `k6 run script.js` → laporan p95 latency & error rate. Load test terhadap server Modul 15.
 5. **Golden file** — simpan output diharapkan di `testdata/x.golden`; test bandingkan output aktual, flag `-update` untuk regenerasi. Cocok untuk output besar/kompleks (HTML, JSON).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go test -v ./37-advanced-testing/advanced`
+
+
+- **Native fuzzing** — `go test -fuzz`; corpus di `testdata/fuzz`; simpan seed penting. Fuzzer nemu bug UTF-8 nyata di repo ini → invariant diperbaiki.
+- **Property-based testing** — uji invariant untuk banyak input acak (mis. `Reverse(Reverse(x))==x`) alih-alih contoh tunggal.
+- **Testcontainers** — jalankan DB/broker nyata dalam container untuk test integrasi; auto-skip jika Docker tak ada.
+- **Load testing (k6)** — verifikasi throughput/latency SLO; masuk CI untuk regresi performa.
+- **Golden files & snapshot** — untuk output besar/berstruktur.
+- **`synctest`** — uji kode berbasis waktu deterministik (Go 1.24). Selalu `-race` untuk kode konkuren.

@@ -10,7 +10,28 @@
       "Bash(cat \"$\\(go env GOROOT\\)/VERSION\")",
       "Read(//usr/local/go/src/internal/goarch/**)",
       "Bash(mkdir -p /tmp/claude-1000/-mnt-c-AMB-Learning-go-learning/4581117a-e172-4d92-91a9-ee9e3bae8e86/scratchpad/hw)",
-      "Bash(curl -sL --max-time 30 \"https://go.dev/dl/?mode=json&include=all\")"
+      "Bash(curl -sL --max-time 30 \"https://go.dev/dl/?mode=json&include=all\")",
+      "Bash(python3 *)",
+      "Bash(awk '/## 🚀 Teknik Advanced/{p=1} p' 07-concurrency/README.md)",
+      "Bash(gofmt -l 0*-*/advanced/)",
+      "Bash(go build *)",
+      "Bash(go test *)",
+      "Bash(gofmt -l .)",
+      "Bash(gofmt -w 10-project-layout/advanced/ 12-http-stdlib/advanced/ 14-database/advanced/)",
+      "Bash(gofmt -l 10-project-layout/advanced/ 12-http-stdlib/advanced/ 14-database/advanced/)",
+      "Bash(gofmt -w 16-grpc/advanced/ 17-studi-kasus-microservices/advanced/)",
+      "Bash(gofmt -l 16-grpc/advanced/ 17-studi-kasus-microservices/advanced/)",
+      "Bash(gofmt -w 36-sqlc-advanced-db/advanced/ 37-advanced-testing/advanced/ 38-concurrency-advanced/advanced/ 39-cloud-native/advanced/ 40-llm-integration/advanced/)",
+      "Bash(gofmt -l 3[6-9]-*/advanced/ 40-*/advanced/)",
+      "Bash(gofmt -w 45-event-sourcing-cqrs/real-case/)",
+      "Bash(gofmt -l 45-event-sourcing-cqrs/real-case/)",
+      "Bash(go get *)",
+      "Bash(gofmt -w 45-event-sourcing-cqrs/real-case/mysql-elasticsearch/)",
+      "Bash(gofmt -l 45-event-sourcing-cqrs/real-case/mysql-elasticsearch/)",
+      "Bash(command -v docker)",
+      "Bash(docker info *)",
+      "Bash(gofmt -w 16-grpc/real-case/ 33-distributed-tracing/real-case/ 40-llm-integration/real-case/ 44-auth-advanced/real-case/)",
+      "Bash(gofmt -l 16-grpc/real-case/ 33-distributed-tracing/real-case/ 40-llm-integration/real-case/ 44-auth-advanced/real-case/)"
     ]
   }
 }

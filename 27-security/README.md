@@ -78,3 +78,17 @@ grpc.NewServer(grpc.Creds(creds))
 3. **TLS self-signed** — generate dengan `crypto/x509` + `crypto/ecdsa`, tulis `cert.pem`/`key.pem`, lalu `srv.ListenAndServeTLS("cert.pem","key.pem")`. Untuk dev; produksi pakai Let's Encrypt/`autocert`.
 4. **`govulncheck` di CI** — tambah step: `go install golang.org/x/vuln/cmd/govulncheck@latest && govulncheck ./...`. Gagalkan build bila ada kerentanan pada dependency.
 5. **Terapkan ke Modul 15** — pasang middleware security headers (`X-Content-Type-Options`, `Strict-Transport-Security`, dll) + rate limit di server REST studi kasus. Keamanan = lapisan default, bukan tambalan.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./27-security/advanced`
+
+
+- **Rate limiting** — token bucket (`golang.org/x/time/rate`) per-IP/per-user; lindungi login & endpoint mahal.
+- **Password hashing** — bcrypt/argon2id (bukan SHA); `hmac.Equal`/`subtle.ConstantTimeCompare` untuk banding token (cegah timing attack).
+- **Token** — access pendek + refresh dengan rotasi & revocation; simpan hash, bukan token mentah.
+- **Header keamanan** — HSTS, CSP, X-Content-Type-Options, X-Frame-Options; CORS ketat; proteksi CSRF untuk cookie-based.
+- **Validasi input** — whitelist, batasi ukuran (`MaxBytesReader`); parameterized query cegah SQLi; escape output cegah XSS.
+- **TLS** — konfig cipher modern, min TLS 1.2/1.3; jangan matikan verifikasi sertifikat.
+- **Secrets** — env/secret manager, jangan di repo; rotasi berkala. Lihat [[19-config]].

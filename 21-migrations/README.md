@@ -161,3 +161,17 @@ migrate -database "$DB" -path migrations force <versi_yang_benar>
    ```
 4. **Ganti ke PostgreSQL** — import `_ "github.com/golang-migrate/migrate/v4/database/postgres"` dan pakai URL `postgres://user:pass@host:5432/db?sslmode=disable`. File SQL sama, hanya driver & dialek yang beda.
 5. **Simulasi `dirty`** — buat migrasi yang sengaja gagal (SQL salah). Setelah gagal, `version` menunjukkan status **dirty**. Perbaiki: betulkan SQL, lalu `migrate force <versi_sebelumnya>` untuk membersihkan flag dirty, baru `up` lagi. Pelajaran: migrasi harus **atomik & idempoten** sebisa mungkin.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./21-migrations/advanced`
+
+
+- **Up/Down berpasangan** — tiap migrasi punya rollback; uji down di dev.
+- **Dirty state** — jika migrasi gagal di tengah, state jadi *dirty*; pulihkan via `force <version>` setelah perbaikan manual.
+- **Embed via `iofs`** — sematkan file migrasi ke binary (`//go:embed migrations/*.sql`) agar deploy satu artefak.
+- **Expand/Contract (backward-compatible)** — untuk zero-downtime: tambah kolom (expand) → deploy kode → backfill → hapus lama (contract). Jangan rename destruktif dalam satu langkah.
+- **Transaksi per migrasi** — banyak DB DDL non-transaksional (mis. beberapa operasi Postgres); pahami batasan engine.
+- **Seed terpisah** — data seed bukan migrasi skema; pisahkan agar idempoten.
+- **Versioning** — nomor migrasi monoton; jangan edit migrasi yang sudah rilis.

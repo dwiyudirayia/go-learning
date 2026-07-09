@@ -77,3 +77,17 @@ Untuk ekspresi cron sungguhan (`"0 */5 * * *"`), pakai [robfig/cron](https://git
 3. **Dead letter ke DB** — alih-alih hanya `deadLetters++`, `INSERT INTO dead_jobs(payload, error, failed_at)`. Bisa di-retry manual belakangan.
 4. **Integrasi NATS** — konsumen NATS (Modul 23) memanggil `queue.Enqueue(job)` saat event masuk, bukan enqueue langsung dari HTTP. Job jadi reaktif terhadap event.
 5. **`robfig/cron`** — `c := cron.New(); c.AddFunc("0 2 * * *", tugasHarian); c.Start()`. Spec `0 2 * * *` = tiap hari 02:00. Lebih ekspresif dari `time.Ticker` untuk jadwal kalender.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./25-background-jobs/advanced`
+
+
+- **Worker pool** — N worker konsumsi dari channel job; ukuran pool sesuai I/O vs CPU bound.
+- **Graceful drain** — saat shutdown, berhenti ambil job baru, selesaikan yang berjalan, persist sisa. Lihat [[20-graceful-shutdown]].
+- **Scheduler** — cron (`robfig/cron`) untuk job periodik; tambah jitter agar tak semua job jalan di detik sama.
+- **Idempotency + retry** — job bisa jalan >1x (crash/redeliver) → rancang idempoten; exponential backoff untuk retry.
+- **Persistence** — job penting harus persist (DB/queue) agar selamat dari restart (at-least-once).
+- **Poison job** — job yang selalu gagal → batasi retry lalu DLQ, jangan blokir worker.
+- **Observability** — metrik antrean (depth, latency, failure rate) untuk deteksi backlog.

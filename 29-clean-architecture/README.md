@@ -76,3 +76,16 @@ Ini versi lebih ketat dari Modul 15 (yang layered). Bandingkan keduanya: 15 = pr
 3. **`UpdateNote` + `DeleteNote`** — tambah method di interface use case + implementasi; adapter tinggal memetakan request→use case.
 4. **Port `Notifier` + adapter NATS** — definisikan `type Notifier interface{ NoteCreated(Note) }`; inti memanggilnya tanpa tahu implementasinya. Adapter NATS (Modul 23) publish event; test pakai mock Notifier.
 5. **Test adapter `rest`** — `httptest.NewRequest` + `httptest.NewRecorder`, inject use case (atau mock repo), assert status & body JSON. Adapter diuji terpisah dari inti.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./29-clean-architecture/advanced`
+
+
+- **Ports & adapters (hexagonal)** — domain di pusat, tak tahu framework/DB; dependency mengarah ke dalam (Dependency Inversion).
+- **Domain murni** — entitas & use-case tanpa import Fiber/GORM; adapter (handler/repo) implement interface yang didefinisikan domain.
+- **Use-case interactor** — satu use-case = satu unit; input/output boundary eksplisit.
+- **Uji di boundary** — domain diuji tanpa infra (cepat, deterministik); adapter diuji integrasi.
+- **Awas over-engineering** — clean arch berharga saat domain kompleks & berumur panjang; untuk CRUD kecil, layered sederhana ([[10-project-layout]]) cukup.
+- **Wiring** — rakit dependency di `main`/composition root; pertimbangkan `wire`.

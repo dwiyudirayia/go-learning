@@ -81,3 +81,17 @@ Gabungan mereka = "defense in depth" untuk keandalan.
 3. **Bungkus gRPC Modul 17** — panggilan ke inventory service dibungkus `breaker.Execute(func(){ ... })` + `bulkhead` (batasi concurrent call) agar satu dependency lambat tak menghabiskan semua goroutine.
 4. **Metrik** — Gauge `circuit_state` (0=closed,1=open,2=half), Counter `bulkhead_rejected_total`. Naikkan saat transisi & saat reject (Modul 18).
 5. **Auto-renew lease** — untuk job panjang, goroutine memperpanjang TTL lock secara berkala (`PEXPIRE`) sebelum kedaluwarsa, agar lock tak lepas di tengah kerja. Berhenti perpanjang saat job selesai.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./32-resiliency-patterns/advanced`
+
+
+- **Circuit breaker** — state Closed→Open→Half-Open; hentikan panggil dependency yang gagal untuk beri waktu pulih & cegah cascade.
+- **Bulkhead** — isolasi resource (pool koneksi/goroutine terpisah per dependency) agar satu yang lambat tak menghabiskan semua.
+- **Timeout + retry + backoff+jitter** — wajib berpasangan; retry tanpa backoff = memperparah overload (retry storm).
+- **Retry budget** — batasi total retry agar tak melipatgandakan beban.
+- **Distributed lock (Redis)** — pahami keterbatasan Redlock (clock skew, GC pause); untuk correctness kritis, pakai fencing token.
+- **Fallback / graceful degradation** — sajikan data basi/default saat dependency mati, bukan gagal total.
+- **Hedged request** — kirim ke replika kedua jika yang pertama lambat (kurangi tail latency).

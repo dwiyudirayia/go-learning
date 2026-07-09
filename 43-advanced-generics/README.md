@@ -96,3 +96,16 @@ Jangan generik-kan sesuatu yang cuma dipakai satu tipe (over-engineering).
 3. **`Zip[A,B]`** — pakai `iter.Seq2[A,B]`; tarik dari dua sumber paralel (butuh `next()` via `iter.Pull`). Berhenti saat salah satu habis.
 4. **`WithLogger` + validasi** — functional option yang mengembalikan error; `NewServer` menerapkan semua option lalu validasi (mis. logger tak nil) → return `(*Server, error)`.
 5. **Ganti Map/Filter Modul 6** — versi iterator **lazy**: tak mengalokasikan slice antara; elemen mengalir satu per satu. Bandingkan alokasi dengan versi slice (Modul 26) — lazy menang untuk pipeline panjang.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./43-advanced-generics/advanced`
+
+
+- **Type sets lanjutan** — constraint sebagai interface berisi union & `~` (underlying type). Rancang constraint sesempit mungkin.
+- **`iter.Seq[T]` / `iter.Seq2[K,V]` (Go 1.23)** — iterator lazy via **range-over-func**: `for v := range mySeq {}`. Bangun pipeline malas & hemat memori.
+- **Struktur data generik** — `Set[T comparable]`, tree, cache type-safe tanpa `any`+assertion.
+- **Functional options generik** — builder type-safe dengan opsi.
+- **Phantom/marker types** — tipe untuk enforce invariant di compile-time (mis. unit terukur, state builder).
+- **Batas inference** — kadang perlu instansiasi eksplisit; method tak bisa punya type param (taruh di tipe).

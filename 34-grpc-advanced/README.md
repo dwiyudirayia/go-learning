@@ -92,3 +92,17 @@ case <-ctx.Done(): return nil, status.Error(codes.DeadlineExceeded, "...")
 3. **Server-streaming hormati `ctx.Done()`** — dalam loop `stream.Send`, cek `select { case <-stream.Context().Done(): return ctx.Err(); default: }` agar berhenti saat klien pergi.
 4. **gRPC-Gateway** — lihat Modul 48: hasilkan REST proxy dari `.proto` dengan `protoc-gen-grpc-gateway` (produksi) atau tulis manual (contoh 48).
 5. **Retry client-side** — `grpc.WithDefaultServiceConfig` berisi JSON `retryPolicy` (`maxAttempts`, `retryableStatusCodes: ["UNAVAILABLE"]`). Retry transparan di layer transport.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./34-grpc-advanced/advanced`
+
+
+- **Interceptor chain** — susun auth→logging→metrics→recovery; unary & stream terpisah.
+- **Bidi streaming & flow control** — kelola siapa kirim/terima; hormati backpressure, jangan buffer tak terbatas.
+- **Deadline propagation** — deadline mengalir ke downstream call; server cek `ctx.Err()`.
+- **Retry via service config** — retry deklaratif (kode status retryable, backoff) di sisi klien tanpa kode manual.
+- **Load balancing & keepalive** — `round_robin`, name resolver; keepalive deteksi koneksi mati.
+- **Protobuf lanjutan** — `oneof`, well-known types (`Timestamp`, `Any`), **field mask** untuk partial update.
+- **Uji** — `bufconn` untuk semua di atas tanpa jaringan.

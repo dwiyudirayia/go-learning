@@ -71,3 +71,16 @@ Semua error memakai **satu bentuk** — klien tak perlu menebak:
 3. **`swaggo/swag` (code-first)** — anotasi handler dengan komentar `// @Summary`, `// @Success 200 {object} Book`, jalankan `swag init` → generate spec + Swagger UI dari kode. Kebalikan dari design-first.
 4. **Versi v2 tanpa merusak v1** — daftarkan route `/api/v2/books` terpisah dengan schema baru (field tambahan). v1 tetap utuh → klien lama tak rusak (backward compatible).
 5. **Generate client SDK** — `openapi-generator-cli generate -i openapi.json -g go -o client/`. Dari satu spec dapat SDK banyak bahasa — kontrak jadi sumber kebenaran.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./28-api-docs/advanced`
+
+
+- **Spec-first vs code-first** — spec-first (tulis OpenAPI dulu, generate server/client via `oapi-codegen`) menjaga kontrak; code-first (`swag` dari komentar) lebih cepat tapi rawan drift.
+- **Validasi dari spec** — middleware validasi request/response terhadap OpenAPI (kkc) agar dokumen = perilaku.
+- **Codegen klien** — hasilkan SDK klien type-safe dari spec untuk konsumen.
+- **Versioning API** — `/v1`, `/v2`; deprecation policy & header `Sunset`.
+- **Contract testing** — pastikan implementasi tak menyimpang dari kontrak (Pact/dredd).
+- **Contoh & error schema** — dokumentasikan bentuk error konsisten (lihat pemetaan error di [[15-studi-kasus-rest]]).

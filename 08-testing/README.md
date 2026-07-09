@@ -129,3 +129,17 @@ go test -run TestFoo ./... -v   # saat debug satu test
 - Simpan test **di package yang sama** (`package store`) untuk akses internal, atau `package store_test` untuk menguji hanya API publik (black-box).
 
 **Cocok dipakai saat:** SELALU. Test adalah jaring pengaman yang membuatmu berani me-refactor. Di Go, menulis test itu murah (bawaan bahasa) — jadikan kebiasaan sejak awal, apalagi menjelang REST API & microservices.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go test -v ./08-testing/advanced`
+
+
+- **`t.Parallel()` + subtests** — `t.Run(name, func(t){ t.Parallel(); ... })` jalankan paralel. Hati-hati *loop var capture* (aman sejak Go 1.22).
+- **`t.Cleanup`, `t.Helper`, `t.TempDir`** — cleanup LIFO; `Helper()` agar baris gagal menunjuk pemanggil; `TempDir` auto-hapus.
+- **Fuzzing** — `func FuzzX(f *testing.F)` cari input pemecah invariant. Lihat [[37-advanced-testing]].
+- **`testing/synctest` (Go 1.24, eksperimental)** — uji kode berbasis waktu tanpa `time.Sleep` nyata (fake clock deterministik).
+- **Golden files** — simpan output ekspektasi di `testdata/`, update via flag `-update`. Bagus untuk output besar.
+- **`httptest.Server` / `httptest.NewRecorder`** — uji handler tanpa port nyata.
+- **Coverage & bench** — `go test -coverprofile`, `go tool cover -func`; `-benchmem` tampilkan `allocs/op`; bandingkan dengan `benchstat`.

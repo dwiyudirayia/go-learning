@@ -93,3 +93,17 @@ Cocok untuk objek yang sering dibuat-buang di jalur panas (buffer, encoder). ⚠
 3. **`sync.Pool` benchmark** — bandingkan alokasi buffer dengan & tanpa `Pool` via `-benchmem` (Modul 26). Pool mengurangi tekanan GC pada objek yang sering dibuat-buang.
 4. **`errgroup.SetLimit(n)`** — batasi goroutine berjalan bersamaan jadi n (mirip semaphore built-in). `g.SetLimit(10)` sebelum loop `g.Go`.
 5. **`errgroup` + timeout** — `ctx, cancel := context.WithTimeout(ctx, 5*time.Second)`; `errgroup.WithContext(ctx)` → seluruh batch punya deadline; yang lewat batas dibatalkan serempak.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./38-concurrency-advanced/advanced`
+
+
+- **`errgroup` + `SetLimit`** — paralelisme terbatas dengan agregasi error & cancel otomatis saat satu gagal.
+- **Weighted semaphore** — `golang.org/x/sync/semaphore` untuk batasi resource berbobot (bukan sekadar hitung).
+- **`singleflight`** — gabungkan panggilan duplikat concurrent jadi satu (anti cache stampede [[22-caching]]).
+- **`sync.Pool`** — reuse objek panas; awas: objek bisa di-GC kapan saja, jangan simpan state.
+- **False sharing** — padding struct agar field yang sering ditulis beda cache line (perf multi-core). Lihat [[42-go-internals]].
+- **Atomic & lock-free** — `atomic.Pointer[T]`, compare-and-swap untuk struktur lock-free (mahir; ukur vs mutex).
+- **`rate.Limiter`** — throttle idiomatik.

@@ -120,3 +120,16 @@ if err := json.NewDecoder(resp.Body).Decode(&u); err != nil { return err }
 **Kaitan ke depan:** `net/http` + `encoding/json` yang kamu lihat di sini adalah **fondasi** REST API. Framework (Gin/Echo) hanya membungkus ini agar lebih ringkas — memahami versi murninya membuatmu tak "buta" saat pakai framework.
 
 **Cocok dipakai saat:** hampir semua backend. Untuk kasus sederhana, `net/http` bawaan (dengan routing method+path Go 1.22) sudah cukup tanpa framework apa pun.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./09-stdlib/advanced`
+
+
+- **`encoding/json` lanjutan** — `json.RawMessage` tunda decode; implement `MarshalJSON`/`UnmarshalJSON` untuk kontrol penuh; `json.Decoder` untuk stream besar; `dec.DisallowUnknownFields()` tolak field asing.
+- **`time` jebakan** — `time.Timer`/`Ticker` harus di-`Stop()` agar tak bocor; simpan hasil `time.Now()` bawa *monotonic clock* (aman untuk ukur durasi meski jam sistem berubah).
+- **`io` komposisi** — `io.Pipe`, `io.TeeReader` (baca sambil salin), `io.MultiWriter` (tulis ke banyak tujuan), `io.LimitReader` (batasi baca).
+- **`bufio.Scanner`** default token 64KB — set `Buffer()` untuk baris panjang, atau pakai `bufio.Reader.ReadString`.
+- **`net/http` client** — SELALU set `http.Client{Timeout}` (default tak ada timeout!); reuse `Transport` untuk connection pooling; tutup `resp.Body`.
+- **`log/slog`** — logging terstruktur bawaan (Go 1.21): `slog.Info("msg", "key", val)`, handler JSON, `slog.With` context. Lihat [[18-observability]].

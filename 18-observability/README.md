@@ -95,3 +95,17 @@ httpRequestsTotal.WithLabelValues("GET", "/hello", "200").Inc()
    ```
    Semua log dari `reqLog` otomatis membawa `request_id` — korelasi satu request jadi mudah.
 5. **`/healthz` & `/readyz`** — lihat Modul 20: `/healthz` selalu 200 bila proses hidup; `/readyz` cek dependency (DB ping) dan balas 503 bila belum siap / sedang shutdown.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./18-observability/advanced`
+
+
+- **Tiga pilar** — logs (`slog`), metrics (Prometheus), traces (OTel [[33-distributed-tracing]]) — korelasikan via trace-id.
+- **`slog` handler kustom** — tambah atribut dari context (request-id, user), redaksi field sensitif, output JSON untuk agregator.
+- **Metrik: kardinalitas label** — hindari label ber-kardinalitas tinggi (user-id, url mentah) → ledakan time-series. Gunakan label terbatas.
+- **Histogram vs Summary** — histogram (bucket) bisa diagregasi lintas instance; pilih bucket sesuai SLO latensi.
+- **Metodologi** — **RED** (Rate, Errors, Duration) untuk service; **USE** (Utilization, Saturation, Errors) untuk resource.
+- **Exemplars** — tautkan sampel trace ke bucket histogram untuk drill-down.
+- **`pprof` endpoint** — expose `/debug/pprof` (diamankan) untuk profil produksi. Lihat [[26-profiling]].

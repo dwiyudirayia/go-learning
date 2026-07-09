@@ -94,3 +94,16 @@ Go cocok untuk serverless: **cold start cepat** (binari kecil, tanpa runtime ber
 3. **`Reconcile` unhealthy** — selain hitung jumlah pod, cek status; ganti pod "unhealthy" (bukan hanya menambah bila kurang). Reconcile = arahkan state aktual → state diinginkan (pola controller K8s).
 4. **Lambda** — bungkus `HandleOrder` dengan `lambda.Start(handler)` (aws-lambda-go), build `GOOS=linux go build -o bootstrap`. Satu fungsi, deploy serverless.
 5. **`_helpers.tpl`** — definisikan `{{- define "app.labels" }}` untuk label bersama; panggil `{{ include "app.labels" . }}` di tiap template. DRY, best practice Helm.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./39-cloud-native/advanced`
+
+
+- **Reconcile loop (operator)** — bandingkan *desired* vs *actual*, konvergen; **idempoten** & bisa diulang (level-triggered, bukan edge).
+- **CRD & operator SDK** — perluas K8s dengan resource kustom + controller.
+- **Helm** — templating chart, `values.yaml` per-environment; `helm lint`/`--dry-run`.
+- **Serverless** — handler stateless; waspada *cold start* & batas eksekusi; keep-warm bila perlu.
+- **Graceful shutdown di K8s** — hormati SIGTERM & grace period [[20-graceful-shutdown]].
+- **GitOps** — deklaratif via Git sebagai sumber kebenaran (ArgoCD/Flux).

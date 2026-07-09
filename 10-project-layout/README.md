@@ -103,3 +103,17 @@ example/
    ```
 3. **`make build`** — di `Makefile`: `build: \n\tgo build -o bin/hello ./cmd/hello \n\tgo build -o bin/farewell ./cmd/farewell`. Output rapi di `bin/` (jangan lupa `bin/` masuk `.gitignore`).
 4. **Kenapa `internal/` tak bisa di-import dari luar** — aturan compiler Go: package di bawah `internal/` hanya boleh di-import oleh kode yang berbagi **parent** dari folder `internal` itu. Jadi `example/internal/greeting` hanya bisa dipakai di dalam `example/`. Ini pagar privasi tingkat-package bawaan Go — dipakai agar API internal tak bocor jadi dependency publik.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./10-project-layout/advanced`
+
+
+- **`internal/`** — paket di bawah `internal/` hanya bisa diimpor oleh sibling di parent yang sama. Enforcement dari compiler, bukan konvensi.
+- **Go Workspaces (`go.work`)** — kembangkan beberapa module sekaligus tanpa `replace`. `go work use ./svc-a ./svc-b`.
+- **Build tags** — `//go:build linux && amd64` untuk file khusus platform/fitur; dipakai di [[47-tui-wasm]] untuk stub WASM.
+- **`embed.FS`** — sematkan file statis/migrasi/template ke binary: `//go:embed templates/*`.
+- **Versi via ldflags** — `go build -ldflags "-X main.version=$(git describe)"` inject metadata saat build.
+- **Functional options** — pola idiomatik konfigurasi opsional: `New(opts ...Option)`. Lihat [[43-advanced-generics]].
+- **DI** — mulai dari *manual wiring* (constructor); pertimbangkan `google/wire` (codegen) hanya saat graph membesar.

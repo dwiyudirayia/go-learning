@@ -87,3 +87,16 @@ func main() {
 3. **WASM `goReverse`** — daftarkan fungsi: `js.Global().Set("goReverse", js.FuncOf(func(_ js.Value, args []js.Value) any { return reverse(args[0].String()) }))`; panggil dari `index.html`. Build `GOOS=js GOARCH=wasm`.
 4. **TinyGo** — `tinygo build -o main.wasm -target wasm ./...`; binari jauh lebih kecil dari toolchain Go standar (cocok untuk web), dengan trade-off dukungan stdlib terbatas.
 5. **TUI panggil REST** — dalam `Update`, jalankan `tea.Cmd` yang melakukan HTTP GET (Modul 13) secara async; hasilnya kembali sebagai `tea.Msg` → render di `View`. Jangan blok event loop.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./47-tui-wasm/advanced`
+
+
+- **Bubble Tea (Elm architecture)** — `Model` (state) + `Update(msg)` (transisi) + `View()` (render). Efek samping via `tea.Cmd` (async, kembalikan `Msg`).
+- **Uji TUI tanpa TTY** — panggil `Update`/`View` langsung dengan pesan sintetis; deterministik, tanpa terminal.
+- **WASM (`syscall/js`)** — interop DOM/JS; **build tags** `//go:build js && wasm` pisahkan dari kode host, plus stub `main_other.go` agar `go build ./...` di host tetap lolos.
+- **Ukuran biner WASM** — Go WASM besar; **TinyGo** hasilkan biner jauh lebih kecil (dengan trade-off dukungan paket).
+- **`wasm_exec.js` & memori** — bridge Go↔JS; hati-hati boundary call (mahal) & manajemen memori linear.
+- **Performa** — minimalkan lintasan Go↔JS; batch operasi DOM.

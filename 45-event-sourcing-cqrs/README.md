@@ -84,3 +84,19 @@ Output membuktikan read model & write model **konsisten** (saldo 120 sama).
 3. **Event store SQLite** — tabel `events(aggregate_id, seq, type, data, created_at)`; append = INSERT, load = `SELECT ... ORDER BY seq`. Ganti store memori dengan ini.
 4. **Snapshot** — tiap 100 event simpan state agregat; saat load, mulai dari snapshot terakhir + replay event sesudahnya. Replay jadi cepat untuk agregat berumur panjang.
 5. **Publish ke NATS** — setelah append, terbitkan event ke NATS (Modul 23) agar service lain (mis. notifikasi) bereaksi. Integrasi event-driven.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./45-event-sourcing-cqrs/advanced`
+
+> 🗄️ **Versi REAL-CASE (database sungguhan / SQLite)** ada di folder [`real-case/`](real-case) — event store & read-model sebagai TABEL, optimistic concurrency via constraint DB, bukti durabilitas. Jalankan: `go run ./45-event-sourcing-cqrs/real-case`
+
+
+- **Event store append-only** — state = hasil replay event, bukan disimpan langsung. Kebenaran = urutan event.
+- **Optimistic concurrency** — versi per aggregate; tolak append jika versi berubah (cegah lost update).
+- **Snapshot** — simpan snapshot berkala agar replay tak dari nol (perf untuk aggregate berumur panjang).
+- **CQRS** — pisah *write model* (aggregate/command) dari *read model* (projection); read dioptimalkan untuk query.
+- **Eventual consistency** — projection tertinggal sedikit dari write; rancang UI/idempotensi untuk itu.
+- **Event versioning / upcasting** — skema event berevolusi; upcast event lama ke bentuk baru saat replay.
+- **Idempotent projection** — apply event >1x aman (dedup by event-id).

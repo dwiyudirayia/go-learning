@@ -69,3 +69,16 @@ Untuk operasi yang dipicu ulang (retry, pesan ganda), sematkan **idempotency key
 3. **Relay sebagai loop** — `ticker := time.NewTicker(1*time.Second)`; tiap tick baca outbox `WHERE published = 0`, publish, tandai `published = 1`. Pola worker Modul 25.
 4. **Publish ke broker nyata** — ganti "publish" simulasi dengan `broker.Publish(topic, event)` (Modul 23). Outbox menjamin **atomic**: tulis state + event dalam satu transaksi DB, relay kirim belakangan (at-least-once).
 5. **Saga koreografi** — tanpa koordinator pusat: tiap service bereaksi terhadap event dan menerbitkan event berikutnya. Lebih longgar (loose coupling) tapi alur lebih sulit dilacak → andalkan tracing (Modul 33).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./31-saga-outbox/advanced`
+
+
+- **Orkestrasi vs koreografi** — orkestrasi (satu koordinator pusat) lebih mudah dilacak; koreografi (event berantai) lebih longgar tapi sulit diaudit.
+- **Compensating transaction** — tiap langkah punya "undo" (mis. refund untuk charge) karena distributed tx tak ada.
+- **Transactional outbox** — tulis event ke tabel outbox dalam **transaksi yang sama** dengan perubahan bisnis; poller/CDC publish ke broker → atomicity tanpa 2PC.
+- **Idempotency & dedup** — konsumen simpan message-id yang sudah diproses.
+- **CDC vs polling** — Debezium (CDC) real-time; polling lebih sederhana. Trade-off latensi vs kompleksitas.
+- **Saga state** — persist status saga agar bisa lanjut setelah crash.

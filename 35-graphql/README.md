@@ -86,3 +86,17 @@ gqlgen unggul untuk proyek besar (type-safe, codegen). graphql-go (modul ini) le
 3. **Field `Book.author`** — resolver `Book.author` mengambil author dari `book.AuthorID`. Hati-hati siklus: `Author.books` → `Book.author` bisa loop; batasi kedalaman atau jangan resolusikan balik otomatis.
 4. **DataLoader (atasi N+1)** — kumpulkan semua `authorID` dalam satu tick, query `WHERE id IN (...)` sekali, bagikan hasil. Ubah N query jadi 1 (pola batch di README).
 5. **Migrasi ke gqlgen** — schema-first: tulis `.graphql`, `gqlgen generate` menghasilkan tipe & interface resolver. Lebih type-safe & boilerplate berkurang dibanding schema programatik.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./35-graphql/advanced`
+
+
+- **N+1 → DataLoader** — batch & cache per-request agar resolver nested tak query berulang. Masalah utama GraphQL.
+- **Pagination Relay** — cursor-based (`edges`/`pageInfo`) lebih stabil dari offset untuk data berubah.
+- **Batasi kompleksitas** — depth/complexity limiting cegah query jahat yang mahal (DoS).
+- **Error handling** — GraphQL kembalikan 200 dengan `errors[]`; petakan error domain ke extensions.
+- **Resolver & context** — auth & dataloader lewat context; jangan bocorkan internal.
+- **Subscriptions** — real-time via WebSocket [[24-websocket]].
+- **Persisted queries** — whitelist query untuk keamanan & caching.

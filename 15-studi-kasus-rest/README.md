@@ -89,3 +89,17 @@ handler  ──►  service  ──►  repository  ──►  GORM/DB
 
 ## ✅ Status Solusi Latihan
 Latihan **1, 2, 3 sudah diselesaikan**: `GET /me`, `PATCH /tasks/:id` (ubah judul), dan **unit test service dengan mock repo** (internal/service/service_test.go). Latihan 4 & 5 (pagination, refresh token) sebagai tantangan.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./15-studi-kasus-rest/advanced`
+
+
+- **Uji berlapis dengan mock repo** — service diuji terhadap interface repository palsu (tanpa DB). Handler diuji via `httptest`/`app.Test`.
+- **JWT lanjutan** — access token pendek + refresh token dengan **rotasi** (revoke lama saat dipakai), simpan hash refresh. Lihat [[27-security]].
+- **bcrypt cost** — pilih cost seimbang (mis. 10–12); ukur latensi. Bandingkan argon2id untuk keamanan lebih tinggi.
+- **Otorisasi** — middleware RBAC/ABAC; jangan cek role di handler tersebar. Lihat [[44-auth-advanced]].
+- **Validasi & DTO** — pisahkan model domain dari request/response DTO; validasi di boundary.
+- **Idempotency & pagination** — idempotency-key untuk POST yang tak boleh ganda; pagination berbasis cursor (bukan offset) untuk data besar.
+- **Error → HTTP konsisten** — satu tempat pemetaan sentinel error → status + body terstruktur.

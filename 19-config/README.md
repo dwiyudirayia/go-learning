@@ -78,3 +78,17 @@ if c.Env == "production" && len(c.JWT.Secret) < 16 {
    ```
    Bungkus `cfg` dengan mutex/atomic bila dibaca goroutine lain saat reload.
 5. **Integrasi ke Modul 15** — ganti semua `os.Getenv(...)` di server REST dengan `cfg.Port`, `cfg.JWTSecret`, dst. Satu sumber kebenaran config → mudah diuji (inject struct `Config`, bukan baca env global).
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./19-config/advanced`
+
+
+- **Presedensi Viper** — flag > env > file > default. Dokumentasikan urutan agar tak membingungkan.
+- **Fail-fast** — validasi seluruh config saat startup; keluar dengan pesan jelas jika invalid (jangan gagal di tengah request).
+- **Typed config struct** — unmarshal ke struct + default via functional options; hindari `viper.GetString` tersebar di kode.
+- **Secret ≠ config** — jangan commit secret; ambil dari env/secret manager (Vault, AWS SM). Lihat [[27-security]].
+- **Hot reload** — `viper.WatchConfig` untuk reload runtime (mis. log level) — pastikan thread-safe.
+- **12-Factor** — config lewat env; satu image, banyak environment. Lihat [[30-deployment]].
+- **Env prefix** — `viper.SetEnvPrefix("APP")` + `AutomaticEnv` untuk mapping bersih.

@@ -88,3 +88,17 @@ Jangan optimasi kode yang bukan bottleneck — buang waktu & bikin kode rumit.
 3. **Goroutine leak** — buat goroutine yang `<-make(chan int)` (blok selamanya). Buka `/debug/pprof/goroutine?debug=1` → jumlah goroutine terus naik. Perbaiki dengan `context` cancel.
 4. **CPU profile** — `go test -bench BenchmarkSumSquares -cpuprofile cpu.out` lalu `go tool pprof cpu.out` → `top`, `list SumSquares` untuk lihat baris terpanas.
 5. **Optimasi reverse (Modul 2)** — benchmark versi `[]rune` vs versi dua-pointer in-place; buktikan mana lebih sedikit alokasi. Aturannya: **ukur dulu**, jangan tebak.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./26-profiling/advanced`
+
+
+- **`pprof` profil** — CPU, heap, goroutine, block, mutex. `go tool pprof`, visual `-http=:8080` (flamegraph). Profil di produksi via endpoint aman.
+- **Benchmark disiplin** — `-benchmem` (allocs/op), jalankan berkali (`-count`), bandingkan dengan **`benchstat`** (signifikansi statistik, bukan satu angka).
+- **Execution tracer** — `runtime/trace` + `go tool trace` untuk lihat scheduler, GC, blocking secara timeline.
+- **Escape analysis** — `go build -gcflags='-m'` lihat apa yang lolos ke heap; kurangi alokasi panas. Lihat [[42-go-internals]].
+- **Tuning GC** — `GOGC` (frekuensi GC) & **`GOMEMLIMIT`** (Go 1.19, soft memory limit) untuk kontrol jejak memori vs CPU.
+- **`sync.Pool`** untuk reuse objek panas; ukur dulu—jangan tebak.
+- **Optimasi berbasis data** — profil dulu, baru optimasi; hindari micro-optimization tanpa bukti.

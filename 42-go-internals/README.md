@@ -85,3 +85,16 @@ Instruksi compiler: `//go:embed` (Modul 21), `//go:generate` (jalankan codegen v
 3. **`GOGC=off`** — `GOGC=off go run ./42-go-internals` menonaktifkan GC → heap terus tumbuh, tak ada jeda GC. Bandingkan `NumGC` di `runtime.MemStats`. Untuk paham trade-off throughput vs memori.
 4. **`GOMAXPROCS=1`** — `GOMAXPROCS=1 go run ./07-concurrency` memaksa 1 OS thread → goroutine berjalan konkuren tapi tak paralel; worker pool jadi serial secara efektif.
 5. **`fieldalignment`** — `go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest` lalu `fieldalignment ./...`; `-fix` untuk auto-urutkan field. Otomatisasi latihan #2.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./42-go-internals/advanced`
+
+
+- **Scheduler GMP** — Goroutine (G) dijadwal ke OS thread (M) via processor logis (P). Goroutine murah (stack awal ~2KB, tumbuh dinamis). `GOMAXPROCS` = jumlah P.
+- **GC tri-color mark-sweep** — concurrent, low-latency; tuning via `GOGC` & **`GOMEMLIMIT`**. Baca `runtime.MemStats`/`GODEBUG=gctrace=1`.
+- **Memory alignment & padding** — urutan field menentukan ukuran (`BadStruct` 24B vs `GoodStruct` 16B). Susun field besar→kecil.
+- **Escape analysis** — `-gcflags='-m'` tunjukkan alokasi stack vs heap; kurangi escape untuk tekan GC. Lihat [[26-profiling]].
+- **Inlining & BCE** — fungsi kecil di-inline; *bounds-check elimination* hilangkan cek index yang terbukti aman.
+- **`unsafe.Pointer` & `//go:linkname`** — sangat mahir & berbahaya; hanya untuk kasus ekstrem (interop, zero-copy). Bisa rusak antar-versi Go.

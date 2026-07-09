@@ -75,3 +75,17 @@ Client pakai `new EventSource("/events")`. Auto-reconnect bawaan. Cocok untuk **
    ```
 4. **Skala multi-instance** — tiap instance subscribe channel Redis; pesan lokal juga di-`PUBLISH` ke Redis, lalu tiap instance mem-broadcast ke klien-nya sendiri. Redis Pub/Sub jadi "bus" antar-instance (Modul 22).
 5. **SSE dari NATS** — handler SSE (`Content-Type: text/event-stream`) subscribe subject `order.created` (Modul 23); tiap event tulis `fmt.Fprintf(w, "data: %s\n\n", json)` lalu `flush`. Cocok untuk notifikasi satu-arah server→browser.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./24-websocket/advanced`
+
+
+- **Heartbeat** — ping/pong berkala + read deadline untuk deteksi koneksi mati; tanpa ini koneksi zombie menumpuk.
+- **Hub pattern** — satu goroutine hub kelola register/unregister/broadcast; tiap koneksi punya goroutine baca & tulis terpisah.
+- **Satu writer per koneksi** — WebSocket tak aman untuk tulis konkuren; serialkan via channel per-conn.
+- **Backpressure** — jika client lambat, buffer penuh → putuskan atau drop, jangan biarkan memori meledak.
+- **SSE vs WebSocket** — SSE (satu arah, server→client, di atas HTTP biasa, auto-reconnect) lebih sederhana untuk notifikasi; WS untuk dua arah.
+- **Keamanan** — cek `Origin` (cegah CSWSH), autentikasi saat handshake, batasi ukuran pesan.
+- **Graceful close** — kirim close frame, tunggu, lalu tutup TCP.

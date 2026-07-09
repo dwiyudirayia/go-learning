@@ -103,3 +103,17 @@ func (f *fakeRepo) FindByID(id int) (*User, error) { return f.users[id], nil }
 **Kapan bikin interface?** Jangan buat interface "untuk jaga-jaga". Buat saat: (1) butuh mengganti implementasi (test/mock, ganti provider), (2) ada >1 implementasi nyata, (3) memisahkan lapisan (handler↔service↔repo). Kalau cuma 1 implementasi dan tak perlu di-mock → pakai struct langsung.
 
 **Cocok dipakai saat:** membangun sistem berlapis yang **testable** dan **fleksibel** — inti arsitektur clean/hexagonal di Go. Ini akan sangat terpakai di modul REST API & microservices nanti.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./04-interfaces/advanced`
+
+
+- **Typed-nil trap** — interface yang menyimpan pointer nil **tidak** sama dengan `nil` interface. `var p *T = nil; var i any = p; i != nil` → `true`. Penyebab bug "kenapa err != nil padahal nil". Kembalikan `error` bukan `*MyError` konkret.
+- **Accept interfaces, return structs** — parameter pakai interface sempit; return tipe konkret agar caller fleksibel.
+- **Sealed interface** — tambahkan method *unexported* agar hanya paketmu yang bisa mengimplementasikan (mencegah implementasi liar).
+- **Interface embedding** — `io.ReadWriteCloser = Reader + Writer + Closer`. Komposisi interface kecil.
+- **Type switch multi-tipe** — `case int, int64:` satu blok untuk beberapa tipe; `case nil:` menangani nil.
+- **Comma-ok assertion** — `v, ok := x.(T)` aman (tak panic). Tanpa `ok` → panic jika salah tipe.
+- **Interface pointer sangat jarang** — hampir tak pernah butuh `*io.Reader`; interface sudah reference-like.

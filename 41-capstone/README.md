@@ -88,3 +88,18 @@ Lalu jalankan `go test -v ./41-capstone` dan ikuti alurnya.
 3. **Invalidasi cache saat hapus** — setelah delete di DB, `cache.Del(ctx, "url:"+code)` (Modul 22) agar redirect lama tak melayani dari cache basi.
 4. **Unit test service dengan mock** — definisikan interface `storeIface` & `cacheIface`, buat mock in-memory, uji `Shorten`/`Resolve` **tanpa** DB/Redis nyata (cepat, deterministik — Modul 08, 15).
 5. **Dockerfile + compose** — multi-stage build (Modul 30) + `docker-compose.yml` berisi service app, `postgres`, `redis`; app baca `DB_PATH`/`REDIS_ADDR` dari env (Modul 19). Ganti driver SQLite→pgx untuk Postgres.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./41-capstone/advanced`
+
+
+Capstone = menggabung semua. Teknik yang dipadukan di sini:
+
+- **Arsitektur berlapis** — store (data) → service (bisnis) → handler (HTTP), tiap lapis diuji terpisah via interface. Lihat [[15-studi-kasus-rest]].
+- **Cache-aside + graceful shutdown** — Redis (miniredis) di depan DB; shutdown tertib [[20-graceful-shutdown]] & [[22-caching]].
+- **Auth** — JWT + bcrypt di boundary [[27-security]].
+- **Uji integrasi** — `app.Test` menjalankan seluruh stack tanpa port nyata.
+- **Wiring** — rakit dependency di `main` (composition root); config via env [[19-config]].
+- **Latihan mandiri** — bangun ulang dari nol di `workshop/` langkah demi langkah untuk internalisasi (store→service→cache→auth→handler→wiring→test).

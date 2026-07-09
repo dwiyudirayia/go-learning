@@ -93,3 +93,17 @@ Komunikasi internal antar service (order-service ↔ payment-service), sistem lo
 
 ## ✅ Status Solusi Latihan
 Latihan **1, 4, 5 sudah diselesaikan**: RPC `Multiply`, interceptor logging (service/interceptor.go), dan error `InvalidArgument` (status codes). Latihan 2 & 3 (client-streaming, bidirectional) sebagai tantangan.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./16-grpc/advanced`
+
+
+- **Interceptors** — unary & stream, untuk auth, logging, recovery, metrics. Rantai dengan `grpc.ChainUnaryInterceptor`.
+- **Metadata & deadline** — oper auth via `metadata`; SELALU set deadline di client (`context.WithTimeout`), server hormati `ctx.Done()`.
+- **Streaming** — server-stream, client-stream, bidi. Perhatikan flow control & penutupan stream.
+- **Status & error details** — `status.Error(codes.NotFound, ...)` + `errdetails` untuk info terstruktur; petakan ke domain error.
+- **`bufconn`** — uji server+client in-memory tanpa port (pola inti repo ini).
+- **Evolusi protobuf** — tambah field aman; jangan pakai ulang nomor field; `reserved` untuk yang dihapus.
+- **Produksi** — TLS/mTLS, `grpc.health.v1` health check, server reflection untuk `grpcurl`, keepalive.

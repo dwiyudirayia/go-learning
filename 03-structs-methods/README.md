@@ -113,3 +113,16 @@ func (c *Counter) Inc() { c.Lock(); defer c.Unlock(); c.count++ }
 ```
 
 **Cocok dipakai saat:** memodelkan "benda" dalam sistemmu (entity/model), dan membangun service/repository. Pola `struct + NewXxx + pointer method` adalah **tulang punggung** hampir semua aplikasi backend Go.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk semua teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./03-structs-methods/advanced`
+
+
+- **Method value vs method expression** — `f := t.Method` (terikat ke `t`) vs `f := T.Method` (butuh receiver sebagai arg pertama: `f(t)`). Berguna untuk higher-order function.
+- **Method set & satisfaction interface** — method dengan *pointer receiver* hanya masuk method set `*T`, bukan `T`. Artinya nilai `T` (bukan `&T`) mungkin **tidak** memenuhi interface. Sumber error umum.
+- **Field ordering & padding** — urutan field memengaruhi ukuran struct karena alignment. Susun dari lebar terbesar ke terkecil bisa hemat memori — lihat [[42-go-internals]] (`BadStruct` 24B vs `GoodStruct` 16B).
+- **Struct comparability** — struct bisa jadi *map key* jika semua field comparable. Struct dengan slice/map/func **tidak** comparable (panic saat `==`).
+- **Embedding & override** — method promosi dari tipe tersemat bisa "ditimpa" dengan mendefinisikan method bernama sama di outer struct. Ambiguitas (dua embed punya method sama) → wajib eksplisit.
+- **`struct{}` zero-size** — dipakai untuk set & channel sinyal (`chan struct{}`).

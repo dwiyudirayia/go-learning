@@ -85,3 +85,17 @@ Semua `return err` dari handler ditangani satu tempat → response error konsist
 
 ## ✅ Status Solusi Latihan
 Latihan **1, 2, 3, 5 sudah diselesaikan**: update (`PUT`), CORS, filter (`?author=`), dan test (`main.go` + `api_test.go`). Latihan 4 (pisah handler ke package) tersedia sebagai tantangan.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./13-fiber/advanced`
+
+
+- **Custom error handler** — `fiber.Config{ErrorHandler: ...}` sentralisasi mapping error → status. Kombinasi dengan sentinel error dari service.
+- **Middleware order** — urutan `app.Use` menentukan eksekusi; recover, logger, cors, auth berurutan. Grup route: `api := app.Group("/api", authMw)`.
+- **`app.Test(req)`** — uji end-to-end tanpa port nyata (dipakai di [[41-capstone]]).
+- **Immutability & `c.Locals`** — nilai dari `c.Params`/`c.Query` valid hanya selama handler; salin jika disimpan. `c.Locals` untuk oper data antar-middleware.
+- **Zero-alloc gotcha** — Fiber reuse buffer; jangan simpan reference `[]byte` dari context tanpa `copy`.
+- **Streaming** — `c.SendStream` untuk respons besar; WebSocket via `contrib/websocket`. Lihat [[24-websocket]].
+- **Validator** — integrasikan `go-playground/validator` untuk validasi DTO.

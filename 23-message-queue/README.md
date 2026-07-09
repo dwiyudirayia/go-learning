@@ -139,3 +139,17 @@ Karena kode pakai interface `Broker`, kamu bisa mulai dengan yang simpel (NATS) 
 3. **Metrik** — 4 Counter (Modul 18): `publish_total`, `ack_total`, `nack_total`, `reconnect_total`. Naikkan di titik masing-masing pada `resilience.go`.
 4. **Header/metadata** — bungkus payload jadi `struct{ Meta map[string]string; Body []byte }` (mis. `Meta["trace_id"]`). Semua broker meng-encode struct ini (JSON) sehingga trace_id ikut lintas service (korelasi dengan Modul 33).
 5. **Uji reconnect** — jalankan RabbitMQ via Docker, mulai konsumen, `docker stop rabbitmq` saat jalan → `superviseConsumer` masuk loop reconnect (backoff+jitter); `docker start` → konsumen tersambung lagi otomatis tanpa kehilangan langganan.
+
+---
+
+## 🚀 Teknik Advanced (Level Up)
+> 💻 **Contoh runnable + komentar detail** untuk teknik di bawah ada di folder [`advanced/`](advanced). Jalankan: `go run ./23-message-queue/advanced`
+
+
+- **Delivery semantics** — *at-least-once* (umum) → **consumer harus idempoten** (dedup by message-id). *Exactly-once* mahal/ilusi; capai efeknya via idempotency.
+- **Ack/nack & prefetch** — ack setelah proses sukses; nack→requeue/DLQ; atur prefetch agar beban seimbang.
+- **Dead Letter Queue** — pesan gagal berulang dialihkan ke DLQ untuk inspeksi, bukan retry tak henti.
+- **Retry + backoff** — exponential backoff + jitter; batasi max retry.
+- **Outbox pattern** — publikasi andal dalam transaksi DB. Lihat [[31-saga-outbox]].
+- **Ordering & partitioning** — Kafka menjamin urutan *per-partition*; pilih partition key hati-hati (mis. per-aggregate).
+- **Resiliensi** — reconnect otomatis, supervise consumer, `PublishWithRetry` (pola `resilience.go` modul ini).
