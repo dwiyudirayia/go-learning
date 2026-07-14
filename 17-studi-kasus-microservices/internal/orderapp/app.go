@@ -13,6 +13,12 @@ import (
 	invpb "go-learning/17-studi-kasus-microservices/proto"
 )
 
+// 🔍 Analogi besar: microservices itu seperti FRANCHISE dengan banyak toko spesialis, bukan
+// satu supermarket raksasa. order-service (toko pemesanan) tak menyimpan stok sendiri; ia
+// "menelepon" (gRPC) inventory-service (gudang) untuk cek & pesan stok. Untung: tiap toko bisa
+// dikembangkan/di-scale/di-deploy terpisah. Rugi: kini ada JARINGAN di antara mereka — bisa
+// lambat/putus — makanya butuh timeout, retry, dan pemetaan error (lihat fungsi di bawah).
+
 // BuildApp menerima InventoryClient (interface hasil generate) — sehingga di
 // test bisa diisi client bufconn, di produksi diisi koneksi gRPC sungguhan.
 func BuildApp(inv invpb.InventoryClient) *fiber.App {
@@ -84,6 +90,10 @@ func BuildApp(inv invpb.InventoryClient) *fiber.App {
 // reserveWithRetry (latihan 3) memanggil ReserveStock dengan batas waktu 2 detik
 // dan mencoba ulang (maks 3x) HANYA bila error transien (codes.Unavailable),
 // mis. inventory-service sedang restart. Error bisnis (stok kurang) TIDAK diretry.
+// 🔍 Analogi: retry itu seperti MENELEPON ULANG saat nada sibuk. Tapi hati-hati: kita hanya
+// menelepon ulang bila "salurannya" yang bermasalah (codes.Unavailable ~ service sedang restart).
+// Kalau jawabannya "stok memang habis" (error bisnis), menelepon ulang percuma — malah bahaya
+// (bisa memesan dobel). "backoff" = jeda sejenak antar percobaan agar tak membanjiri server.
 func reserveWithRetry(parent context.Context, inv invpb.InventoryClient, req *invpb.ReserveRequest) (*invpb.ReserveResponse, error) {
 	var lastErr error
 	for attempt := 0; attempt < 3; attempt++ {
@@ -102,6 +112,9 @@ func reserveWithRetry(parent context.Context, inv invpb.InventoryClient, req *in
 	return nil, lastErr
 }
 
+// 🔍 Analogi: grpcToHTTP itu PENERJEMAH ANTAR-BAHASA-ERROR. Gudang bicara "bahasa gRPC"
+// (codes.NotFound), tapi pelanggan web mengerti "bahasa HTTP" (404). Fungsi ini menerjemahkan
+// tiap kode agar pelanggan luar menerima status yang benar & bermakna, bukan 500 generik.
 // grpcToHTTP memetakan kode error gRPC -> status HTTP yang sesuai.
 func grpcToHTTP(err error) error {
 	switch status.Code(err) {

@@ -3,6 +3,15 @@ package main
 
 import "fmt"
 
+// 🔍 Analogi besar reconcile loop: seperti TERMOSTAT AC. Kamu set suhu yang DIINGINKAN (desired,
+// mis. 24°C). Termostat terus-menerus membandingkan dengan suhu AKTUAL ruangan, lalu bertindak:
+// terlalu panas -> dinginkan; terlalu dingin -> hangatkan; pas -> diam. Kubernetes bekerja persis
+// begini: kamu bilang "aku mau 3 replika", lalu controller terus menyelaraskan realita ke keinginan
+// itu — ada pod mati? buat baru. Kelebihan? matikan. Kamu deklarasikan TUJUAN, bukan langkah manual.
+//
+// 🔍 Analogi idempotent (lagi): memanggil Reconcile saat sudah pas = menekan tombol lift di lantai
+// yang sedang kamu tempati -> tak terjadi apa-apa. Aman dipanggil berkali-kali. Ini inti model "deklaratif".
+
 // POLA CONTROLLER (jantung Kubernetes): loop yang terus-menerus mengamati
 // "state aktual" lalu MENYELARASKANNYA dengan "state yang diinginkan" (desired).
 // Ini disebut reconcile loop. Operator/controller K8s bekerja persis begini.

@@ -11,6 +11,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// 🔍 Analogi besar bcrypt: JANGAN PERNAH simpan password apa adanya. bcrypt mengubahnya jadi
+// "hash" — seperti MENGGILING DAGING jadi bakso: mudah searah (password -> hash), MUSTAHIL dibalik
+// (hash -> password). Saat login, kita giling password yang diketik lalu bandingkan baksonya. Kalau
+// database bocor, penyerang cuma dapat bakso, bukan password asli. Bonus bcrypt: sengaja LAMBAT &
+// pakai "garam" acak, jadi menebak jutaan password (brute-force) jadi sangat mahal. "cost" = tingkat kesulitan.
 // --- Password hashing (Modul 15/27) ---
 func hashPassword(pw string) (string, error) {
 	b, err := bcrypt.GenerateFromPassword([]byte(pw), bcrypt.DefaultCost)

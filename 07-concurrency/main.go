@@ -26,6 +26,15 @@ func main() {
 // ------------------------------------------------------------------
 // 1. Goroutine + WaitGroup (agar main menunggu)
 // ------------------------------------------------------------------
+// 🔍 Analogi besar modul ini: bayangkan kamu KOKI KEPALA di dapur.
+//   - goroutine = pegawai tambahan yang kamu suruh kerja SENDIRI, paralel denganmu.
+//     Sangat murah — Go sanggup ribuan sekaligus (beda dgn "thread" OS yang berat).
+//   - channel  = LOKET/JENDELA penyerahan piring antar pegawai. Cara aman berbagi kerja.
+//   - Motto Go: "Jangan berbagi memori lalu dikunci; berbagilah lewat channel."
+
+// 🔍 Analogi: WaitGroup itu seperti ABSENSI. wg.Add(1) = "ada 1 pegawai berangkat",
+// wg.Done() = "1 pegawai pulang", wg.Wait() = "koki kepala menunggu di pintu sampai
+// SEMUA pegawai pulang". Tanpa ini, main() bisa selesai duluan & pegawai ditinggal.
 func goroutineWaitGroup() {
 	fmt.Println("\n-- Goroutine + WaitGroup --")
 
@@ -62,11 +71,15 @@ func channelDasar() {
 	fmt.Println("\n-- Channel dasar --")
 
 	// Unbuffered: kirim & terima harus bertemu (sinkron).
+	// 🔍 Analogi: channel unbuffered itu seperti SERAH-TERIMA barang tangan-ke-tangan.
+	// Pengirim menunggu sampai penerima siap menerima (dan sebaliknya) — janjian ketemu.
 	ch := make(chan string)
 	go func() { ch <- "pesan dari goroutine" }()
 	fmt.Println("terima:", <-ch)
 
 	// Buffered: kirim tak blok selama buffer belum penuh.
+	// 🔍 Analogi: channel buffered itu LOKER PENITIPAN dengan N kotak. Pengirim boleh
+	// menaruh barang & pergi (tak menunggu) selama masih ada kotak kosong. Penuh -> baru menunggu.
 	buf := make(chan int, 3)
 	buf <- 1
 	buf <- 2
@@ -90,6 +103,10 @@ func channelDasar() {
 // ------------------------------------------------------------------
 // 3. select + timeout
 // ------------------------------------------------------------------
+// 🔍 Analogi: select itu seperti PENJAGA yang mengawasi BEBERAPA loket sekaligus dan
+// melayani loket MANA PUN yang lebih dulu ada barangnya. Dipadu time.After, ia jadi
+// "tunggu hasil, TAPI kalau lebih dari 100ms tak datang, ambil jalan timeout". default =
+// "kalau tak ada satu pun loket siap SEKARANG, langsung lewat" (tak menunggu / non-blocking).
 func selectDanTimeout() {
 	fmt.Println("\n-- select + timeout --")
 
@@ -120,6 +137,9 @@ func selectDanTimeout() {
 // 4. sync: Mutex, Once, atomic
 // ------------------------------------------------------------------
 
+// 🔍 Analogi: Mutex itu KUNCI KAMAR MANDI. Sebelum masuk (mengubah value), pegawai
+// mengunci pintu (Lock); yang lain antre. Selesai, buka kunci (Unlock) supaya berikutnya
+// masuk. Tanpa kunci, dua pegawai menulis bersamaan -> DATA RACE (hasil kacau & tak terduga).
 // Counter aman-konkuren dengan Mutex.
 type Counter struct {
 	mu    sync.Mutex
@@ -146,6 +166,9 @@ func syncMutexOnceAtomic() {
 	fmt.Printf("Counter (Mutex) = %d (harus 100)\n", c.value)
 
 	// atomic: counter tanpa mutex untuk operasi sederhana.
+	// 🔍 Analogi: atomic itu operasi "sekali gerak tak bisa disela" — seperti mesin penghitung
+	// klik di pintu yang tiap tekan pasti +1 utuh, tak mungkin setengah-setengah. Untuk hitungan
+	// angka sederhana, atomic lebih ringan dari Mutex (tak perlu kunci-buka pintu).
 	var atomicCount int64
 	var wg2 sync.WaitGroup
 	for i := 0; i < 100; i++ {
@@ -156,6 +179,8 @@ func syncMutexOnceAtomic() {
 	fmt.Printf("Counter (atomic) = %d (harus 100)\n", atomic.LoadInt64(&atomicCount))
 
 	// Once: inisialisasi tepat sekali walau dipanggil banyak goroutine.
+	// 🔍 Analogi: sync.Once itu seperti SAKELAR LAMPU yang cuma menyala sekali walau ditekan
+	// beramai-ramai. Cocok untuk "buka koneksi DB / baca config" yang boleh terjadi tepat 1x.
 	var once sync.Once
 	var wg3 sync.WaitGroup
 	var initCount int64
@@ -174,6 +199,10 @@ func syncMutexOnceAtomic() {
 // 5. context: cancellation & timeout
 // ------------------------------------------------------------------
 
+// 🔍 Analogi: context itu seperti REMOTE PEMBATAL + ALARM WAKTU yang dibagikan ke semua
+// pegawai. Kalau pelanggan pergi (request batal) atau waktu habis, satu sinyal ctx.Done()
+// menyuruh semua pegawai berhenti serentak — tak ada yang kerja sia-sia. Aturan Go: context
+// selalu jadi argumen PERTAMA fungsi, dan diteruskan ke bawah rantai panggilan.
 // kerjaLama mensimulasikan pekerjaan yang butuh 'butuh' waktu, tapi menghormati
 // pembatalan lewat ctx.
 func kerjaLama(ctx context.Context, butuh time.Duration) (string, error) {
@@ -206,6 +235,9 @@ func contextCancellation() {
 // ------------------------------------------------------------------
 // 6. Worker pool
 // ------------------------------------------------------------------
+// 🔍 Analogi: worker pool itu seperti 3 KASIR melayani 1 ANTREAN panjang berisi 9 pelanggan.
+// Alih-alih membuka 9 kasir (boros), 3 kasir mengambil pelanggan berikutnya begitu selesai.
+// 'jobs' = antrean masuk; 'results' = keranjang hasil. Ini pola pengendali beban paling umum.
 func workerPool() {
 	fmt.Println("\n-- Worker pool (3 worker, 9 job) --")
 
@@ -246,6 +278,9 @@ func workerPool() {
 // ------------------------------------------------------------------
 // 7. Pipeline: gen -> square -> konsumsi
 // ------------------------------------------------------------------
+// 🔍 Analogi: pipeline itu seperti LINI PRODUKSI bertahap. Tiap tahap (generate -> square)
+// adalah stasiun yang mengambil dari channel masuk, mengolah, lalu mengirim ke channel keluar.
+// Barang mengalir tahap demi tahap tanpa menunggu semua selesai — hemat memori & alami.
 func square(in <-chan int) <-chan int {
 	out := make(chan int)
 	go func() {

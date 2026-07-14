@@ -32,6 +32,11 @@ func tempDB(name string) (string, func()) {
 // ------------------------------------------------------------------
 // Bagian A: database/sql MENTAH (tanpa ORM)
 // ------------------------------------------------------------------
+// 🔍 Analogi besar: ada 2 cara bicara dengan database.
+//   - database/sql (mentah) = kamu menulis SQL sendiri, seperti MASAK DARI NOL. Kontrol penuh,
+//     tapi lebih banyak kerja tangan (Scan tiap kolom, kelola rows, transaksi manual).
+//   - GORM (ORM) = "penerjemah" yang mengubah struct Go <-> tabel otomatis, seperti KATERING.
+//     Cepat & praktis, tapi ada "sihir" yang perlu dipahami. Modul ini menunjukkan keduanya.
 func rawSQLDemo() {
 	fmt.Println("\n-- database/sql (mentah) --")
 
@@ -54,6 +59,10 @@ func rawSQLDemo() {
 		log.Fatal(err)
 	}
 
+	// 🔍 Analogi: placeholder (?) itu KOTAK TERKUNCI untuk data pengguna. Alih-alih menempel
+	// teks langsung ke SQL (bahaya! pengguna nakal bisa menyelipkan perintah = "SQL injection"),
+	// kita kirim data terpisah lewat (?) — driver memperlakukannya murni sebagai DATA, bukan perintah.
+	// Ibarat memberi tamu formulir isian, bukan membiarkannya menulis ulang kontrak.
 	// INSERT dengan placeholder (?) -> cegah SQL injection. LastInsertId ambil ID.
 	res, _ := db.Exec("INSERT INTO users(name,email) VALUES(?,?)", "Ana", "ana@mail.id")
 	id, _ := res.LastInsertId()
@@ -82,6 +91,9 @@ func rawSQLDemo() {
 		fmt.Printf("  #%d %s <%s>\n", uid, uname, umail)
 	}
 
+	// 🔍 Analogi: transaksi itu "SEMUA-ATAU-TIDAK SAMA SEKALI", seperti transfer bank: kurangi
+	// saldo A DAN tambah saldo B harus sukses bersama. Begin = buka sesi; Commit = "sahkan semua";
+	// Rollback = "batalkan semua seolah tak pernah terjadi" bila ada langkah gagal di tengah.
 	// Transaksi: Begin -> ... -> Commit/Rollback.
 	tx, _ := db.Begin()
 	_, err = tx.Exec("UPDATE users SET name=? WHERE id=?", "Ana Updated", 1)
@@ -169,6 +181,9 @@ func gormDemo() {
 	db.Model(&User{}).Count(&total)
 	fmt.Printf("jumlah user = %d\n", total)
 
+	// 🔍 Analogi: soft delete itu "PINDAH KE TEMPAT SAMPAH", bukan hapus permanen. Barisnya masih
+	// ada di disk tapi ditandai DeletedAt, jadi query biasa pura-pura tak melihatnya. Unscoped =
+	// "buka tempat sampah, tampilkan semua". Berguna untuk audit / undo. GORM melakukannya otomatis.
 	// Delete (soft delete: baris tak hilang, DeletedAt diisi).
 	db.Delete(&found)
 	var afterDelete int64

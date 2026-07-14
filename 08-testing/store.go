@@ -15,6 +15,9 @@ func ApplyDiscount(price, pct int) (int, error) {
 	return price - price*pct/100, nil
 }
 
+// 🔍 Analogi: fungsi seperti ini "murni" — input sama selalu output sama, tanpa efek samping.
+// Fungsi murni itu PALING MUDAH DIUJI: seperti soal matematika yang jawabannya pasti, jadi
+// tinggal cocokkan "IsValidEmail('a@b.com') harus true". Inilah yang diuji table-driven di _test.go.
 // IsValidEmail cek sederhana: tepat satu '@' dan ada '.' setelahnya.
 func IsValidEmail(s string) bool {
 	at := strings.IndexByte(s, '@')
@@ -37,6 +40,12 @@ type Product struct {
 
 // ErrProductNotFound dipakai repo saat produk tak ada (sentinel).
 var ErrProductNotFound = errors.New("produk tidak ditemukan")
+
+// 🔍 Analogi besar: kenapa Catalog bergantung pada INTERFACE (ProductRepo), bukan DB langsung?
+// Bayangkan stopkontak. Catalog cuma butuh "colokan" yang bisa FindByID. Di dunia nyata
+// kamu colok "database asli"; saat menguji, kamu colok "database boongan (mock)" yang isinya
+// sudah kamu atur. Karena stopkontaknya sama, Catalog tak sadar bedanya — inilah kenapa
+// interface bikin kode MUDAH DIUJI tanpa perlu database sungguhan yang lambat & ribet.
 
 // ProductRepo adalah dependency Catalog. Di produksi diisi implementasi DB;
 // di test diisi implementasi palsu (mock).

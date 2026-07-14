@@ -37,6 +37,16 @@ func getenv(k, def string) string {
 	return def
 }
 
+// 🔍 Analogi besar CAPSTONE: kalau modul 1–40 itu belajar tiap ALAT satu-satu (palu, gergaji, bor),
+// capstone ini MEMBANGUN RUMAH memakai semuanya sekaligus. Perhatikan tiap baris di main() menunjuk
+// modul asalnya: config (19), database (14), cache Redis (22), arsitektur berlapis (29), graceful
+// shutdown (20), auth JWT (15/27). Inilah cara semua kepingan menyatu jadi aplikasi utuh siap-produksi.
+// Tujuannya membuktikan: kamu tak sekadar tahu tiap konsep, tapi bisa MERANGKAINYA.
+//
+// 🔍 Analogi "in-memory double": app ini jalan tanpa infra apa pun — SQLite file temp + Redis PALSU
+// (miniredis) di dalam memori. Seperti MAKET rumah skala penuh yang bisa dihuni untuk latihan, tanpa
+// perlu menyambung listrik & air kota sungguhan. Set REDIS_ADDR -> baru pakai Redis asli.
+
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 

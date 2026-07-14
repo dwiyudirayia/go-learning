@@ -9,7 +9,12 @@ import (
 // bila satu bagian bocor, tak menenggelamkan seluruh kapal). Mencegah satu
 // dependency lambat menghabiskan semua goroutine/koneksi aplikasi.
 //
-// Implementasi: semaphore berbasis channel berkapasitas N.
+// 🔍 Analogi tambahan: nama "bulkhead" diambil dari SEKAT KAPAL. Kapal dibagi ruang-ruang kedap
+// air; kalau satu ruang bocor, air tak menyebar ke seluruh kapal -> kapal tetap mengapung. Di kode,
+// kita batasi "maksimal N operasi bersamaan" untuk tiap dependency. Kalau layanan-X melambat, ia
+// hanya boleh memakai N slot — sisa aplikasi tetap punya slot untuk melayani yang lain. Tanpa sekat,
+// satu dependency lemot bisa menyedot SEMUA goroutine/koneksi & menenggelamkan seluruh aplikasi.
+// Implementasi: semaphore berbasis channel berkapasitas N (slot = tiket masuk; habis -> tolak/tunggu).
 type Bulkhead struct {
 	sem chan struct{}
 }

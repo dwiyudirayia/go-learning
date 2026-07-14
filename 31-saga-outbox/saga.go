@@ -17,6 +17,12 @@ type Step struct {
 	Compensate func(ctx context.Context) error
 }
 
+// 🔍 Analogi besar SAGA: bayangkan MEMESAN PAKET LIBURAN via beberapa vendor terpisah: pesan
+// tiket pesawat -> booking hotel -> sewa mobil. Tak ada "satu tombol batal" ajaib yang mencakup
+// ketiganya (itu two-phase commit, mahal & rapuh di sistem terdistribusi). Kalau sewa mobil GAGAL,
+// saga menjalankan "KOMPENSASI" mundur: batalkan hotel, lalu batalkan pesawat — undo urutan terbalik,
+// seperti melepas tumpukan piring dari atas. Hasil akhir: konsisten (semua jadi, atau semua dibatalkan).
+
 // Saga (pola ORKESTRASI): satu koordinator menjalankan langkah berurutan.
 type Saga struct {
 	steps []Step

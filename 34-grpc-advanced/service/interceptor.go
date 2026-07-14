@@ -13,6 +13,12 @@ import (
 // ValidToken: token dummy untuk demo auth interceptor.
 const ValidToken = "Bearer rahasia"
 
+// 🔍 Analogi besar: interceptor gRPC itu sama seperti MIDDLEWARE di HTTP (modul 12) — SATPAM
+// BERLAPIS yang tiap panggilan lewati sebelum sampai ke handler inti. Bedanya istilah saja. Gunanya:
+// urusan lintas-semua-method (logging, autentikasi, metrics) ditulis SEKALI di sini, bukan diulang
+// di tiap method. "Unary" = panggilan biasa (1 req/1 resp); "Stream" = panggilan mengalir — keduanya
+// butuh satpamnya sendiri. "metadata" = amplop header yang menyertai panggilan (tempat menaruh token).
+
 // --- Interceptor UNARY ---
 
 // LoggingUnaryInterceptor mencatat tiap panggilan unary.

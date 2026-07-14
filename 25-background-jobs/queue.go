@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+// 🔍 Analogi besar: background job itu seperti "TARUH DI KERANJANG, KERJAKAN NANTI". Saat user
+// klik "checkout", kita tak menyuruhnya menunggu email struk terkirim — email dimasukkan antrean,
+// user langsung dapat respons, lalu WORKER di belakang layar mengirimnya. Kerja lambat (email,
+// resize gambar, laporan) dipindah dari "jalur cepat" (request user) ke "jalur belakang".
+
 // Job = unit kerja yang diproses di latar belakang (mis. kirim email, resize gambar).
 type Job struct {
 	ID         string       // dipakai untuk idempotensi
@@ -55,6 +60,9 @@ func (q *Queue) worker() {
 }
 
 func (q *Queue) process(j Job) {
+	// 🔍 Analogi idempotensi: seperti nomor struk unik. Kalau struk #123 sudah diproses, memproses
+	// lagi struk #123 TIDAK menambah efek (mis. tak mengirim email dobel / tak menagih 2x). Penting
+	// karena antrean bisa mengirim pesan yang sama dua kali ("at-least-once delivery"). ID job = pengaman.
 	// IDEMPOTENSI: kalau job dengan ID ini sudah sukses, jangan proses lagi.
 	// (Message queue bisa mengirim pesan ganda — handler harus tahan itu.)
 	q.mu.Lock()
@@ -64,6 +72,10 @@ func (q *Queue) process(j Job) {
 		return
 	}
 
+	// 🔍 Analogi backoff: seperti mengetuk pintu — kalau tak dibuka, kamu menunggu makin lama sebelum
+	// mengetuk lagi (jeda 1x, 2x, 3x...), bukan menggedor terus-menerus. Memberi waktu layanan yang
+	// bermasalah untuk pulih & mencegah membanjiri. Job yang gagal terus akhirnya masuk "dead letter"
+	// (kotak surat khusus gagal) untuk diselidiki manusia — bukan dibuang diam-diam.
 	// RETRY dengan BACKOFF: coba sampai MaxRetries+1 kali.
 	for attempt := 1; attempt <= j.MaxRetries+1; attempt++ {
 		atomic.AddInt64(&q.handlerHit, 1)

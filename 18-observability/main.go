@@ -42,6 +42,13 @@ func buildHandler(logger *slog.Logger, reg *prometheus.Registry) http.Handler {
 	return loggingMiddleware(logger)(metricsMiddleware(mux))
 }
 
+// 🔍 Analogi besar: observability = kemampuan "melihat isi perut" aplikasi yang sedang jalan,
+// seperti PANEL DASHBOARD MOBIL. Tiga alatnya: LOG (buku catatan kejadian), METRICS (angka di
+// spidometer: berapa request/detik, berapa error), TRACING (peta perjalanan 1 request — modul 33).
+//
+// 🔍 Analogi: structured logging (slog JSON) itu seperti mengisi FORMULIR berlabel (method=GET,
+// status=200) alih-alih menulis catatan bebas "si A datang jam segini". Karena rapi & berlabel,
+// mesin (Loki/ELK/Datadog) bisa otomatis menyaring "tampilkan semua request yang status=500".
 // loggingMiddleware mencatat tiap request sebagai structured log (JSON).
 func loggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

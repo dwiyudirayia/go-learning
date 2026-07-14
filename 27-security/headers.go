@@ -2,6 +2,10 @@ package main
 
 import "net/http"
 
+// 🔍 Analogi: security headers itu seperti STIKER INSTRUKSI KEAMANAN yang ditempel di tiap paket
+// yang kamu kirim ke browser: "jangan tebak isi paket" (nosniff), "jangan pajang aku di etalase
+// orang lain" (X-Frame-Options = anti-clickjacking), "hanya percaya sumber dari rumah sendiri"
+// (CSP). Murah (cuma menambah header) tapi menutup banyak celah serangan umum. "Defense in depth".
 // securityHeaders menambahkan header keamanan standar ke setiap response.
 // Ini pertahanan murah terhadap serangan umum (clickjacking, MIME sniffing, XSS).
 func securityHeaders(next http.Handler) http.Handler {

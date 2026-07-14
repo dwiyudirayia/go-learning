@@ -11,6 +11,18 @@ import (
 	"time"
 )
 
+// 🔍 Analogi besar WEBHOOK: kebalikan dari "kamu menelepon layanan". Webhook = layanan yang
+// MENELEPONMU saat ada kabar ("pembayaranmu berhasil!"). Kamu memberi mereka nomor (URL endpoint),
+// mereka menelepon saat ada event. Hemat: kamu tak perlu bertanya berulang "sudah bayar belum?".
+//
+// 🔍 Analogi tanda tangan HMAC: karena siapa saja bisa menelepon nomormu, bagaimana tahu ini benar
+// dari Stripe, bukan penipu? Pengirim asli menyegel pesan dengan "CAP LILIN rahasia" (HMAC pakai
+// signing secret yang cuma kalian berdua tahu). Kamu hitung ulang cap dari isi pesan; kalau cocok,
+// asli. Penipu tak punya secret -> capnya salah -> ditolak.
+//
+// 🔍 Analogi anti-replay: pengecekan timestamp mencegah penyerang MEREKAM pesan asli lalu MENGIRIM
+// ULANG nanti (seperti memutar rekaman izin lama). Pesan lebih tua dari toleransi -> ditolak.
+
 // WEBHOOK: layanan (Stripe/GitHub) mengirim event ke endpoint-mu (mis. "pembayaran
 // berhasil"). WAJIB verifikasi TANDA TANGAN agar tak ada yang memalsukan event.
 // Pola Stripe: HMAC-SHA256 atas "timestamp.payload" dengan signing secret.

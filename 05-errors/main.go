@@ -18,6 +18,14 @@ func main() {
 // ------------------------------------------------------------------
 // Sentinel errors (dibandingkan by identity)
 // ------------------------------------------------------------------
+// 🔍 Analogi besar: di Go, error itu BUKAN alarm kebakaran yang tiba-tiba meledak
+// (seperti exception di Java/Python). Error itu NILAI BIASA — seperti struk yang
+// dikembalikan kasir. Kamu WAJIB melihat struknya ("if err != nil") sebelum lanjut.
+// Eksplisit & tak ada kejutan: jalur sukses dan jalur gagal sama-sama terlihat di kode.
+
+// 🔍 Analogi: sentinel error itu seperti KODE ERROR RESMI yang dipajang (mis. "404").
+// Dibuat sekali di satu tempat, lalu kode lain membandingkannya dengan errors.Is —
+// seperti mencocokkan "apakah ini benar-benar error 'data tidak ditemukan' yang itu?".
 var (
 	ErrNotFound          = errors.New("data tidak ditemukan")
 	ErrInsufficientFunds = errors.New("saldo tidak mencukupi")
@@ -34,6 +42,11 @@ func repoGetUser(id int) error {
 	}
 	return nil
 }
+
+// 🔍 Analogi: membungkus error dengan verb-w (%w) itu seperti menempel STIKER catatan
+// di atas struk lama tanpa menutupinya: "gagal di lapisan service, saat load user 5".
+// Tiap lapisan menambah konteks, tapi struk asli tetap bisa dibaca lewat errors.Is/As.
+// Kalau pakai verb-v (%v), struk aslinya cuma jadi teks — identitasnya HILANG, tak bisa dilacak lagi.
 
 // Lapis service: menambah konteks TAPI tetap membungkus asal dengan %w.
 func serviceLoadUser(id int) error {
@@ -84,6 +97,9 @@ func errorsIsAs() {
 	err := fmt.Errorf("registrasi gagal: %w", validateAge(-5))
 	fmt.Printf("rantai error: %v\n", err)
 
+	// 🔍 Analogi: errors.Is = "apakah di tumpukan struk ini ADA struk merek X?" (cocokkan identitas).
+	//            errors.As = "cari struk merek X di tumpukan, lalu SERAHKAN ke saya biar bisa
+	//            kubaca detailnya (Field, Msg)". Is untuk mengenali; As untuk mengambil isinya.
 	// errors.As menembus rantai & mengisi target dengan *ValidationError.
 	var ve *ValidationError
 	if errors.As(err, &ve) {
@@ -94,6 +110,9 @@ func errorsIsAs() {
 // ------------------------------------------------------------------
 // 3. errors.Join — gabungkan banyak error (Go 1.20+)
 // ------------------------------------------------------------------
+// 🔍 Analogi: errors.Join itu seperti FORMULIR yang mengumpulkan SEMUA kesalahan sekaligus,
+// bukan berhenti di kesalahan pertama. Seperti petugas yang bilang "nama kosong DAN umur
+// kurang" dalam sekali sebut — bukan menyuruhmu bolak-balik memperbaiki satu per satu.
 func validateForm(name string, age int) error {
 	var errs []error
 	if name == "" {
@@ -122,6 +141,10 @@ func errorsJoin() {
 // ------------------------------------------------------------------
 // 4. panic & recover — ubah panic jadi error di batas API
 // ------------------------------------------------------------------
+// 🔍 Analogi: panic itu "REM DARURAT" — dipakai hanya untuk kondisi benar-benar rusak
+// (bug programmer), bukan error biasa. recover() itu seperti JARING PENGAMAN di dalam defer
+// yang menangkap orang jatuh, lalu mengubah kepanikan jadi error rapi di batas API — sehingga
+// seluruh program tak ikut roboh. Aturan main Go: error biasa pakai nilai, panic hanya untuk darurat.
 func safeDivide(a, b int) (result int, err error) {
 	// recover hanya bermakna di dalam defer.
 	defer func() {

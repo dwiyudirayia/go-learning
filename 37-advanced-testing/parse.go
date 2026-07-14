@@ -7,6 +7,13 @@ import (
 	"strings"
 )
 
+// 🔍 Analogi besar FUZZING: unit test biasa itu kamu memberi CONTOH SOAL pilihan sendiri ("2-5
+// harus jadi 2,5"). Fuzzing itu seperti menyewa MONYET PENGETIK yang melempar RIBUAN input aneh
+// & acak ("", "--", "9999999999999", emoji) ke fungsimu untuk mencari yang bikin CRASH/panic.
+// Alih-alih menguji contoh spesifik, fuzzing menguji INVARIAN — sifat yang harus SELALU benar apa
+// pun inputnya (mis. "Reverse(Reverse(s)) harus sama dengan s"). Di repo ini, fuzzer pernah menemukan
+// bug UTF-8 nyata. Fungsi yang mengurai input mentah seperti ParseRange = target fuzzing paling pas.
+
 // ParseRange mem-parse "2-5" menjadi (2, 5). Fungsi seperti ini rawan crash oleh
 // input tak terduga -> kandidat sempurna untuk FUZZING.
 func ParseRange(s string) (lo, hi int, err error) {

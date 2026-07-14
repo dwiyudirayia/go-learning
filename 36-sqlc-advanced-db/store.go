@@ -15,6 +15,16 @@ import (
 //go:embed db/schema.sql
 var schemaSQL string
 
+// 🔍 Analogi besar sqlc: kamu tulis SQL biasa di file .sql, lalu sqlc meng-GENERATE fungsi Go
+// type-safe dari situ. Seperti punya PENERJEMAH yang mengubah query-mu jadi kode Go otomatis —
+// beda dari ORM (GORM) yang menyembunyikan SQL, sqlc justru merangkul SQL tapi memberi keamanan
+// tipe: salah nama kolom ketahuan saat COMPILE, bukan saat program jalan di produksi. SQL jujur + aman.
+
+// 🔍 Analogi connection pool: buka-tutup koneksi DB itu mahal (seperti antre & basa-basi tiap kali).
+// Pool = SEKUMPULAN KONEKSI SIAP PAKAI yang dipinjam-kembalikan, bukan dibuat baru tiap query.
+// SetMaxOpenConns = batas maksimal "loket" agar DB tak kewalahan; SetMaxIdleConns = berapa loket
+// dibiarkan siaga; ConnMaxLifetime = daur ulang koneksi tua agar tak basi. Wajib disetel di produksi.
+
 // OpenDB membuka SQLite + MENYETEL CONNECTION POOL.
 func OpenDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite", dsn)
@@ -56,6 +66,11 @@ func NewStore(db *sql.DB) *Store {
 	return &Store{Queries: sqlcdb.New(db), db: db}
 }
 
+// 🔍 Analogi execTx: fungsi ini "PEMBUNGKUS TRANSAKSI" — kamu serahkan pekerjaanmu (fn), ia yang
+// urus buka transaksi, dan otomatis Commit kalau sukses / Rollback kalau gagal. Seperti kasir yang
+// menjamin "kalau salah satu barang gagal di-scan, seluruh keranjang dibatalkan". WithTx(tx) membuat
+// query berjalan DI DALAM keranjang transaksi yang sama, bukan langsung ke DB. Menghindari kode
+// buka/commit/rollback yang berulang & rawan lupa di tiap operasi multi-langkah.
 // execTx menjalankan fn dalam SATU transaksi. Commit bila sukses, Rollback bila
 // error atau panic — sehingga perubahan bersifat atomik.
 func (s *Store) execTx(ctx context.Context, fn func(*sqlcdb.Queries) error) error {

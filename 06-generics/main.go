@@ -21,6 +21,14 @@ func main() {
 // 1. Fungsi generik: Max, Map, Filter, Reduce
 // ------------------------------------------------------------------
 
+// 🔍 Analogi besar: generic itu seperti RESEP MASAKAN yang ditulis dengan "bahan X"
+// alih-alih menyebut bahan tertentu. Satu resep "tumis X" bisa dipakai untuk ayam,
+// tempe, atau sayur — tanpa menulis ulang resepnya per bahan. [T] itulah "bahan X".
+// Sebelum generic, kamu harus menyalin fungsi yang sama untuk int, lalu untuk string, dst.
+
+// 🔍 Analogi: constraint (cmp.Ordered) itu "SYARAT bahan". Max butuh bahan yang "bisa
+// diurutkan/dibandingkan" (angka, teks) — jadi cmp.Ordered menyaring: tipe yang tak bisa
+// pakai operator > ditolak saat kompilasi, bukan meledak saat program jalan.
 // Max bekerja untuk semua tipe yang bisa dibandingkan urutannya.
 func Max[T cmp.Ordered](a, b T) T {
 	if a > b {
@@ -29,6 +37,9 @@ func Max[T cmp.Ordered](a, b T) T {
 	return b
 }
 
+// 🔍 Analogi: Map itu seperti BAN BERJALAN PABRIK — tiap barang (T) lewat satu mesin (f)
+// dan keluar jadi barang jenis lain (U). Map angka->label: {1,2,3} lewat mesin "#" jadi
+// {"#1","#2","#3"}. Filter = penyaring (buang yang tak lolos). Reduce = melipat semua jadi satu.
 // Map mengubah []T menjadi []U lewat fungsi f. Dua type parameter.
 func Map[T, U any](s []T, f func(T) U) []U {
 	out := make([]U, len(s))
@@ -82,6 +93,10 @@ func fungsiGenerik() {
 // 2. Constraint kustom dengan union & ~
 // ------------------------------------------------------------------
 
+// 🔍 Analogi: union "|" itu daftar bahan yang BOLEH ("int ATAU int64 ATAU float64").
+// Tanda "~" berarti "termasuk tipe turunannya". Celsius adalah 'int' yang diberi nama baru —
+// tanpa ~, ia ditolak; dengan ~int, Go bilang "asal DASARNYA int, boleh masuk". Seperti aturan
+// "boleh bawa jeruk" yang otomatis juga membolehkan "jeruk bali" karena sama-sama jeruk.
 // Number: int/int64/float64 ATAU tipe apa pun yang underlying-nya itu (~).
 type Number interface {
 	~int | ~int64 | ~float64
@@ -110,6 +125,9 @@ func constraintKustom() {
 // ------------------------------------------------------------------
 // 3. Tipe generik: Stack[T] & Pair[K,V]
 // ------------------------------------------------------------------
+// 🔍 Analogi: Stack[T] itu TUMPUKAN PIRING generik. Sekali dibuat, kamu bisa cetak
+// Stack[string] (tumpukan teks) atau Stack[int] (tumpukan angka) dari cetakan yang sama.
+// Push = taruh piring di atas; Pop = ambil dari atas (yang terakhir masuk, pertama keluar).
 type Stack[T any] struct {
 	items []T
 }
@@ -117,6 +135,8 @@ type Stack[T any] struct {
 func (s *Stack[T]) Push(v T) { s.items = append(s.items, v) }
 
 func (s *Stack[T]) Pop() (T, bool) {
+	// 🔍 Analogi: 'var zero T' itu "nilai netral sesuai jenis tumpukan" — 0 untuk angka,
+	// "" untuk teks. Dipakai saat tumpukan kosong: kita balas nilai netral + false, bukan panik.
 	var zero T
 	if len(s.items) == 0 {
 		return zero, false // zero value generik + false

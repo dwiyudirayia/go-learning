@@ -35,6 +35,13 @@ func newServer(addr string, logger *slog.Logger) *http.Server {
 	}
 }
 
+// 🔍 Analogi besar: graceful shutdown itu seperti RESTORAN yang mau tutup dengan sopan.
+// Saat tanda "tutup" (sinyal SIGTERM dari Docker/Kubernetes) datang, restoran TIDAK langsung
+// mengusir semua orang. Ia: (1) mengunci pintu depan (stop terima tamu baru), (2) tetap
+// melayani tamu yang MASIH makan sampai selesai, (3) baru mematikan lampu. Tanpa ini, request
+// yang sedang jalan terputus mendadak = data setengah jadi, pelanggan error. SIGTERM = "tolong
+// tutup baik-baik"; kalau kelamaan (lewat 10 detik), baru dipaksa tutup (srv.Close).
+
 // runWithGracefulShutdown menjalankan server sampai ctx dibatalkan (biasanya oleh
 // sinyal SIGINT/SIGTERM), lalu:
 //  1. berhenti menerima koneksi BARU,
@@ -43,6 +50,9 @@ func newServer(addr string, logger *slog.Logger) *http.Server {
 func runWithGracefulShutdown(ctx context.Context, srv *http.Server, ln net.Listener, logger *slog.Logger) error {
 	serveErr := make(chan error, 1)
 	go func() {
+		// 🔍 Analogi: ErrServerClosed itu BUKAN error sungguhan — ia cuma "pemberitahuan resmi"
+		// bahwa server berhenti karena KITA yang menyuruh (Shutdown), bukan karena rusak. Jadi
+		// kita perlakukan sebagai sukses (nil). Membedakan "berhenti sengaja" vs "berhenti gagal".
 		// Serve mengembalikan ErrServerClosed saat Shutdown dipanggil — itu normal.
 		err := srv.Serve(ln)
 		if errors.Is(err, http.ErrServerClosed) {

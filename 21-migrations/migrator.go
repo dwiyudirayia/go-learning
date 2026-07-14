@@ -12,6 +12,15 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 )
 
+// 🔍 Analogi besar: migrasi database itu seperti RIWAYAT VERSI (git) untuk struktur tabel.
+// Tiap perubahan skema (tambah tabel/kolom) ditulis sebagai langkah bernomor: "up" = maju
+// (terapkan perubahan), "down" = mundur (batalkan). Karena berurutan & tercatat, tim mana pun
+// bisa membawa database-nya ke versi yang sama persis — tak ada lagi "di laptopku beda struktur".
+
+// 🔍 Analogi: //go:embed itu "MENJAHIT" file .sql ke DALAM binary hasil kompilasi. Jadi saat
+// deploy, kamu cukup mengirim 1 file program — file migrasi ikut terbawa di dalamnya, tak perlu
+// menyalin folder migrations/ terpisah. Praktis & anti-"file ketinggalan di server".
+
 // File .sql ditanam ke binary. golang-migrate membaca versi dari nama file
 // dengan format: {versi}_{judul}.{up|down}.sql  (mis. 001_create_users.up.sql).
 //
@@ -41,6 +50,9 @@ func Up(db *sql.DB) error {
 	if err != nil {
 		return err
 	}
+	// 🔍 Analogi: "idempotent" = menjalankan berkali-kali hasilnya sama seperti sekali. Seperti
+	// tombol lift: menekan 5x tak membuatnya naik 5 lantai. ErrNoChange ("tak ada migrasi baru")
+	// bukan kegagalan — cuma berarti "sudah versi terbaru", jadi kita anggap sukses.
 	// ErrNoChange = tidak ada migrasi baru -> itu bukan error (idempotent).
 	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return err
@@ -60,6 +72,9 @@ func Down(db *sql.DB) error {
 	return nil
 }
 
+// 🔍 Analogi: status 'dirty' itu seperti RENOVASI YANG MANDEK di tengah — tembok sudah dibongkar
+// tapi belum dipasang lagi. Kalau migrasi gagal separuh jalan, database ditandai 'dirty' dan
+// migrator menolak lanjut sampai manusia memperbaikinya manual. Ini pengaman agar tak makin kacau.
 // Version mengembalikan versi migrasi saat ini (0 bila belum ada) dan status
 // 'dirty' (true bila sebuah migrasi gagal di tengah -> perlu diperbaiki manual).
 func Version(db *sql.DB) (version uint, dirty bool, err error) {

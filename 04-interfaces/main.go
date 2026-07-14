@@ -19,6 +19,9 @@ func main() {
 // ------------------------------------------------------------------
 // 1. Interface & implicit satisfaction (duck typing)
 // ------------------------------------------------------------------
+// 🔍 Analogi: interface itu seperti LOWONGAN KERJA berisi daftar keahlian ("harus bisa
+// Area() dan Perimeter()"). Siapa pun yang punya keahlian itu otomatis "diterima" —
+// tak peduli dia lingkaran atau persegi. Interface fokus pada BISA APA, bukan DIA SIAPA.
 type Shape interface {
 	Area() float64
 	Perimeter() float64
@@ -26,6 +29,9 @@ type Shape interface {
 
 type Circle struct{ R float64 }
 
+// 🔍 Analogi: di Go tak ada kata "implements". Ini DUCK TYPING: "kalau jalannya seperti
+// bebek & bersuara seperti bebek, ya kita anggap bebek." Circle tak pernah bilang "saya
+// Shape" — cukup punya method yang diminta, dan Go otomatis mengakuinya. Longgar tapi kuat.
 // Circle otomatis jadi Shape karena punya kedua method — tanpa "implements".
 func (c Circle) Area() float64      { return math.Pi * c.R * c.R }
 func (c Circle) Perimeter() float64 { return 2 * math.Pi * c.R }
@@ -61,6 +67,9 @@ func interfaceDasar() {
 // ------------------------------------------------------------------
 // 2. Type assertion & type switch
 // ------------------------------------------------------------------
+// 🔍 Analogi: type switch itu seperti PETUGAS SORTIR PAKET yang membuka kotak 'any'
+// dan bertanya "isinya jenis apa?" lalu mengarahkan ke jalur yang tepat (int, string, ...).
+// 'any' = kotak misteri yang bisa berisi apa saja; type switch membongkarnya dengan aman.
 func describe(i any) string {
 	// type switch: cabang berdasarkan tipe dinamis.
 	switch v := i.(type) {
@@ -83,6 +92,9 @@ func typeAssertionDanSwitch() {
 	fmt.Println("\n-- Type assertion & switch --")
 
 	// comma-ok assertion: aman, tidak panic kalau tipe salah.
+	// 🔍 Analogi: type assertion i.(string) itu seperti mengklaim "isi kotak ini pasti gelas".
+	// Bentuk aman i.(string) memberi 'ok': kalau ternyata bukan gelas, ok=false (tak pecah/panic).
+	// Bentuk nekat tanpa 'ok' akan PANIK bila tebakanmu salah. Selalu pilih yang pakai 'ok'.
 	var i any = "halo"
 	if s, ok := i.(string); ok {
 		fmt.Printf("assertion sukses: %q (huruf pertama %c)\n", s, s[0])
@@ -116,6 +128,10 @@ func (m Money) String() string {
 	return "Rp" + string(out)
 }
 
+// 🔍 Analogi: io.Writer itu "colokan universal untuk tujuan tulis". Apa pun yang punya
+// method Write bisa jadi tujuan — file, layar, koneksi jaringan, atau (di sini) sekadar
+// penghitung. countingWriter tak menyimpan apa pun, ia cuma jadi METERAN yang mencatat
+// berapa byte lewat — seperti meteran air yang berputar tiap air mengalir.
 // countingWriter mengimplementasikan io.Writer: Write([]byte)(int,error).
 // Tugasnya cuma menghitung total byte yang lewat.
 type countingWriter struct{ total int }
@@ -145,6 +161,10 @@ type MyError struct{ Msg string }
 
 func (e *MyError) Error() string { return e.Msg }
 
+// 🔍 Analogi typed nil: interface itu seperti AMPLOP dengan dua tulisan: "jenis isi" & "isi".
+// Mengembalikan pointer nil bertipe = amplop yang isinya kosong TAPI di amplop tertulis
+// jenisnya "*MyError". Karena amplopnya sendiri TIDAK kosong (ada label jenis), cek
+// "== nil" jadi false — padahal maksudmu "tak ada error". Ini jebakan klasik pemula Go.
 // SALAH: mengembalikan *MyError bertipe. Walau nilainya nil, interface-nya
 // berisi (tipe=*MyError, nilai=nil) -> TIDAK sama dengan nil.
 func bikinErrorSalah() error {

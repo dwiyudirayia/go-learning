@@ -18,6 +18,9 @@ func main() {
 // ------------------------------------------------------------------
 // 1. Struct: literal, zero value, perbandingan, value semantics
 // ------------------------------------------------------------------
+// 🔍 Analogi: struct itu seperti FORMULIR dengan kolom-kolom (ID, Name, Email).
+// Sekali kamu definisikan formulirnya, kamu bisa cetak banyak lembar (user) dengan
+// isi berbeda tapi bentuk kolom sama. Struct mengelompokkan data yang saling terkait.
 type User struct {
 	ID    int
 	Name  string
@@ -38,6 +41,8 @@ func structDasar() {
 	fmt.Printf("u == a ? %t (perbandingan per-field)\n", u == a)
 
 	// Value semantics: struct di-copy saat di-assign
+	// 🔍 Analogi: "b := u" itu MEMFOTOKOPI formulir. Coret-coret di lembar b tidak
+	// mengubah lembar u. (Ingat modul 02: array & struct = fotokopi; slice & map = alamat.)
 	b := u
 	b.Name = "Berubah"
 	fmt.Printf("u.Name=%q b.Name=%q (b salinan, tidak memengaruhi u)\n", u.Name, b.Name)
@@ -49,6 +54,12 @@ func structDasar() {
 type Counter struct {
 	value int
 }
+
+// 🔍 Analogi besar: bayangkan Counter itu PAPAN TULIS.
+//   - Value receiver (c Counter) = kamu diberi FOTO papan tulis. Coret fotonya,
+//     papan asli tak berubah. Makanya IncBroken() "gagal" menambah.
+//   - Pointer receiver (c *Counter) = kamu diberi ALAMAT ruangan tempat papan berada.
+//     Kamu datang & coret papan aslinya -> perubahan bertahan.
 
 // Value receiver: bekerja pada SALINAN -> perubahan tidak bertahan.
 func (c Counter) IncBroken() {
@@ -84,6 +95,9 @@ type Rectangle struct {
 	Width, Height float64
 }
 
+// 🔍 Analogi: konstruktor NewXxx itu seperti SATPAM PINTU MASUK pabrik. Ia memeriksa
+// bahan mentah dulu (w & h harus > 0); kalau tak lolos, ditolak dengan error — sehingga
+// tak mungkin ada Rectangle "cacat" beredar. Go tak punya constructor bawaan, jadi ini polanya.
 func NewRectangle(w, h float64) (*Rectangle, error) {
 	if w <= 0 || h <= 0 {
 		return nil, errors.New("width & height harus > 0")
@@ -128,6 +142,10 @@ func (p Person) Greet() string {
 	return "Halo, saya " + p.Name
 }
 
+// 🔍 Analogi: embedding itu KOMPOSISI, bukan warisan. Bayangkan Employee "memasang"
+// modul Person di dalam dirinya — seperti HP yang menyematkan modul kamera. Semua
+// kemampuan Person (Greet, field Name) otomatis "naik" jadi milik Employee (promosi).
+// Go sengaja pakai ini alih-alih pewarisan class ala Java: "punya-sebuah" > "adalah-sebuah".
 type Employee struct {
 	Person // embedded -> Name & Greet() dipromosikan
 	Title  string

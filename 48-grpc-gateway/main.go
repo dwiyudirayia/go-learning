@@ -22,6 +22,12 @@ import (
 	"go-learning/48-grpc-gateway/service"
 )
 
+// 🔍 Analogi besar gRPC-Gateway: kamu punya satu DAPUR (service gRPC) berisi logika. Masalahnya,
+// tamu internal (microservice lain) suka bicara "bahasa gRPC" yang cepat, tapi tamu luar (browser,
+// aplikasi mobile, curl) maunya "bahasa REST/JSON" yang umum. Alih-alih memasak dua kali, kamu pasang
+// PENERJEMAH di depan (gateway): ia menerima pesanan REST dari luar, menerjemahkannya jadi panggilan
+// gRPC ke dapur, lalu menerjemahkan balik jawabannya ke JSON. SATU sumber logika, DUA pintu masuk.
+// Hebatnya, penerjemah ini bisa di-generate otomatis dari file .proto yang sama — tak ditulis tangan.
 func main() {
 	// 1. Jalankan server gRPC (sumber logika tunggal).
 	lis, err := net.Listen("tcp", ":50054")

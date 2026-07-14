@@ -47,6 +47,14 @@ func (s *ProductService) loadFromDB(id int) (Product, bool) {
 	return p, ok
 }
 
+// 🔍 Analogi besar: cache itu seperti menaruh barang yang sering dipakai di MEJA KERJA, bukan
+// bolak-balik ke GUDANG (database) yang jauh & lambat. Redis = meja kerja super cepat (di memori).
+// "cache HIT" = barang ada di meja (cepat); "cache MISS" = harus ambil ke gudang lalu taruh di meja.
+//
+// 🔍 Analogi TTL (Time To Live): seperti tanggal kedaluwarsa pada makanan. Data di cache otomatis
+// "basi" & dibuang setelah 30 detik, supaya tak menyajikan harga lama selamanya. Penyeimbang antara
+// "cepat" (cache lama) dan "akurat" (data segar).
+
 // Get menerapkan pola CACHE-ASIDE:
 //  1. cek cache; kalau ada (hit) -> kembalikan.
 //  2. kalau tidak ada (miss) -> baca DB, lalu isi cache dengan TTL.
@@ -60,6 +68,9 @@ func (s *ProductService) Get(ctx context.Context, id int) (Product, bool, error)
 		if jsonErr := json.Unmarshal([]byte(val), &p); jsonErr == nil {
 			return p, true, nil // cache HIT
 		}
+		// 🔍 Analogi: redis.Nil itu "meja kosong" (data tak ada di cache) — normal, lanjut ke gudang.
+		// Beda dari error Redis sungguhan (mis. koneksi putus) yang HARUS dilaporkan. Membedakan
+		// "tidak ada" vs "rusak" itu penting agar tak salah menyembunyikan masalah infrastruktur.
 	} else if !errors.Is(err, redis.Nil) {
 		return Product{}, false, err // error Redis sungguhan (bukan sekadar "tak ada")
 	}
@@ -76,6 +87,11 @@ func (s *ProductService) Get(ctx context.Context, id int) (Product, bool, error)
 	}
 	return p, false, nil
 }
+
+// 🔍 Analogi: invalidation itu MEMBUANG catatan lama dari meja begitu harga berubah, supaya
+// permintaan berikutnya mengambil harga baru dari gudang. Inilah salah satu "2 hal tersulit di
+// ilmu komputer": memberi nama, cache invalidation, dan off-by-one. Lupa invalidate = pelanggan
+// lihat harga usang. Update DB DAN buang cache harus berjalan berpasangan.
 
 // Invalidate menghapus cache saat data berubah (mis. setelah update produk).
 // Tanpa ini, cache bisa menyajikan data basi (stale).

@@ -2,6 +2,13 @@ package main
 
 import "iter"
 
+// 🔍 Analogi besar iterator "lazy": bedakan AIR GALON vs KERAN.
+//   - Slice biasa = galon: seluruh air (data) sudah ditampung sekaligus, makan tempat.
+//   - Iterator lazy = keran: air keluar SATU GELAS saat kamu minta; kalau cukup 3 gelas, sisanya
+//     tak pernah dialirkan (hemat). "yield" = menuang satu gelas; konsumen bilang "cukup" (break) ->
+//     keran berhenti. Bisa dirangkai (Filter lalu Map) tanpa membuat galon-galon perantara.
+// Bermanfaat untuk data besar/tak terhingga: proses mengalir tanpa memuat semuanya ke memori dulu.
+
 // ITERATOR (Go 1.23+): fungsi bertipe iter.Seq[T] = func(yield func(T) bool).
 // Bisa dipakai langsung dengan `for v := range seq` (range-over-func).
 // Keunggulan: LAZY (dihitung saat diminta) & bisa dirangkai (Map/Filter) tanpa

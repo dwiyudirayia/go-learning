@@ -1,5 +1,13 @@
 // Modul 47 — TUI (Bubble Tea) & WebAssembly.
 //
+// 🔍 Analogi besar TUI = aplikasi berbasis TEKS di terminal (seperti htop, vim, git rebase -i) —
+// antarmuka interaktif tanpa mouse/grafik. Bubble Tea memakai pola ELM dengan 3 bagian:
+//   - Model = FOTO keadaan aplikasi saat ini (di sini: angka counter). Satu-satunya sumber kebenaran.
+//   - Update = ATURAN PERUBAHAN: "diberi keadaan lama + kejadian (tekan tombol) -> hasilkan keadaan baru".
+//     Fungsi ini MURNI (tak menyentuh layar/dunia luar) -> gampang diuji: cukup cek "tekan + jadi count naik".
+//   - View = JURU GAMBAR: mengubah keadaan (Model) jadi teks yang tampil. Hanya menggambar, tak mengubah apa pun.
+// Alur berputar: kejadian -> Update -> Model baru -> View menggambar ulang. Rapi & mudah dinalar.
+
 // Bubble Tea memakai arsitektur ELM: Model (state) + Update (transisi) + View
 // (render). Update MURNI (state lama + pesan -> state baru) sehingga mudah
 // di-test tanpa terminal.

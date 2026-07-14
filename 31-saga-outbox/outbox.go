@@ -5,6 +5,13 @@ import (
 	"database/sql"
 )
 
+// 🔍 Analogi besar OUTBOX: masalahnya begini — kamu perlu (1) simpan order ke DB DAN (2) kirim
+// event ke message queue. Kalau app CRASH tepat setelah (1) tapi sebelum (2), event hilang &
+// sistem lain tak tahu order itu ada. Solusi outbox: alih-alih langsung kirim ke queue, tulis
+// event ke "KOTAK SURAT KELUAR" (tabel outbox) DALAM TRANSAKSI DB YANG SAMA. Karena satu transaksi,
+// order & surat pasti tersimpan bersama. Lalu "TUKANG POS" (Relay) rutin mengecek kotak surat &
+// benar-benar mengirim. Analogi: tulis surat & taruh di kotak pos rumah (aman) — tukang pos ambil nanti.
+
 // OUTBOX PATTERN menyelesaikan masalah "dual write": bagaimana mengubah database
 // DAN mengirim event secara ATOMIK? Jawaban: tulis event ke tabel `outbox` dalam
 // TRANSAKSI yang sama dengan perubahan bisnis. Sebuah RELAY membaca outbox lalu

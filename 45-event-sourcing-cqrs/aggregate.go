@@ -4,6 +4,16 @@ package main
 
 import "errors"
 
+// 🔍 Analogi besar EVENT SOURCING: seperti BUKU REKENING/mutasi bank vs cuma tahu saldo akhir.
+// Cara biasa menyimpan "Saldo = 100" (kehilangan riwayat). Event sourcing menyimpan tiap TRANSAKSI:
+// "buka rekening, setor 150, tarik 50". Saldo (state) dihitung dengan MENJUMLAH ulang seluruh mutasi.
+// Untung: riwayat lengkap (audit), bisa "time-travel" ke saldo tanggal lalu, & tiap perubahan jelas
+// sebabnya. Perhatikan event ditulis LAMPAU (Opened, Deposited) — fakta yang sudah terjadi, tak bisa diubah.
+//
+// 🔍 Analogi CQRS: memisahkan MESIN TULIS dari MESIN BACA. Command (Open/Deposit/Withdraw) = sisi
+// TULIS: memvalidasi aturan lalu menghasilkan event — tak langsung mengubah state. Nanti sisi BACA
+// menyusun "tampilan saldo" dari event. Seperti dapur (tulis pesanan) terpisah dari etalase (baca menu).
+
 // EVENT SOURCING: alih-alih menyimpan STATE saat ini (Balance=100), kita simpan
 // urutan PERISTIWA (dibuka, +150, -50). State direkonstruksi dengan MEMUTAR ULANG
 // event. Keuntungan: audit lengkap, bisa "time-travel", debug mudah.
@@ -28,6 +38,9 @@ func (AccountOpened) isEvent()  {}
 func (MoneyDeposited) isEvent() {}
 func (MoneyWithdrawn) isEvent() {}
 
+// 🔍 Analogi aggregate: Account itu "REKENING sebagai satu kesatuan yang menjaga aturannya sendiri"
+// (mis. tak boleh tarik melebihi saldo). Ia dijaga konsisten sebagai satu unit. 'Version' = nomor
+// urut mutasi terakhir; dipakai untuk deteksi bentrok saat dua orang mengubah rekening bersamaan.
 // Account = AGGREGATE: state-nya diturunkan dari event.
 type Account struct {
 	ID      string

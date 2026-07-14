@@ -8,6 +8,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+// 🔍 Analogi tiga jenis metrik:
+//   - Counter   = ODOMETER mobil: hanya bertambah, tak pernah mundur (total request seumur hidup).
+//   - Gauge     = JARUM SPIDOMETER / indikator bensin: naik-turun (request yang lagi diproses).
+//   - Histogram = mengelompokkan durasi ke "laci-laci" (bucket) agar bisa jawab "95% request
+//     selesai di bawah berapa detik?" (p95). Rata-rata bisa menipu; p95/p99 jujur.
+//
+// 🔍 Analogi: "label" (method, path, status) itu seperti TAG yang membuat satu metrik bisa
+// diiris banyak sudut — "berapa error KHUSUS di /orders dengan method POST?".
 // Tiga jenis metrik yang paling umum:
 //   - Counter  : hanya naik (jumlah request)
 //   - Histogram: distribusi (durasi request) -> hitung p50/p95/p99
@@ -43,6 +51,9 @@ func newRegistry() *prometheus.Registry {
 	return reg
 }
 
+// 🔍 Analogi: statusRecorder itu "PENGINTIP di balik loket". http.ResponseWriter tak mengingat
+// status code yang sudah dikirim, jadi kita bungkus dengan lapisan tipis yang mencatat angkanya
+// saat lewat (WriteHeader) — supaya middleware bisa tahu request tadi berakhir 200 atau 500.
 // statusRecorder membungkus ResponseWriter untuk menangkap status code
 // (karena http.ResponseWriter tidak menyimpannya).
 type statusRecorder struct {

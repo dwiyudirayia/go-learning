@@ -31,6 +31,17 @@ import (
 	"go-learning/15-studi-kasus-rest/internal/service"
 )
 
+// 🔍 Analogi besar: arsitektur berlapis itu seperti RESTORAN dengan pembagian tugas jelas:
+//   - handler  = PELAYAN: menerima pesanan (HTTP request), menyampaikan hasil. Tak memasak.
+//   - service  = KOKI: logika bisnis (aturan, validasi, hitung). Tak tahu soal HTTP/DB.
+//   - repository = PENJAGA GUDANG: satu-satunya yang menyentuh database.
+// Kenapa dipisah? Supaya tiap bagian bisa diganti/diuji sendiri. Ganti Fiber ke net/http? cukup
+// ubah pelayan. Ganti SQLite ke Postgres? cukup ubah gudang. Koki (aturan bisnis) tak tersentuh.
+
+// 🔍 Analogi: "wiring" di buildApp itu seperti MERANGKAI PIPA dari gudang -> koki -> pelayan
+// saat restoran buka. Ini "dependency injection manual": tiap lapisan diberi bahan yang
+// dibutuhkannya dari luar. Karena buildApp menerima db, test bisa menyuntik DB in-memory.
+
 // buildApp merangkai seluruh dependency (dependency injection manual) dan
 // mengembalikan app Fiber yang siap. Dipakai oleh main dan oleh test.
 func buildApp(db *gorm.DB) *fiber.App {

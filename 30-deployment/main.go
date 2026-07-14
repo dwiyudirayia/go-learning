@@ -12,6 +12,9 @@ import (
 	"sync/atomic"
 )
 
+// 🔍 Analogi: ldflags "-X" itu seperti MENCAP NOMOR SERI ke produk saat keluar pabrik (build),
+// bukan menulisnya manual di kode. Nomor versi (dari git tag) ditanam ke binary tepat saat
+// kompilasi — jadi endpoint /version bisa membuktikan "versi mana yang sedang jalan di server ini".
 // version diisi saat build via ldflags:
 //
 //	go build -ldflags "-X main.version=1.2.3" ./30-deployment
@@ -25,6 +28,11 @@ func buildHandler() http.Handler {
 	ready.Store(true)
 	mux := http.NewServeMux()
 
+	// 🔍 Analogi besar health probe: Kubernetes itu seperti PERAWAT yang rutin mengecek pasien (app).
+	//   - liveness (/healthz)  = "masih bernapas?" Kalau tidak -> RESTART paksa (defibrilator).
+	//   - readiness (/readyz)  = "siap menerima tamu?" Kalau belum (lagi warming up / mau shutdown)
+	//     -> perawat berhenti mengirim tamu ke sini TANPA me-restart. Beda pertanyaan, beda tindakan.
+	// Memisahkan keduanya mencegah restart sia-sia & memutus traffic ke pod yang belum siap.
 	// Liveness: apakah proses hidup? K8s me-restart pod bila ini gagal.
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

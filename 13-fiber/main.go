@@ -34,6 +34,14 @@ type server struct {
 	validate *validator.Validate
 }
 
+// 🔍 Analogi: Fiber itu framework web "siap pakai" — dibanding net/http (modul 12) yang
+// seperti masak dari bahan mentah, Fiber seperti dapur yang alat-alatnya sudah lengkap:
+// router lebih ringkas, BodyParser otomatis, middleware tinggal pasang. Fiber terinspirasi
+// Express (Node.js) & terkenal cepat. Repo ini memakai Fiber (bukan Gin) sebagai standarnya.
+
+// 🔍 Analogi: ErrorHandler terpusat itu seperti BAGIAN KELUHAN SATU PINTU. Semua handler yang
+// gagal cukup "return error"; semuanya bermuara ke sini untuk diubah jadi respons JSON rapi —
+// jadi tak perlu menulis format error berulang di tiap handler. DRY (Don't Repeat Yourself).
 // buildApp merangkai app Fiber: middleware, error handler, dan rute.
 func buildApp(s *server) *fiber.App {
 	app := fiber.New(fiber.Config{
@@ -53,6 +61,9 @@ func buildApp(s *server) *fiber.App {
 	app.Use(logger.New())  // log tiap request
 	app.Use(cors.New())    // latihan 2: izinkan akses lintas-origin (mis. dari frontend)
 
+	// 🔍 Analogi: route group "/api" itu seperti MEMBERI AWALAN alamat bersama — semua rute di
+	// bawahnya otomatis diawali /api (jadi /api/books). Praktis untuk versioning (/api/v1) atau
+	// memasang middleware khusus satu kelompok (mis. semua /admin butuh login).
 	// Route group: semua di bawah /api.
 	api := app.Group("/api")
 	api.Get("/books", s.list)
@@ -119,10 +130,15 @@ func (s *server) update(c *fiber.Ctx) error {
 
 func (s *server) create(c *fiber.Ctx) error {
 	var b Book
+	// 🔍 Analogi: BodyParser itu PENERJEMAH SERBABISA di pintu masuk — entah tamu bicara JSON,
+	// form, atau query string, ia otomatis mengubahnya jadi struct Book yang dipahami program.
 	// BodyParser otomatis mendeteksi JSON/form/query dan mengisi struct.
 	if err := c.BodyParser(&b); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "body tidak valid")
 	}
+	// 🔍 Analogi: validator itu SATPAM MUTU. Berdasarkan tag `validate:"required,min=1"` di struct,
+	// ia menolak data cacat (judul kosong, tahun negatif) SEBELUM masuk ke penyimpanan. Aturan
+	// ditulis sekali di struct, dipakai di mana-mana — bersih & konsisten.
 	// Validasi berbasis tag `validate:"..."` di struct Book.
 	if err := s.validate.Struct(b); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "validasi gagal: "+err.Error())

@@ -9,6 +9,10 @@ import (
 	"go-learning/29-clean-architecture/internal/domain"
 )
 
+// 🔍 Analogi "port": domain.NoteRepository itu KONTRAK/lubang colokan yang didefinisikan oleh
+// INTI ("aku butuh sesuatu yang bisa Save & FindByID"). Inti tak peduli colokannya diisi memory
+// atau Postgres — ini "dependency inversion": yang di luar (database) menyesuaikan aturan inti,
+// bukan sebaliknya. Efeknya, service bisa diuji cukup dengan repo palsu di memori (cepat, tanpa DB).
 type NoteService struct {
 	repo domain.NoteRepository // PORT, bukan tipe konkret
 }

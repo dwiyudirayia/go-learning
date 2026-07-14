@@ -7,6 +7,15 @@ import (
 	"time"
 )
 
+// 🔍 Analogi 3 keadaan (perluasan analogi sekring):
+//   - CLOSED    = sekring NYAMBUNG, listrik mengalir normal (request diteruskan).
+//   - OPEN      = sekring PUTUS setelah korslet berulang; kita berhenti mencoba & langsung tolak
+//                 (fail fast) — mencegah "menendang orang yang sudah jatuh" & memberi waktu pulih.
+//   - HALF-OPEN = "colok satu alat untuk tes" setelah jeda. Kalau nyala (sukses) -> sambung penuh;
+//                 kalau korslet lagi -> putus lagi. Ini mencegah membanjiri service yang belum sembuh.
+// Kenapa penting? Tanpa breaker, ribuan request menumpuk menunggu service mati -> efek domino
+// yang menjatuhkan seluruh sistem (cascading failure). Breaker memutus rantai kejatuhan itu.
+
 // CIRCUIT BREAKER mencegah aplikasi terus memanggil service yang sedang bermasalah
 // (fail fast). Seperti sekring listrik: bila terlalu banyak gagal, "putus" (open)
 // sementara agar service downstream sempat pulih, lalu "coba lagi" (half-open).

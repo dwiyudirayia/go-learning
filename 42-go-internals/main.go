@@ -21,6 +21,12 @@ func main() {
 // ------------------------------------------------------------------
 func demoScheduler() {
 	fmt.Println("\n-- Scheduler (GMP) --")
+	// 🔍 Analogi GMP: bayangkan DAPUR restoran. G (goroutine) = daftar PESANAN yang menumpuk
+	// (bisa ribuan, murah ditulis). M (thread OS) = KOKI sungguhan (mahal, jumlahnya terbatas).
+	// P (processor) = STASIUN MASAK/kompor; hanya koki yang memegang stasiun yang boleh memasak.
+	// Scheduler Go = manajer yang menugaskan pesanan (G) ke koki (M) di stasiun (P) secara efisien.
+	// Karena "pesanan" jauh lebih murah dari "koki", Go sanggup ribuan goroutine di segelintir thread.
+	// GOMAXPROCS = jumlah stasiun = berapa banyak yang benar-benar memasak BERSAMAAN (paralel).
 	// G = goroutine (ringan), M = thread OS, P = processor logis (konteks).
 	// GOMAXPROCS = jumlah P = maks goroutine yang benar-benar PARALEL.
 	fmt.Printf("NumCPU        = %d\n", runtime.NumCPU())
@@ -40,6 +46,11 @@ func demoScheduler() {
 // ------------------------------------------------------------------
 // 2. Garbage Collector
 // ------------------------------------------------------------------
+// 🔍 Analogi GC (Garbage Collector): seperti PETUGAS KEBERSIHAN otomatis yang keliling membuang
+// gelas & piring yang sudah tak dipakai (memori yang tak lagi terpakai) — jadi kamu tak perlu
+// mengelola sendiri seperti di C (free() manual, rawan bocor/double-free). Harganya: petugas butuh
+// sedikit waktu CPU untuk keliling. GOGC = seberapa sering ia menyapu: sering (hemat memori, boros CPU)
+// vs jarang (boros memori, hemat CPU). Trade-off yang bisa disetel sesuai kebutuhan aplikasi.
 func demoGC() {
 	fmt.Println("\n-- Garbage Collector --")
 	var m runtime.MemStats
@@ -63,6 +74,11 @@ func demoGC() {
 // ------------------------------------------------------------------
 // 3. Memory alignment
 // ------------------------------------------------------------------
+// 🔍 Analogi alignment/padding: memori itu seperti RAK dengan slot berukuran tetap (mis. 8 byte).
+// Field harus ditaruh di posisi "rapi" (kelipatan ukurannya), jadi CPU mengambilnya sekali comot.
+// Kalau urutan field buruk (bool, int64, bool), Go menyelipkan "ganjalan kosong" (padding) agar rapi —
+// boros tempat. Mengurutkan field dari BESAR ke KECIL memampatkan ganjalan itu. Seperti menyusun
+// koper: barang besar dulu, celahnya diisi barang kecil — muat lebih banyak di ruang sama.
 func demoAlignment() {
 	fmt.Println("\n-- Memory Alignment --")
 	fmt.Printf("BadStruct  {bool,int64,bool} = %d byte (padding boros)\n", badSize())

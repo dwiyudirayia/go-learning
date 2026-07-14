@@ -1,5 +1,12 @@
 package main
 
+// 🔍 Analogi besar ABAC (lawan RBAC): kalau RBAC bertanya "kamu SIAPA?", ABAC bertanya "APA konteks
+// spesifiknya?" dengan menimbang banyak atribut sekaligus. Contoh aturan yang sulit dgn RBAC murni:
+// "pemilik boleh edit dokumennya SENDIRI", "satu departemen boleh baca dokumen non-rahasia depnya",
+// "hanya boleh saat jam kerja". Analogi: satpam yang tak cuma lihat kartu jabatan, tapi juga
+// "ini dokumen SIAPA?", "kamu dari divisi mana?", "rahasia atau tidak?", "sekarang jam berapa?".
+// Tiap "Policy" = satu aturan kecil; AnyOf merangkainya ("boleh kalau MEMENUHI salah satu aturan").
+// Lebih fleksibel & halus, tapi lebih rumit — pakai saat aturan RBAC per-peran tak lagi cukup.
 // ABAC: Attribute-Based Access Control. Keputusan berdasar ATRIBUT (subjek,
 // sumber daya, aksi, konteks) — lebih fleksibel dari RBAC. Cocok untuk aturan
 // seperti "pemilik boleh mengedit dokumennya sendiri" atau "hanya jam kerja".

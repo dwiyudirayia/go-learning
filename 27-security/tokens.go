@@ -7,6 +7,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// 🔍 Analogi besar: access + refresh token itu seperti TIKET HARIAN + KARTU MEMBER.
+//   - Access token = tiket harian yang cepat hangus (15 menit). Ditunjukkan tiap masuk wahana.
+//     Kalau tercecer & dipungut orang, cuma berlaku sebentar -> kerugian kecil.
+//   - Refresh token = kartu member tahan lama (7 hari), disimpan baik-baik di dompet. Fungsinya
+//     HANYA menukar tiket harian baru saat yang lama hangus — jadi kamu tak perlu daftar ulang (login).
+// Prinsipnya: yang sering dipamerkan dibuat cepat kadaluarsa; yang tahan lama disembunyikan & bisa dicabut.
+
 // Pola ACCESS + REFRESH token:
 //   - Access token  : umur PENDEK (mis. 15 menit). Dipakai di tiap request.
 //   - Refresh token : umur PANJANG (mis. 7 hari). Dipakai HANYA untuk minta

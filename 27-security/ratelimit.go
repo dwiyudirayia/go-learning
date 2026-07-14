@@ -9,6 +9,12 @@ import (
 	"golang.org/x/time/rate"
 )
 
+// 🔍 Analogi besar "token bucket": bayangkan tiap IP punya EMBER berisi koin. Tiap request
+// memakai 1 koin. Ember diisi ulang pelan-pelan (r koin/detik) dan muat maksimal b koin (burst).
+// Selama masih ada koin -> boleh lewat. Ember kosong -> tolak (429). Ini membiarkan "ledakan
+// singkat" wajar (b koin sekaligus) tapi menahan pengguna yang menembak terus-menerus (brute-force/DoS).
+// Analogi lain: pintu tol dgn kuota — beberapa mobil boleh lewat cepat, tapi tak boleh membanjiri.
+
 // ipRateLimiter membatasi laju request PER IP memakai algoritma token bucket.
 // Mencegah abuse/brute-force/DoS ringan.
 type ipRateLimiter struct {

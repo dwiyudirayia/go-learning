@@ -14,6 +14,10 @@ var addCmd = &cobra.Command{
 	Use:   "add [teks tugas]",
 	Short: "Tambah tugas baru",
 	Args:  cobra.MinimumNArgs(1), // validasi: minimal 1 argumen
+	// 🔍 Analogi: 'Args: MinimumNArgs(1)' itu SATPAM input — menolak perintah "add" tanpa teks
+	// sebelum kode inti jalan. 'RunE' (E = Error) dipilih ketimbang 'Run' biasa supaya jika ada
+	// masalah, kita cukup 'return err' dan Cobra otomatis mencetaknya + set exit code ≠ 0
+	// (penting agar skrip/CI tahu perintah GAGAL). Flag lokal --priority hanya berlaku di 'add'.
 	// RunE (bukan Run) agar bisa mengembalikan error -> Cobra cetak & set exit code.
 	RunE: func(cmd *cobra.Command, args []string) error {
 		s, err := store.Load(filePath)

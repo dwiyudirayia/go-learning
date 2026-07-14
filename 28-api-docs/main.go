@@ -24,6 +24,15 @@ type Book struct {
 	Author string `json:"author"`
 }
 
+// 🔍 Analogi besar: OpenAPI/Swagger itu "BUKU MENU BERGAMBAR" untuk API-mu. Alih-alih pelanggan
+// (developer lain) menebak-nebak endpoint apa yang ada & bentuk datanya, mereka buka /docs dan
+// melihat menu lengkap yang bisa langsung dicoba. Spec openapi.json = menu versi mesin (tool bisa
+// auto-generate kode klien darinya). Dokumentasi yang hidup bareng kode = jarang basi.
+
+// 🔍 Analogi: format error konsisten itu seperti STANDAR RAMBU LALU LINTAS. Di mana pun errornya,
+// bentuknya selalu {error:{code,message}} — jadi klien menulis SATU cara menangani error, bukan
+// menebak format berbeda tiap endpoint. 'code' (mesin baca) + 'message' (manusia baca).
+
 // APIError: format error KONSISTEN untuk seluruh API. Klien selalu tahu bentuknya.
 type APIError struct {
 	Error struct {
@@ -54,6 +63,9 @@ func buildHandler() http.Handler {
 	s := &store{}
 	mux := http.NewServeMux()
 
+	// 🔍 Analogi: versioning /api/v1 itu seperti mencetak EDISI BARU buku tanpa menarik edisi lama
+	// dari peredaran. Kalau kelak ada perubahan yang merusak (breaking change), buat /api/v2 —
+	// aplikasi lama tetap memakai v1 dengan tenang sampai siap pindah. Menghormati pengguna lama.
 	// API BERVERSI: /api/v1/... -> saat ada breaking change, buat /api/v2 tanpa
 	// merusak klien lama.
 	mux.HandleFunc("GET /api/v1/books", func(w http.ResponseWriter, r *http.Request) {

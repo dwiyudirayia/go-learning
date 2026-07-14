@@ -22,11 +22,22 @@ import (
 	"strconv"
 )
 
+// 🔍 Analogi besar: server HTTP itu seperti RESTORAN. Pelanggan (browser/curl) mengirim
+// PESANAN (request) via jalur tertentu; dapur (handler) memasak & mengirim balik PIRING
+// (response). "REST/CRUD" = 4 aksi dasar: Create (POST=tambah), Read (GET=lihat),
+// Update (PUT=ubah), Delete (DELETE=hapus) — persis buku menu operasi terhadap data.
+
+// 🔍 Analogi: menaruh 'store' di dalam struct server itu DEPENDENCY INJECTION — seperti
+// memberi koki bahan & alat lewat pintu, bukan menyuruhnya mengambil sendiri dari gudang global.
+// Efeknya: saat menguji, kita bisa memberi "store palsu" (lihat modul 08). Menghindari variabel global.
 // server memegang dependency (store). Handler jadi method-nya.
 type server struct {
 	store *BookStore
 }
 
+// 🔍 Analogi: mux (router) itu RESEPSIONIS yang membaca "mau ke mana" (GET /books) lalu
+// mengarahkan ke handler yang tepat. Sejak Go 1.22, resepsionis paham METHOD+PATH langsung
+// (mis. "POST /books" beda dari "GET /books") — dulu harus if-else manual, kini bawaan.
 // routes mendaftarkan endpoint memakai routing method+path bawaan Go 1.22.
 func (s *server) routes() http.Handler {
 	mux := http.NewServeMux()
@@ -144,6 +155,10 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 	writeJSON(w, status, map[string]string{"error": msg})
 }
 
+// 🔍 Analogi: middleware itu SATPAM BERLAPIS di pintu masuk. Tiap request harus melewati
+// mereka dulu sebelum sampai ke handler. logging = satpam yang mencatat tamu di buku tamu;
+// recover = satpam yang menangkap kalau handler "pingsan" (panic) agar server tak ikut roboh.
+// Polanya "bungkus": recoverMW(logging(mux)) — request masuk dari luar ke dalam, respons balik keluar.
 // logging: middleware sederhana (mencatat method + path tiap request).
 func logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

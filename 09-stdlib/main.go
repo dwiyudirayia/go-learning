@@ -26,6 +26,12 @@ func main() {
 // ------------------------------------------------------------------
 // 1. encoding/json
 // ------------------------------------------------------------------
+// 🔍 Analogi: JSON itu "bahasa universal" antar aplikasi/web — seperti bahasa Inggris di
+// bandara. Marshal = MENERJEMAHKAN struct Go -> teks JSON (untuk dikirim keluar).
+// Unmarshal = kebalikannya, teks JSON dari luar -> struct Go.
+// 🔍 Analogi: tag `json:"..."` itu seperti LABEL NAMA di koper — memberi tahu penerjemah
+// "field Name ini di JSON namanya 'name'". 'omitempty' = "kalau kosong, jangan ikut dikirim".
+// Field huruf kecil (pass) itu "barang pribadi" — tak pernah ikut keluar (privat).
 type User struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
@@ -62,6 +68,10 @@ func contohJSON() {
 func contohTime() {
 	fmt.Println("\n-- time --")
 
+	// 🔍 Analogi: format waktu Go itu UNIK & bikin kaget pemula. Bahasa lain pakai "YYYY-MM-DD",
+	// Go pakai CONTOH tanggal acuan: Senin, 02 Jan 2006, jam 15:04:05. Anggap "2006-01-02" itu
+	// bukan kode misterius, tapi "tunjukkan formatnya dengan MENCONTOHKAN tanggal khusus ini".
+	// Cara ingat: 01/02 03:04:05 '06 -> 1,2,3,4,5,6 berurutan (bulan,hari,jam,menit,detik,tahun).
 	t := time.Date(2026, time.July, 1, 15, 4, 5, 0, time.UTC)
 	fmt.Printf("Format            : %s\n", t.Format("2006-01-02 15:04:05"))
 	fmt.Printf("Format lain       : %s\n", t.Format("Mon, 02 Jan 2006"))
@@ -84,6 +94,10 @@ func contohTime() {
 func contohIO() {
 	fmt.Println("\n-- io --")
 
+	// 🔍 Analogi: io.Reader = KERAN (tempat data mengalir keluar), io.Writer = EMBER/BAK
+	// (tempat data ditampung). io.Copy = SELANG yang mengalirkan dari keran ke ember tanpa
+	// peduli merek keran/embernya. Karena semua pakai "colokan" sama, file, jaringan, string,
+	// buffer bisa disambung bebas — inilah kekuatan abstraksi Reader/Writer di Go.
 	// strings.Reader (sumber) -> bytes.Buffer (tujuan) via io.Copy.
 	src := strings.NewReader("data mengalir lewat io.Reader")
 	var dst bytes.Buffer
@@ -138,6 +152,9 @@ func contohHTTP() {
 		_ = json.NewEncoder(w).Encode(User{ID: 99, Name: "User-" + id, Admin: false})
 	})
 
+	// 🔍 Analogi: httptest itu "server latihan" — restoran pop-up yang buka sebentar di
+	// alamat acak khusus untuk kita coba pesan, lalu ditutup. Cara menguji kode HTTP tanpa
+	// perlu menyalakan server produksi beneran. Sangat cepat & tak butuh port tetap.
 	// httptest menjalankan server sungguhan di port acak, lalu kita panggil.
 	srv := httptest.NewServer(mux)
 	defer srv.Close()

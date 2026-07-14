@@ -8,6 +8,15 @@ import (
 	"unicode"
 )
 
+// 🔍 Analogi besar RAG: LLM itu seperti murid PANDAI tapi PELUPA soal fakta spesifik perusahaanmu —
+// kalau ditanya hal yang tak diketahuinya, ia bisa "mengarang percaya diri" (halusinasi). RAG =
+// UJIAN OPEN-BOOK: sebelum murid menjawab, kita CARIKAN dulu halaman buku yang relevan (retrieve),
+// selipkan ke soal ("jawab HANYA berdasar teks ini"), baru ia menjawab. Hasilnya berbasis datamu
+// (dokumen internal, DB) & jujur bilang "tidak tahu" kalau jawabannya tak ada. Mengurangi karangan.
+//
+// 🔍 Catatan: retrieve di sini pakai cocok-kata sederhana demi kejelasan. Di produksi, "kemiripan
+// makna" dicari pakai EMBEDDING + vector DB — supaya "uang kembali" cocok dengan "refund" walau beda kata.
+
 // RAG (Retrieval-Augmented Generation): sebelum bertanya ke LLM, AMBIL dokumen
 // relevan dari basis pengetahuanmu, lalu sisipkan sebagai KONTEKS. Ini membuat
 // LLM menjawab berdasar datamu (dokumen internal, DB) & mengurangi halusinasi.

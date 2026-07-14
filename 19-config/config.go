@@ -27,6 +27,13 @@ type JWTConfig struct {
 	Secret string `mapstructure:"secret"`
 }
 
+// 🔍 Analogi besar: memuat config berlapis itu seperti ATURAN BERPAKAIAN bertingkat.
+//  1. default   = seragam standar pabrik ("kalau tak diatur, pakai ini").
+//  2. file      = aturan kantor cabang (menimpa seragam pabrik).
+//  3. env var   = instruksi bos langsung hari ini (PALING menang, menimpa semuanya).
+// Lapisan lebih tinggi menimpa yang rendah. Prinsip "12-factor": config lewat ENVIRONMENT,
+// bukan di-hardcode — jadi 1 binary sama bisa jalan di dev/staging/produksi hanya dgn ganti env.
+
 // Load memuat config dengan prioritas (dari rendah ke tinggi):
 //  1. nilai default (di kode)
 //  2. file config (bila path diberikan & ada)
@@ -70,6 +77,9 @@ func Load(configPath string) (*Config, error) {
 	return &cfg, nil
 }
 
+// 🔍 Analogi: "fail fast" itu seperti CEK KELENGKAPAN sebelum pesawat lepas landas. Lebih baik
+// aplikasi menolak START dengan pesan jelas ("jwt.secret wajib di production") daripada telanjur
+// jalan lalu meledak di tengah melayani pengguna. Validasi config di awal = mencegah bencana diam-diam.
 // Validate memastikan config masuk akal SEBELUM aplikasi jalan (fail fast).
 func (c *Config) Validate() error {
 	switch c.Env {

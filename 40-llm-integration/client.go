@@ -17,6 +17,17 @@ type Message struct {
 	Text string
 }
 
+// 🔍 Analogi besar: kenapa bikin interface Chatter, bukan pakai SDK Anthropic langsung? Sama seperti
+// modul 08 & 29 — kita menaruh "COLOKAN standar". Aplikasi cuma tahu "ada sesuatu yang bisa Chat()".
+// Di produksi colokannya diisi Claude asli; saat TEST diisi MockChatter (balasan palsu) — jadi test
+// jalan cepat, gratis, tanpa API key & tanpa internet. Bonus: kalau mau ganti provider LLM, cukup
+// buat implementasi Chatter baru; logika RAG & aplikasi tak tersentuh sama sekali.
+//
+// 🔍 Analogi system prompt vs messages: "system" itu seperti ARAHAN SUTRADARA ke aktor ("kamu CS yang
+// sopan, jawab singkat"); "messages" itu naskah dialog bergantian (user <-> assistant). "token" =
+// potongan kata; MaxTokens membatasi panjang jawaban (seperti batas halaman). Streaming = jawaban
+// muncul mengalir kata-demi-kata (UX chat enak) alih-alih menunggu semuanya jadi lalu muncul sekaligus.
+
 // Chatter = abstraksi LLM. Aplikasi memakai interface ini, bukan SDK langsung.
 type Chatter interface {
 	Chat(ctx context.Context, system string, messages []Message) (string, error)

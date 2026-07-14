@@ -2,6 +2,11 @@
 // Lanjutan Modul 15 & 27. rbac.go = Role-Based Access Control.
 package main
 
+// 🔍 Analogi besar RBAC: seperti KARTU AKSES kantor berdasar JABATAN. "Editor" boleh masuk ruang
+// tulis-artikel; "Admin" boleh masuk semua ruang termasuk kelola-user. Kamu tak memberi izin per
+// orang satu-satu (ribet & rawan salah) — kamu beri orang sebuah PERAN, dan peran itu sudah membawa
+// paket izinnya. Karyawan baru? cukup beri peran "Editor", langsung dapat semua izin editor. RBAC
+// menjawab "kamu SIAPA (perannya apa)?". Cocok saat izin bisa dikelompokkan rapi per jabatan.
 // RBAC: hak akses ditentukan oleh PERAN (role) yang dimiliki user. Peran punya
 // sekumpulan izin (permission). Cek: "apakah user boleh melakukan X?".
 

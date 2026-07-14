@@ -4,8 +4,13 @@ package main
 
 import "sync"
 
-// Hub mengelola daftar subscriber dan menyiarkan pesan ke semuanya.
-// Ini pola "pub/sub in-process" — jantung fitur chat/notifikasi realtime.
+// 🔍 Analogi besar: WebSocket itu "TELEPON yang tetap tersambung" antara browser & server —
+// beda dari HTTP biasa yang seperti kirim SURAT sekali balas lalu putus. Karena saluran terus
+// terbuka, server bisa MENDORONG pesan kapan saja (chat masuk, notifikasi) tanpa browser bertanya dulu.
+//
+// 🔍 Analogi Hub: Hub itu OPERATOR PENYIARAN. Tiap browser yang tersambung = satu pendengar yang
+// "Subscribe" (dapat channel sendiri). Saat ada pesan, Hub "Broadcast" ke semua pendengar sekaligus.
+// RWMutex = kunci khusus: banyak boleh MEMBACA daftar bersamaan, tapi MENGUBAH daftar harus giliran.
 type Hub struct {
 	mu          sync.RWMutex
 	subscribers map[chan []byte]struct{}
@@ -34,6 +39,9 @@ func (h *Hub) Unsubscribe(ch chan []byte) {
 	h.mu.Unlock()
 }
 
+// 🔍 Analogi: pola "select-default" di sini itu prinsip "PERTUNJUKAN HARUS LANJUT". Kalau satu
+// pendengar terlalu lambat (kotak pesannya penuh), penyiar TIDAK berhenti menunggunya — ia
+// lewati & lanjut ke pendengar lain. Mencegah satu klien lemot menyandera seluruh siaran.
 // Broadcast mengirim pesan ke SEMUA subscriber. Non-blocking: subscriber yang
 // lambat (buffer penuh) dilewati agar tidak menahan yang lain.
 func (h *Hub) Broadcast(msg []byte) {

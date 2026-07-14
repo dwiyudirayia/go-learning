@@ -15,6 +15,9 @@ import (
 // ------------------------------------------------------------------
 // 1. errgroup — jalankan banyak tugas paralel; error PERTAMA membatalkan sisanya.
 // ------------------------------------------------------------------
+// 🔍 Analogi errgroup: seperti KETUA TIM yang menyuruh anggota kerja paralel DAN punya aturan
+// "kalau satu orang menemukan masalah fatal, SEMUA berhenti (batal), tak buang tenaga percuma".
+// Lebih ringkas & aman dari WaitGroup+channel manual (Modul 7) karena error & pembatalan diurus otomatis.
 // Lebih ringkas & aman dari WaitGroup+channel manual (Modul 7).
 func FetchAll(ctx context.Context, ids []int, fetch func(ctx context.Context, id int) (string, error)) ([]string, error) {
 	g, ctx := errgroup.WithContext(ctx)
@@ -61,10 +64,13 @@ func RunLimited(ctx context.Context, tasks []func(), maxConcurrent int64) error 
 }
 
 // ------------------------------------------------------------------
-//  3. singleflight — gabungkan panggilan IDENTIK yang bersamaan menjadi SATU.
-//     Mengatasi "cache stampede": 1000 request miss serempak -> hanya 1 ke DB.
-//
+// 3. singleflight — gabungkan panggilan IDENTIK yang bersamaan menjadi SATU.
+// Mengatasi "cache stampede": 1000 request miss serempak -> hanya 1 ke DB.
 // ------------------------------------------------------------------
+// 🔍 Analogi singleflight: bayangkan 1000 orang serempak bertanya "jam berapa sekarang?".
+// Alih-alih 1000 kali lihat jam, SATU orang lihat lalu meneriakkan jawabannya ke semua.
+// "Cache stampede" = cache kosong & 1000 request menyerbu DB bersamaan; singleflight memastikan
+// hanya 1 yang benar-benar ke DB, sisanya "nebeng" hasil sama. Analogi: satu ojek, banyak yang patungan.
 type Loader struct {
 	group singleflight.Group
 	calls int64 // berapa kali loader asli dipanggil
@@ -95,6 +101,10 @@ func (l *Loader) Calls() int64 {
 // ------------------------------------------------------------------
 // 4. sync.Pool — daur ulang objek untuk mengurangi alokasi (tekanan GC).
 // ------------------------------------------------------------------
+// 🔍 Analogi sync.Pool: seperti tumpukan NAMPAN di kantin yang dipakai-cuci-pakai lagi, bukan beli
+// nampan baru tiap pelanggan lalu dibuang. Membuat objek baru terus (mis. buffer) memberi "sampah"
+// yang harus dibersihkan Garbage Collector (GC) -> bikin program tersendat. Pool mendaur ulang objek
+// agar GC santai. Catatan: objek dari pool itu "nampan bekas" -> WAJIB di-Reset dulu sebelum dipakai.
 var bufPool = sync.Pool{
 	New: func() any { return new(bytes.Buffer) },
 }

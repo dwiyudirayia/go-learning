@@ -1,5 +1,11 @@
 //go:build js && wasm
 
+// 🔍 Analogi besar WASM (WebAssembly): biasanya browser cuma paham JavaScript. WASM itu seperti
+// "PASPOR" yang membolehkan kode dari bahasa lain (Go, Rust, C++) ikut JALAN DI DALAM BROWSER dengan
+// kecepatan mendekati native. Jadi logika Go yang sama bisa dipakai di server DAN di halaman web.
+// Di sini fungsi Go (add, greet) "dititipkan" ke dunia JavaScript (window) agar tombol di halaman
+// bisa memanggilnya. "//go:build js && wasm" = tag yang bilang "file ini KHUSUS saat menyasar browser".
+// 'select{}' kosong = "tahan program tetap hidup" agar fungsinya terus siap dipanggil dari halaman.
 // Program ini dikompilasi ke WebAssembly & jalan DI BROWSER.
 // Build: GOOS=js GOARCH=wasm go build -o main.wasm ./47-tui-wasm/wasm
 package main

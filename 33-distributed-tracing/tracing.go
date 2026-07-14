@@ -1,5 +1,15 @@
 // Modul 33 — Distributed Tracing dengan OpenTelemetry.
 //
+// 🔍 Analogi besar: distributed tracing itu seperti PELACAKAN PAKET (resi). Satu request
+// (paket) melewati banyak pos: API gateway -> service order -> service inventory -> DB. TRACE =
+// riwayat lengkap perjalanan paket; tiap SPAN = satu stempel pos ("tiba di gudang 10:01, keluar
+// 10:03"). Karena tiap span mencatat durasi, kamu bisa langsung lihat "oh, macetnya di gudang
+// inventory 2 detik". Tanpa tracing, request lambat di sistem microservice = misteri tak terpecahkan.
+
+// 🔍 Analogi propagation: "traceparent" itu seperti NOMOR RESI yang ditempel & ikut terus di tiap
+// pos. Berkat itu, stempel di service B tahu ia bagian dari perjalanan yang sama dengan service A —
+// sehingga semua span tersambung jadi SATU pohon utuh, bukan potongan terpisah tak berhubungan.
+
 // TRACE = perjalanan SATU request melintasi banyak fungsi/service. Tiap langkah
 // = SPAN (punya nama, durasi, atribut, dan parent). Span dihubungkan lewat
 // context.Context -> membentuk pohon (trace) yang bisa divisualisasikan di

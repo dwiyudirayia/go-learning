@@ -16,6 +16,15 @@ import (
 	_ "net/http/pprof" // side-effect: mendaftarkan handler /debug/pprof/*
 )
 
+// 🔍 Analogi besar: profiling itu seperti CEK KESEHATAN / MRI untuk program. Alih-alih MENEBAK
+// "mungkin fungsi ini yang lambat", pprof mengukur FAKTA: fungsi mana makan CPU/memori terbanyak.
+// Aturan emas optimasi: "ukur dulu, baru optimasi" — sering biang lambatnya di tempat tak terduga.
+//
+// 🔍 Analogi import "_" (blank): pola "_ net/http/pprof" itu seperti MENYALAKAN alat hanya dengan
+// memasang colokannya. Kita tak memanggil fungsinya langsung; cukup meng-import-nya, dan paket itu
+// diam-diam mendaftarkan endpoint /debug/pprof/* saat start (efek samping init()). Tanda "_" berarti
+// "aku sengaja import ini demi efek sampingnya, bukan untuk memakai isinya".
+
 func main() {
 	mux := http.NewServeMux()
 
