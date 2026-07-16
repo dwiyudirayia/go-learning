@@ -17,6 +17,10 @@ func main() {
 	// slog memisahkan "apa yang dicatat" (logger) dari "bagaimana formatnya"
 	// (handler). JSON cocok untuk agregator (Loki/ELK). ReplaceAttr dipanggil
 	// untuk SETIAP atribut -> tempat menyensor rahasia & merapikan field.
+	//
+	// 🔍 Analogi: ReplaceAttr itu seperti EDITOR SENSOR di redaksi — setiap
+	// kalimat (atribut) melewati mejanya sebelum naik cetak: kata sensitif
+	// dihitamkan (password -> ***), bagian tak perlu dicoret (timestamp).
 	opts := &slog.HandlerOptions{
 		Level: slog.LevelInfo, // Debug akan disaring (tak tampil)
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
@@ -35,11 +39,19 @@ func main() {
 	// 2. Base attributes dengan With() — konteks yang menempel di tiap log
 	// =====================================================================
 	// Semua log dari logger turunan ini otomatis membawa service & version.
+	//
+	// 🔍 Analogi: With() itu seperti STEMPEL KOP SURAT — sekali dibuat, semua
+	// surat (log) dari meja ini otomatis berkop "service=api v1.4.2" tanpa
+	// ditulis tangan tiap kali.
 	log := logger.With("service", "api", "version", "1.4.2")
 
 	// =====================================================================
 	// 3. Level & structured key-value (bukan string interpolation)
 	// =====================================================================
+	// 🔍 Analogi: log key-value itu seperti FORMULIR BERKOLOM, bukan surat
+	// bebas — mesin pencari log tinggal menyaring "kolom user_id = 42";
+	// kalau semuanya kalimat panjang (interpolation), mencarinya seperti
+	// membaca tumpukan surat satu per satu.
 	log.Debug("query detail", "sql", "SELECT 1")                 // TIDAK tampil (di bawah Info)
 	log.Info("user login", "user_id", 42, "password", "rahasia") // password tersensor
 	log.Warn("latensi tinggi", "ms", 850)
@@ -48,6 +60,10 @@ func main() {
 	// 4. Grouping — mengelompokkan atribut terkait
 	// =====================================================================
 	// slog.Group menyarangkan field -> {"http":{"method":"GET","status":200}}.
+	//
+	// 🔍 Analogi: Group itu seperti MAP BERLABEL di dalam lemari arsip —
+	// dokumen method & status dimasukkan satu map "http" agar rapi, bukan
+	// berserakan sejajar dengan dokumen lain.
 	log.Info("request selesai",
 		slog.String("path", "/users/42"),
 		slog.Group("http",

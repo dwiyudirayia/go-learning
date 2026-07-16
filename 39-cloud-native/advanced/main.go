@@ -22,6 +22,12 @@ type Cluster struct{ running int }
 //   - IDEMPOTEN: bila sudah sesuai, memanggilnya lagi TIDAK melakukan apa-apa.
 //
 // Inilah inti semua controller/operator Kubernetes.
+//
+// 🔍 Analogi: reconcile loop itu seperti TERMOSTAT AC — kamu cukup menyetel
+// "24°C" (desired), dan termostat terus membandingkan suhu ruangan (actual)
+// lalu menyalakan/mematikan kompresor untuk menutup selisihnya. Ia tak peduli
+// KENAPA ruangan memanas (pintu terbuka? matahari?) — cukup lihat selisihnya
+// (level-triggered), dan bila suhu sudah pas ia diam saja (idempoten).
 // ===========================================================================
 func reconcile(c *Cluster, d Desired) (aksi int) {
 	for c.running < d.Replicas { // kurang -> scale up

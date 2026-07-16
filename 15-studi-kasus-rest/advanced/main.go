@@ -33,6 +33,11 @@ type User struct {
 // ===========================================================================
 // Service bergantung pada abstraksi ini, bukan implementasi konkret. Di produksi
 // diisi repo Postgres/SQLite; di test diisi mock in-memory (lihat memRepo).
+//
+// 🔍 Analogi: repository interface itu seperti COLOKAN LISTRIK STANDAR —
+// service cuma butuh "lubang colokan" (kontrak Simpan/CariByEmail), tak
+// peduli listriknya dari PLN (Postgres) atau genset (mock in-memory).
+// Ganti sumber listrik, alat elektroniknya tak perlu dibongkar.
 type UserRepo interface {
 	Simpan(u User) error
 	CariByEmail(email string) (User, bool)
@@ -54,6 +59,10 @@ func (r *memRepo) CariByEmail(e string) (User, bool) { u, ok := r.data[e]; retur
 // ===========================================================================
 // 2. Lapisan SERVICE — aturan bisnis murni (tak tahu HTTP)
 // ===========================================================================
+// 🔍 Analogi: service itu seperti KOKI DI DAPUR — ia paham resep (aturan
+// bisnis: validasi, hashing, anti-duplikat) tapi tak pernah menemui tamu.
+// Urusan menyajikan ke meja (HTTP, status code) adalah tugas pelayan
+// (handler). Koki yang ikut melayani meja = lapisan yang tercampur.
 type AuthService struct{ repo UserRepo }
 
 func (s *AuthService) Register(email, pw string) error {
@@ -84,6 +93,10 @@ func (s *AuthService) Login(email, pw string) error {
 // ===========================================================================
 // 3. Lapisan HANDLER (batas HTTP) — SATU tempat memetakan error -> status
 // ===========================================================================
+// 🔍 Analogi: statusUntuk itu seperti KAMUS RESMI PENERJEMAH — bahasa domain
+// ("duplikat", "kredensial salah") diterjemahkan ke bahasa HTTP (409, 401)
+// lewat SATU kamus. Kalau tiap handler menerjemahkan sendiri-sendiri,
+// error yang sama bisa jadi status yang berbeda-beda.
 func statusUntuk(err error) int {
 	switch {
 	case err == nil:

@@ -42,6 +42,11 @@ func main() {
 	// =====================================================================
 	// Karena pengiriman at-least-once, konsumen WAJIB aman diproses berulang.
 	// Cara termudah: catat ID yang sudah sukses; abaikan bila datang lagi.
+	//
+	// 🔍 Analogi: at-least-once itu seperti KURIR YANG RAGU — kalau tak yakin
+	// paket sudah diterima, ia kirim ULANG. Konsumen idempoten = penerima yang
+	// mencatat NOMOR RESI: paket dengan resi yang sudah tercatat langsung
+	// ditolak halus, jadi pesanan tak pernah diproses dobel.
 	sudahDiproses := map[string]bool{}
 
 	const maxRetry = 2
@@ -56,6 +61,11 @@ func main() {
 		// =================================================================
 		// 2. RETRY terbatas -> DLQ. Pesan yang selalu gagal tak boleh
 		//    memblokir antrean selamanya; setelah maxRetry, buang ke DLQ.
+		//
+		// 🔍 Analogi: DLQ itu seperti LOKER "SURAT TAK TERKIRIM" di kantor
+		// pos — surat beralamat kacau (pesan poison) tak boleh membuat
+		// seluruh antrean pengiriman macet; setelah beberapa kali gagal, ia
+		// disisihkan ke loker khusus untuk diperiksa petugas (inspeksi manual).
 		// =================================================================
 		var err error
 		for attempt := 1; attempt <= maxRetry; attempt++ {

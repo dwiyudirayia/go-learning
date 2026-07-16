@@ -18,6 +18,11 @@ import (
 // iter.Seq[T] = func(yield func(T) bool). `for v := range seq {}` memanggil
 // yield tiap elemen; mengembalikan false (mis. karena break) menghentikannya.
 // Nilai dihasilkan MALAS (on-demand) -> bisa "tak hingga" tanpa boros memori.
+//
+// 🔍 Analogi: slice itu seperti MEMASAK SEMUA PESANAN DI MUKA lalu menaruhnya
+// di meja (boros bila tamu cuma makan 5); iterator lazy seperti KOKI TEPPANYAKI
+// — memasak satu porsi TEPAT saat diminta (yield), dan langsung berhenti
+// begitu tamu bilang cukup (break). Makanya deret "tak hingga" pun aman.
 
 // Hitung menghasilkan 0,1,2,... hingga tak terbatas (lazy!).
 func Hitung() iter.Seq[int] {
@@ -32,6 +37,10 @@ func Hitung() iter.Seq[int] {
 
 // Filter membungkus iterator lain -> hanya meneruskan yang lolos predikat.
 // Komposisi iterator: rantai transformasi tanpa mengalokasikan slice antara.
+//
+// 🔍 Analogi: komposisi iterator itu seperti MENYAMBUNG SARINGAN di ujung
+// selang — air mengalir sekali lewat semua saringan berurutan; tak perlu
+// menampung ke ember (slice antara) tiap ganti saringan.
 func Filter[T any](seq iter.Seq[T], keep func(T) bool) iter.Seq[T] {
 	return func(yield func(T) bool) {
 		for v := range seq {

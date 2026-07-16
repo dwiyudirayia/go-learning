@@ -23,6 +23,11 @@ func main() {
 	// =====================================================================
 	// Tiap Read dibungkus context berbatas waktu -> koneksi "zombie" (client
 	// diam selamanya) tak menggantung goroutine server tanpa batas.
+	//
+	// 🔍 Analogi: read deadline itu seperti PENJAGA WARTEL jaman dulu — tiap
+	// penelepon diberi jatah waktu; yang diam saja tanpa bicara (koneksi
+	// zombie) diputus sambungannya, supaya bilik (goroutine) tak terkunci
+	// selamanya oleh satu orang.
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		c, err := websocket.Accept(w, r, nil)
 		if err != nil {
@@ -83,6 +88,12 @@ func main() {
 	// Client kirim "bye"; server menutup dgn kode status. Read berikutnya
 	// mengembalikan error penutupan yang bisa dibaca kodenya via CloseStatus
 	// (bukan sekadar "koneksi putus"). Kode 1000 = normal.
+	//
+	// 🔍 Analogi: close handshake itu seperti PAMIT SEBELUM PULANG — tamu
+	// bilang "saya pamit" (bye) dan tuan rumah mengantar ke pintu sambil
+	// menyebut alasannya (kode status 1000 = baik-baik). Tanpa handshake,
+	// tamu tiba-tiba hilang dan tuan rumah cuma tahu "koneksi putus" tanpa
+	// tahu itu wajar atau musibah.
 	fmt.Println("== 2. graceful close handshake ==")
 	closeCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()

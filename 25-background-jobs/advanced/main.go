@@ -29,6 +29,11 @@ func main() {
 	// =====================================================================
 	// Ukuran pool membatasi konkurensi (mis. jaga koneksi DB/CPU). Semua worker
 	// membaca dari channel yang sama; Go mendistribusikan job secara adil.
+	//
+	// 🔍 Analogi: worker pool itu seperti TIGA KASIR dengan SATU ANTREAN
+	// berjalur tunggal — pelanggan (job) maju ke kasir mana pun yang kosong.
+	// Menambah kasir mempercepat antrean; membatasi jumlahnya menjaga toko
+	// (DB/CPU) tak kewalahan.
 	var wg sync.WaitGroup
 	for w := 1; w <= jumlahWorker; w++ {
 		wg.Add(1)
@@ -47,6 +52,10 @@ func main() {
 	// =====================================================================
 	// Ticker memicu pekerjaan berkala (mirip cron). Di produksi tambah jitter
 	// agar tak semua instance menembak di detik yang sama.
+	//
+	// 🔍 Analogi: Ticker itu seperti BEL SEKOLAH yang berdering tiap jam
+	// pelajaran — bukan alarm sekali bunyi (Timer), tapi pengingat berulang
+	// dengan irama tetap yang memicu kegiatan berikutnya.
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		tick := time.NewTicker(15 * time.Millisecond)
@@ -76,6 +85,11 @@ func main() {
 	// Urutan penting: (a) hentikan scheduler (cancel), (b) TUTUP channel jobs
 	// agar worker keluar dari `range` setelah job tersisa habis, (c) tunggu
 	// semua worker selesai (wg.Wait). Tak ada job yang terpotong di tengah.
+	//
+	// 🔍 Analogi: drain itu seperti MENUTUP DAPUR RESTORAN — (a) stop terima
+	// pesanan baru, (b) umumkan ke koki "ini pesanan terakhir" (close channel),
+	// (c) tunggu semua masakan di kompor matang (wg.Wait). Mematikan listrik
+	// begitu saja = ada masakan setengah jadi (job terpotong).
 	fmt.Println("== shutdown: drain worker pool ==")
 	cancel()    // (a) scheduler berhenti mengirim
 	close(jobs) // (b) sinyal ke worker: tak ada job baru

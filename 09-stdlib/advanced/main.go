@@ -17,6 +17,11 @@ import (
 // ===========================================================================
 // Epoch adalah time.Time yang ingin kita serialisasikan sebagai UNIX seconds
 // (angka), bukan string RFC3339 default. Implement json.Marshaler.
+//
+// 🔍 Analogi: custom MarshalJSON itu seperti PENERJEMAH PRIBADI — biasanya
+// json.Marshal memakai "kamus standar", tapi tipe yang punya MarshalJSON
+// bilang "biar saya yang menerjemahkan diri saya sendiri", dan json.Marshal
+// menurut.
 type Epoch struct{ time.Time }
 
 func (e Epoch) MarshalJSON() ([]byte, error) {
@@ -25,6 +30,10 @@ func (e Epoch) MarshalJSON() ([]byte, error) {
 
 // Event memakai json.RawMessage untuk MENUNDA decode field "payload":
 // bentuknya berbeda-beda tergantung "type", jadi kita simpan mentah dulu.
+//
+// 🔍 Analogi: json.RawMessage itu seperti PAKET YANG BELUM DIBUKA — kamu baca
+// dulu label pengirimnya (field "type"), baru memutuskan cara membongkar
+// isinya. Membuka semua paket sekaligus tanpa lihat label = salah bongkar.
 type Event struct {
 	Type    string          `json:"type"`
 	Payload json.RawMessage `json:"payload"`
@@ -58,6 +67,11 @@ func main() {
 	// =====================================================================
 	// Decoder membaca aliran JSON bertubi tanpa memuat semua ke memori.
 	// DisallowUnknownFields menolak field asing -> menangkap typo/kontrak salah.
+	//
+	// 🔍 Analogi: json.Unmarshal itu seperti menunggu SEMUA air terkumpul di
+	// ember baru diminum; json.Decoder seperti minum langsung dari KERAN yang
+	// mengalir. DisallowUnknownFields = petugas bea cukai ketat: barang yang
+	// tak ada di manifes (field asing) langsung ditolak, bukan didiamkan.
 	stream := `{"nama":"A"} {"nama":"B"} {"nama":"C","umur":9}`
 	dec := json.NewDecoder(strings.NewReader(stream))
 	dec.DisallowUnknownFields()
@@ -83,6 +97,11 @@ func main() {
 	// TeeReader  : membaca sambil menyalin (mis. hitung hash sambil kirim body).
 	// MultiWriter: satu Write menyebar ke banyak tujuan (mis. file + stdout).
 	// LimitReader: batasi jumlah byte yang boleh dibaca (cegah abuse memori).
+	//
+	// 🔍 Analogi: bayangkan INSTALASI PIPA AIR. TeeReader = pipa berbentuk "T"
+	// (aliran utama jalan terus, cabangnya mengisi tangki salinan). MultiWriter
+	// = pipa bercabang ke banyak keran sekaligus. LimitReader = METERAN yang
+	// menutup keran setelah N liter. Kekuatannya: semua bisa disambung-sambung.
 	src := strings.NewReader("HALO-DUNIA-INI-PANJANG")
 	var salinan bytes.Buffer
 	tee := io.TeeReader(src, &salinan) // apa pun yang dibaca dari tee, tersalin ke salinan
@@ -101,6 +120,10 @@ func main() {
 	// =====================================================================
 	// Timer/Ticker yang tak di-Stop membiarkan resource menggantung. Pola aman:
 	// buat timer, dan Stop() saat tak lagi dibutuhkan.
+	//
+	// 🔍 Analogi: timer tanpa Stop() itu seperti ALARM DI KAMAR KOSONG — tetap
+	// disetel dan memakan baterai (resource) padahal tak ada yang menunggunya.
+	// defer t.Stop() = mematikan alarm begitu kamu keluar kamar.
 	t := time.NewTimer(50 * time.Millisecond)
 	defer t.Stop()
 	select {

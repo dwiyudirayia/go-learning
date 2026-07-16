@@ -28,6 +28,12 @@ func main() {
 	// =====================================================================
 	// CHAIN interceptor: dieksekusi berurutan membungkus handler.
 	// Urutan penting -> recovery TERLUAR agar menangkap panic dari yang lain.
+	//
+	// 🔍 Analogi: chain interceptor itu seperti LAPISAN PENGAMANAN GEDUNG —
+	// tamu melewati pos berurutan: pemadam kebakaran berjaga paling luar
+	// (recovery: apa pun yang terbakar di dalam, gedung tak runtuh), lalu
+	// pemeriksaan kartu akses (auth), lalu buku tamu (logging). Menaruh
+	// pemadam di dalam = kebakaran di pos kartu akses tak tertangani.
 	// =====================================================================
 	recovery := func(ctx context.Context, req any, info *grpc.UnaryServerInfo, h grpc.UnaryHandler) (resp any, err error) {
 		defer func() {

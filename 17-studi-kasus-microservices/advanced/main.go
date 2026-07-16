@@ -31,6 +31,11 @@ var rng = rand.New(rand.NewSource(1))
 // Meniru layanan inventory: gagal beberapa kali lalu sukses. Ia mengecek
 // ctx.Err() — bila deadline dari pemanggil (hulu) sudah lewat, langsung batal.
 // Inilah propagasi deadline lintas hop: batas waktu mengalir ke bawah.
+//
+// 🔍 Analogi: propagasi deadline itu seperti ESTAFET DENGAN SATU STOPWATCH —
+// pelari pertama (API gateway) menyalakan stopwatch 2 detik, dan SEMUA pelari
+// berikutnya (service hilir) melirik stopwatch yang sama. Begitu waktu habis,
+// pelari mana pun langsung berhenti — tak ada yang lari sia-sia.
 type inventory struct{ gagalTersisa int }
 
 func (in *inventory) cekStok(ctx context.Context, sku string) (int, error) {
@@ -53,6 +58,12 @@ func (in *inventory) cekStok(ctx context.Context, sku string) (int, error) {
 // Retry hanya untuk error sementara & operasi idempoten. Backoff eksponensial
 // mengurangi tekanan; jitter mencegah semua klien retry serempak (thundering
 // herd). Loop berhenti bila context habis (menghormati deadline hulu).
+//
+// 🔍 Analogi: backoff itu seperti menelepon nomor yang sibuk — coba lagi
+// setelah 1 menit, lalu 2, lalu 4 (memberi napas, bukan menyerbu). Jitter =
+// tiap orang menunggu WAKTU ACAK sedikit berbeda; kalau seribu penelepon
+// menunggu tepat 1 menit yang sama, sentral langsung tumbang lagi bersamaan
+// (thundering herd).
 func panggilDenganRetry(ctx context.Context, fn func(context.Context) (int, error)) (int, error) {
 	const maxPercobaan = 5
 	backoff := 10 * time.Millisecond
@@ -82,6 +93,11 @@ func panggilDenganRetry(ctx context.Context, fn func(context.Context) (int, erro
 // Setelah sejumlah kegagalan beruntun, breaker "terbuka" dan menolak panggilan
 // cepat (fail-fast) tanpa menyentuh dependency, memberi waktu ia pulih dan
 // mencegah cascade failure.
+//
+// 🔍 Analogi: persis SEKRING LISTRIK di rumah — korsleting beruntun membuat
+// sekring "putus" (breaker terbuka) sehingga arus berhenti mengalir ke
+// perangkat yang rusak. Lebih baik satu ruangan gelap sebentar daripada
+// seisi rumah terbakar (cascade failure).
 type breaker struct {
 	gagalBeruntun int
 	ambang        int

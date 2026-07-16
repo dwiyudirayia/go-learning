@@ -19,6 +19,11 @@ import (
 
 var ErrNotFound = errors.New("kode tidak ditemukan")
 
+// 🔍 Analogi: arsitektur berlapis itu seperti RESTORAN — gudang bahan (store),
+// dapur dengan resep (service), dan pelayan yang menghadapi tamu (handler).
+// Tamu tak pernah masuk gudang; pelayan tak pernah memasak. Tiap lapisan bisa
+// diganti (gudang in-memory -> SQLite) tanpa melatih ulang seluruh restoran.
+
 // ---- Lapisan STORE (data) — di sini in-memory; di capstone asli: SQLite ----
 type Store struct {
 	mu   sync.RWMutex
@@ -98,6 +103,11 @@ func main() {
 	// =====================================================================
 	// INTEGRATION TEST via app.Test — menembus SEMUA lapisan tanpa port nyata.
 	// Inilah cara memvalidasi bahwa store+service+handler bekerja bersama.
+	//
+	// 🔍 Analogi: unit test menguji tiap alat musik sendiri-sendiri;
+	// integration test itu GLADI BERSIH SATU ORKESTRA — semua lapisan main
+	// bersama dari partitur asli, tapi di ruang latihan (tanpa penonton/port
+	// nyata). Salah kompak antar-pemain baru ketahuan di sini.
 	// =====================================================================
 	fmt.Println("== 1. POST /shorten ==")
 	fmt.Println(" ", call(app, "POST", "/shorten", `{"url":"https://go.dev"}`))

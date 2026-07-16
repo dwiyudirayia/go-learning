@@ -14,6 +14,11 @@ import (
 // - Method VALUE : t.Naik  -> sudah terikat ke receiver t (closure).
 // - Method EXPR   : Counter.Naik -> fungsi biasa, receiver jadi argumen pertama.
 // Keduanya berguna saat mengoper method sebagai nilai (higher-order function).
+//
+// 🔍 Analogi: method value itu seperti NOMOR SPEEDDIAL — tombolnya sudah
+// terikat ke satu orang (receiver), tinggal pencet. Method expression seperti
+// TELEPON UMUM: alatnya sama, tapi tiap kali harus sebut dulu mau menelepon
+// siapa (receiver dioper sebagai argumen).
 
 type Counter struct{ n int }
 
@@ -25,6 +30,11 @@ func (c *Counter) Naik() { c.n++ }
 // Method dengan POINTER receiver hanya masuk method set *T, BUKAN T.
 // Akibatnya: nilai T (bukan &T) mungkin TIDAK memenuhi interface. Ini sumber
 // error paling umum bagi pemula Go.
+//
+// 🔍 Analogi: pointer receiver itu seperti KUNCI RUMAH ASLI — hanya pemegang
+// alamat rumah (*T) yang bisa mengubah isinya. Nilai T cuma FOTO rumahnya:
+// mau diberi kunci pun percuma, maka Go tak mengakuinya sebagai "pemilik"
+// (tidak memenuhi interface).
 
 type Penyapa interface{ Sapa() string }
 
@@ -38,6 +48,10 @@ func (o *Orang) Sapa() string { return "Halo, " + o.Nama } // pointer receiver
 // Field disusun rata (aligned) ke kelipatan ukurannya. Menaruh field kecil di
 // antara field besar menyisipkan "padding" kosong. Menyusun dari besar ke
 // kecil sering memangkas ukuran total. (Detail lengkap: modul 42.)
+//
+// 🔍 Analogi: menyusun field itu seperti MENGEPAK KOPER — barang besar ditaruh
+// dulu, barang kecil menyelip di celahnya. Kalau barang kecil ditaruh acak di
+// antara yang besar, muncul rongga kosong (padding) dan koper "membengkak".
 
 type Boros struct {
 	a bool  // 1 byte + 7 padding
@@ -56,6 +70,10 @@ type Hemat struct {
 // ===========================================================================
 // Struct bisa dibandingkan dengan == (dan dipakai sebagai kunci map) HANYA
 // jika semua field-nya comparable. Struct berisi slice/map/func tidak bisa.
+//
+// 🔍 Analogi: map key harus seperti KTP — datanya tetap dan bisa dicocokkan
+// persis. Struct berisi slice/map itu seperti "alamat yang isinya bisa
+// berubah-ubah": tak bisa dijadikan identitas pembanding.
 
 type Titik struct{ X, Y int } // comparable
 

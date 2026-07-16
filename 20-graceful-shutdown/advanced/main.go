@@ -14,6 +14,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 	"time"
@@ -25,6 +26,10 @@ func main() {
 	// =====================================================================
 	// Cara idiomatik (Go 1.16+): ctx.Done() menyala saat Ctrl+C atau SIGTERM
 	// dari orchestrator (K8s). stop() melepas pendaftaran sinyal.
+	//
+	// 🔍 Analogi: NotifyContext itu seperti BEL "TOKO AKAN TUTUP" — begitu
+	// berbunyi (SIGTERM), semua bagian toko yang mendengarkan bel yang sama
+	// (ctx.Done) tahu harus mulai beres-beres, tanpa disuruh satu per satu.
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
@@ -63,9 +68,12 @@ func main() {
 
 	// Simulasikan operator/K8s mengirim SIGTERM 100ms kemudian (saat request
 	// masih berjalan). Di produksi ini datang dari luar, bukan dikirim sendiri.
+	// (os.Process.Signal dipakai alih-alih syscall.Kill agar kode ini tetap
+	// ter-compile lintas platform — syscall.Kill tak ada di Windows.)
 	time.AfterFunc(100*time.Millisecond, func() {
 		fmt.Println("== SIGTERM diterima (disimulasikan) ==")
-		_ = syscall.Kill(syscall.Getpid(), syscall.SIGTERM)
+		p, _ := os.FindProcess(os.Getpid())
+		_ = p.Signal(syscall.SIGTERM)
 	})
 
 	<-ctx.Done() // tunggu sinyal
@@ -76,6 +84,11 @@ func main() {
 	// =====================================================================
 	// Server berhenti menerima koneksi baru lalu menunggu request yang sedang
 	// jalan selesai, sampai batas timeout. Jika lewat, dipaksa berhenti.
+	//
+	// 🔍 Analogi: graceful shutdown itu seperti RESTORAN JAM TUTUP — pintu
+	// dikunci untuk tamu baru, tapi tamu yang sedang makan (request in-flight)
+	// dibiarkan menghabiskan piringnya. Timeout = batas kesabaran: lewat jam
+	// itu, lampu dimatikan walau masih ada yang mengunyah.
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(shutdownCtx); err != nil {

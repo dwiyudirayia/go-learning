@@ -13,6 +13,12 @@ import (
 
 // Skema field minimal (subset OpenAPI) — SATU sumber kebenaran untuk dokumen
 // DAN validasi, sehingga keduanya tak pernah menyimpang (drift).
+//
+// 🔍 Analogi: satu sumber kebenaran itu seperti RESEP MASTER di dapur pusat —
+// buku menu untuk pelanggan (dokumen OpenAPI) dan instruksi koki (validasi)
+// dicetak dari resep yang SAMA. Kalau menu dan dapur ditulis terpisah,
+// cepat atau lambat pelanggan memesan hidangan yang dapurnya sudah beda
+// (dokumentasi drift).
 type Field struct {
 	Nama  string `json:"name"`
 	Tipe  string `json:"type"`
@@ -46,6 +52,11 @@ func main() {
 	// =====================================================================
 	// Karena validasi memakai definisi field yang sama dengan dokumen, mustahil
 	// dokumen dan perilaku berbeda.
+	//
+	// 🔍 Analogi: spec-driven validation itu seperti PENJAGA GERBANG yang
+	// membaca peraturan dari papan pengumuman YANG SAMA dengan yang dibaca
+	// pengunjung — mustahil pengunjung mengikuti aturan yang dipajang tapi
+	// tetap ditolak karena penjaga memakai aturan versi lain.
 	fmt.Println("== 2. validasi request thd skema ==")
 	cek(ep, map[string]any{"email": "a@b.com", "nama": "Budi", "umur": 20})          // valid
 	cek(ep, map[string]any{"email": "a@b.com"})                                      // "nama" hilang

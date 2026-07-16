@@ -12,6 +12,11 @@ import "fmt"
 // - "int | float64" = tepat tipe itu.
 // - "~int"          = semua tipe yang UNDERLYING-nya int (termasuk type MyInt int).
 // Tanpa tilde, "type Celsius float64" TIDAK akan cocok dengan "float64".
+//
+// 🔍 Analogi: constraint tanpa tilde itu seperti daftar tamu yang mensyaratkan
+// NAMA PERSIS ("hanya float64"); dengan tilde (~) syaratnya jadi GARIS
+// KETURUNAN — siapa pun yang "lahir dari" float64 (Celsius, Fahrenheit) boleh
+// masuk.
 
 type Angka interface {
 	~int | ~int64 | ~float64
@@ -34,6 +39,11 @@ type Celsius float64
 // ===========================================================================
 // comparable = constraint bawaan untuk tipe yang bisa dibandingkan dgn ==
 // (syarat menjadi kunci map). Dengan generics, Set aman tipe tanpa any+assertion.
+//
+// 🔍 Analogi: Set[T] generik itu seperti RAK SEPATU DENGAN CETAKAN UKURAN —
+// sekali kamu bilang "rak untuk ukuran 42" (Set[string]), mustahil sepatu
+// ukuran lain nyasar masuk. Pakai any = rak tanpa cetakan: apa pun bisa
+// masuk, dan kamu harus meraba-raba (assertion) tiap kali mengambil.
 
 type Set[T comparable] struct {
 	m map[T]struct{}
@@ -57,6 +67,10 @@ func (s *Set[T]) Len() int     { return len(s.m) }
 // Perhatikan DUA type parameter [A, B any]: input dan output boleh beda tipe.
 // Catatan penting: METHOD tidak boleh punya type parameter sendiri di Go —
 // makanya Map ditulis sebagai fungsi bebas, bukan method Set.
+//
+// 🔍 Analogi: Map itu seperti PABRIK KONVERSI dengan mesin yang bisa ditukar
+// (f) — masukkan sekeranjang bahan tipe A, keluar sekeranjang produk tipe B.
+// Keranjangnya (loop + slice hasil) selalu sama; yang berubah cuma mesinnya.
 func Map[A, B any](in []A, f func(A) B) []B {
 	out := make([]B, len(in))
 	for i, v := range in {

@@ -18,6 +18,10 @@ import (
 //  1. Interface + MOCK — bungkus dependency eksternal agar bisa diuji tanpa
 //     memanggil API nyata (tanpa biaya, tanpa jaringan, deterministik).
 //
+// 🔍 Analogi: MockGateway itu seperti UANG MAINAN UNTUK LATIHAN KASIR — kasir
+// baru berlatih transaksi lengkap tanpa menyentuh uang sungguhan (API Stripe
+// yang berbiaya). Skenario "kartu ditolak" pun bisa dilatih kapan saja tanpa
+// menunggu kejadian nyata.
 // ===========================================================================
 type PaymentGateway interface {
 	Charge(amountCents int) (string, error)
@@ -39,6 +43,12 @@ func (m MockGateway) Charge(amount int) (string, error) {
 // Webhook dari pihak ketiga harus dibuktikan asli: tanda tangan HMAC memakai
 // shared secret. Tambahan anti-replay: tolak timestamp lama & signature yang
 // sudah pernah dipakai (nonce) -> penyerang tak bisa memutar ulang request sah.
+//
+// 🔍 Analogi: webhook itu SURAT PENTING dari mitra. HMAC = segel lilin yang
+// hanya bisa dicetak pemegang stempel rahasia (shared secret). Anti-replay =
+// dua pemeriksaan tambahan: tanggal surat tak boleh terlalu tua (timestamp),
+// dan nomor surat yang sama tak boleh diproses dua kali (dedup) — sebab
+// pencuri bisa saja MEMFOTOKOPI surat asli bersegel dan mengirimnya ulang.
 var secret = []byte("whsec_rahasia")
 
 func tandaTangan(ts int64, body string) string {

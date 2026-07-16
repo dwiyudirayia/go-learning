@@ -20,6 +20,11 @@ func main() {
 	// atomic.Int64 membungkus operasi atomik; lebih aman & ringkas daripada
 	// fungsi atomic.AddInt64 lawas. Cocok untuk counter yang di-update banyak
 	// goroutine. (Uji dengan -race untuk buktikan bebas data race.)
+	//
+	// 🔍 Analogi: atomic itu seperti TURNSTILE (pintu putar) stadion — walau
+	// ratusan orang mendorong bersamaan, pintu hanya memutar SATU orang per
+	// klik, jadi hitungannya mustahil dobel. Mutex = menutup seluruh gerbang
+	// tiap ada yang lewat; atomic jauh lebih ringan untuk sekadar menghitung.
 	var counter atomic.Int64
 	var wg sync.WaitGroup
 	for i := 0; i < 100; i++ {
@@ -39,6 +44,10 @@ func main() {
 	// Channel berkapasitas N berperan sebagai "tiket": kirim = ambil tiket
 	// (blok bila penuh), terima = kembalikan tiket. Maksimal N goroutine
 	// berjalan bersamaan. Pola ini membatasi beban (mis. koneksi DB, API call).
+	//
+	// 🔍 Analogi: semaphore itu seperti PARKIRAN DENGAN 3 SLOT — mobil ke-4
+	// harus menunggu di depan portal sampai ada yang keluar. Portalnya
+	// (buffered channel) yang menjamin tak pernah ada 4 mobil di dalam.
 	const maxKonkuren = 3
 	sem := make(chan struct{}, maxKonkuren)
 	var aktif, puncak atomic.Int64
@@ -70,6 +79,10 @@ func main() {
 	// =====================================================================
 	// Tanpa case yang siap, cabang default langsung dieksekusi (tak menunggu).
 	// Berguna untuk "coba kirim/terima, kalau tak bisa lakukan hal lain".
+	//
+	// 🔍 Analogi: select tanpa default itu seperti MENGANTRE sampai loket buka;
+	// dengan default seperti MAMPIR — kalau loket penuh, langsung pergi
+	// mengerjakan hal lain alih-alih berdiri menunggu.
 	ch := make(chan int, 1)
 	ch <- 1 // buffer penuh
 	select {
@@ -85,6 +98,11 @@ func main() {
 	// =====================================================================
 	// Mendaftarkan fungsi yang otomatis dipanggil ketika ctx dibatalkan/timeout.
 	// Praktis untuk cleanup (tutup koneksi, batalkan pekerjaan hilir).
+	//
+	// 🔍 Analogi: AfterFunc itu seperti ALARM KEBAKARAN yang dipasang sekali —
+	// kamu tak perlu berjaga (goroutine yang menunggu <-ctx.Done()); begitu
+	// asap terdeteksi (context batal), alarm menyala sendiri dan tim cleanup
+	// langsung bergerak.
 	ctx, cancel := context.WithCancel(context.Background())
 	selesai := make(chan struct{})
 	stop := context.AfterFunc(ctx, func() {

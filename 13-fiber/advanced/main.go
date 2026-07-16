@@ -24,6 +24,12 @@ func main() {
 	// Semua error yang dikembalikan handler mengalir ke sini. Kita petakan
 	// sentinel error & *fiber.Error ke status yang tepat -> handler jadi bersih
 	// (cukup `return ErrTidakDitemukan`).
+	//
+	// 🔍 Analogi: ErrorHandler terpusat itu seperti CUSTOMER SERVICE satu
+	// pintu — semua keluhan dari lantai mana pun (handler) diteruskan ke satu
+	// meja yang tahu cara menjawabnya (memetakan error -> status HTTP).
+	// Karyawan lantai cukup bilang "ada masalah X", tak perlu hafal skrip
+	// jawaban resmi.
 	app := fiber.New(fiber.Config{
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
@@ -41,6 +47,10 @@ func main() {
 	// =====================================================================
 	// 2. Middleware + c.Locals — oper data antar-lapis dalam satu request
 	// =====================================================================
+	// 🔍 Analogi: c.Locals itu seperti GELANG PASIEN di rumah sakit — dipasang
+	// di pintu masuk (middleware), lalu setiap petugas berikutnya (handler)
+	// tinggal membaca gelangnya tanpa bertanya ulang. Gelang dilepas saat
+	// pasien pulang (request selesai) — tak bocor ke pasien lain.
 	app.Use(func(c *fiber.Ctx) error {
 		c.Locals("request_id", "req-abc-123") // simpan untuk handler di bawahnya
 		return c.Next()                       // WAJIB Next() agar lanjut
@@ -49,6 +59,9 @@ func main() {
 	// =====================================================================
 	// 3. Route group — prefix + middleware bersama
 	// =====================================================================
+	// 🔍 Analogi: route group itu seperti SAYAP GEDUNG dengan satu pintu
+	// masuk — semua ruangan di sayap "/api" otomatis berbagi alamat depan dan
+	// penjaga pintu (middleware) yang sama, tanpa ditulis ulang per ruangan.
 	api := app.Group("/api")
 	api.Get("/users/:id", func(c *fiber.Ctx) error {
 		id := c.Params("id")

@@ -18,6 +18,11 @@ var secret = []byte("kunci-rahasia-server")
 // ===========================================================================
 // 1. JWT — terbitkan & verifikasi token (stateless)
 // ===========================================================================
+// 🔍 Analogi: JWT itu seperti GELANG KONSER anti-palsu — identitas & kelas
+// tiket (claims) tercetak di gelangnya, dan hologram pabrik (signature)
+// membuat pemalsuan ketahuan. Penjaga pintu mana pun bisa memeriksanya TANPA
+// menelepon loket pusat (stateless) — tapi karena itu pula gelang yang sudah
+// beredar sulit ditarik kembali (revoke), maka masa berlakunya dibuat pendek.
 func terbitkanToken(user, role string) (string, error) {
 	claims := jwt.MapClaims{
 		"sub":  user,
@@ -46,6 +51,9 @@ func verifikasiToken(s string) (jwt.MapClaims, error) {
 // ===========================================================================
 // 2. RBAC — akses berdasarkan PERAN (role -> daftar izin)
 // ===========================================================================
+// 🔍 Analogi: RBAC itu seperti SERAGAM DI RUMAH SAKIT — dokter, perawat, dan
+// tamu punya akses pintu yang berbeda berdasar seragamnya saja. Sederhana dan
+// mudah diaudit, tapi kasar: semua dokter dianggap sama.
 var izinPeran = map[string][]string{
 	"admin":  {"baca", "tulis", "hapus"},
 	"editor": {"baca", "tulis"},
@@ -65,6 +73,11 @@ func rbacBoleh(role, aksi string) bool {
 // 3. ABAC — akses berdasarkan ATRIBUT (kebijakan lebih kaya dari sekadar peran)
 // ===========================================================================
 // Contoh kebijakan: user hanya boleh mengedit dokumen MILIKNYA, atau bila ia admin.
+//
+// 🔍 Analogi: ABAC itu RBAC yang naik level — bukan cuma melihat seragam,
+// tapi juga KONTEKSNYA: "dokter boleh membuka rekam medis HANYA milik
+// pasiennya sendiri, kecuali kepala rumah sakit". Aturannya menimbang atribut
+// subjek + objek, bukan sekadar jabatan.
 type Subjek struct {
 	User string
 	Role string

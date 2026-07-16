@@ -17,6 +17,12 @@ import (
 // dan View() merender state jadi teks. Efek samping diwakili tea.Cmd (async).
 // Karena Update murni (input msg -> output model), ia mudah diuji: cukup panggil
 // dengan pesan sintetis, tanpa terminal sungguhan.
+//
+// 🔍 Analogi: arsitektur Elm itu seperti PERTUNJUKAN WAYANG — keadaan panggung
+// (Model) hanya boleh berubah lewat tangan dalang (Update) yang merespons
+// tiap bisikan penonton (Msg), dan layar (View) sekadar MEMANTULKAN posisi
+// wayang saat itu. Mengujinya mudah: bisikkan pesan buatan ke dalang dan
+// periksa bayangannya — tak perlu gedung pertunjukan sungguhan (TTY).
 // ===========================================================================
 
 type model struct {

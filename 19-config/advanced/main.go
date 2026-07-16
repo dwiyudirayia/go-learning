@@ -29,6 +29,10 @@ func main() {
 	// =====================================================================
 	// 1. DEFAULT — lapisan paling bawah (dipakai bila tak ada override)
 	// =====================================================================
+	// 🔍 Analogi: presedensi config itu seperti BERPAKAIAN BERLAPIS — kaos
+	// dalam (default) selalu terpasang, kemeja (file config) menutupinya,
+	// dan jaket (env var) yang dipakai paling akhir itulah yang terlihat.
+	// Lepas jaketnya (unset env), kemejanya yang tampak lagi.
 	v.SetDefault("port", 8080)
 	v.SetDefault("log.level", "info")
 
@@ -43,6 +47,11 @@ func main() {
 	// =====================================================================
 	// Prefix APP_ + replacer titik->garis bawah: kunci "log.level" dibaca dari
 	// env APP_LOG_LEVEL. AutomaticEnv membuat semua kunci otomatis terbaca env.
+	//
+	// 🔍 Analogi: env var itu seperti INSTRUKSI LANGSUNG dari operator di
+	// lokasi — apa pun isi buku manual (file config), perintah orang yang
+	// berdiri di depan mesin saat itu (deploy) yang diikuti. Prefix APP_ =
+	// memastikan instruksi memang ditujukan untuk mesin ini, bukan mesin lain.
 	v.SetEnvPrefix("APP")
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	v.AutomaticEnv()
@@ -55,6 +64,10 @@ func main() {
 	// =====================================================================
 	// 4. Unmarshal ke struct + fail-fast validasi saat startup
 	// =====================================================================
+	// 🔍 Analogi: validasi saat startup itu seperti PRE-FLIGHT CHECK pilot —
+	// lebih baik batal lepas landas di darat (panic saat boot) daripada tahu
+	// bahan bakar salah isi di ketinggian 30.000 kaki (error di tengah
+	// melayani trafik).
 	var cfg Config
 	if err := v.Unmarshal(&cfg); err != nil {
 		panic(err)

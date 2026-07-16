@@ -23,6 +23,11 @@ func main() {
 	// =====================================================================
 	// rate.NewLimiter(r, b): isi ulang r token/detik, kapasitas burst b.
 	// Allow() true bila ada token. Di produksi: satu limiter PER IP/user.
+	//
+	// 🔍 Analogi: token bucket itu seperti EMBER KUPON antrean — kupon
+	// menetes masuk dengan kecepatan tetap (r/detik), ember memuat maksimal
+	// b kupon (burst). Mau dilayani? Ambil satu kupon; ember kosong berarti
+	// tunggu tetesan berikutnya.
 	lim := rate.NewLimiter(rate.Every(100*time.Millisecond), 2) // 10/dtk, burst 2
 	fmt.Println("== 1. rate limiting (burst 2) ==")
 	for i := 1; i <= 5; i++ {
@@ -32,6 +37,10 @@ func main() {
 	// =====================================================================
 	// 2. Security headers via middleware
 	// =====================================================================
+	// 🔍 Analogi: security headers itu seperti STIKER ATURAN di pintu masuk
+	// ("dilarang merokok", "wajib helm") — server menitipkan aturan main, dan
+	// BROWSER-lah yang menegakkannya: jangan tebak-tebak isi file (nosniff),
+	// jangan mau dipajang di bingkai orang (DENY), wajib jalur HTTPS (HSTS).
 	secure := func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			h := w.Header()
@@ -62,6 +71,12 @@ func main() {
 	// =====================================================================
 	// Membandingkan token/HMAC dengan == bocor lewat waktu eksekusi (berhenti
 	// di byte pertama yang beda). hmac.Equal membandingkan dalam waktu KONSTAN.
+	//
+	// 🔍 Analogi: perbandingan dengan == itu seperti satpam yang bilang
+	// "SALAH!" begitu digit pertama PIN meleset — pencuri tinggal mengukur
+	// seberapa lama satpam berpikir untuk menebak digit demi digit.
+	// hmac.Equal = satpam yang selalu memeriksa SEMUA digit dengan durasi
+	// sama persis, benar atau salah, jadi tak ada petunjuk yang bocor.
 	secret := []byte("kunci-rahasia")
 	pesan := []byte("payload-webhook")
 	tandaTanganAsli := tandaTangan(secret, pesan)

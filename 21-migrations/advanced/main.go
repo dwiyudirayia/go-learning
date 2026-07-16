@@ -42,6 +42,10 @@ func main() {
 	// =====================================================================
 	// Menyimpan versi terakhir yang sudah diterapkan. Menjalankan migrasi dua
 	// kali TIDAK mengulang yang sudah ada (persis perilaku golang-migrate).
+	//
+	// 🔍 Analogi: schema_version itu seperti BUKU VAKSINASI — tercatat vaksin
+	// apa saja yang SUDAH disuntikkan (versi terapan), jadi datang ke klinik
+	// dua kali tak membuatmu disuntik dobel; petugas cukup melirik bukunya.
 	mustExec(db, `CREATE TABLE IF NOT EXISTS schema_version(versi INTEGER NOT NULL)`)
 
 	fmt.Println("== migrasi pertama ==")
@@ -54,6 +58,11 @@ func main() {
 	// =====================================================================
 	// Setelah expand (kolom email nullable), isi data lama (backfill) sebelum
 	// kelak membuatnya NOT NULL / menghapus kolom lama (fase "contract").
+	//
+	// 🔍 Analogi: expand/contract itu seperti MENGGANTI JEMBATAN TANPA MENUTUP
+	// JALAN — bangun jembatan baru di sampingnya (expand: kolom baru nullable),
+	// pindahkan lalu lintas bertahap (backfill), baru bongkar jembatan lama
+	// (contract). Merobohkan langsung = seluruh jalan mati (downtime).
 	mustExec(db, `INSERT INTO users(nama) VALUES('Budi'),('Ani')`)
 	res, _ := db.Exec(`UPDATE users SET email = lower(nama) || '@contoh.com' WHERE email IS NULL`)
 	n, _ := res.RowsAffected()

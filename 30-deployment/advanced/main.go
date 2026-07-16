@@ -19,6 +19,12 @@ import (
 //   - LIVENESS  : "proses masih waras?" -> jika gagal, K8s RESTART pod.
 //   - READINESS : "siap terima traffic?" -> jika gagal, K8s CABUT dari Service
 //     (tak restart). Dipakai saat warm-up ATAU saat shutdown (drain).
+//
+// 🔍 Analogi: bayangkan KASIR DI MINIMARKET. Liveness = "kasirnya masih
+// bernapas?" — kalau pingsan, panggil pengganti (restart pod). Readiness =
+// lampu "KASIR BUKA/TUTUP" — kasir yang sedang istirahat (warm-up/drain)
+// cukup mematikan lampunya agar antrean dialihkan ke kasir lain; ia TIDAK
+// perlu dipecat (restart).
 type health struct {
 	ready atomic.Bool
 }
@@ -68,6 +74,11 @@ func main() {
 
 	// Saat SIGTERM: set ready=false LEBIH DULU agar load balancer berhenti
 	// mengirim traffic, baru drain koneksi & tutup dependency (lihat modul 20).
+	//
+	// 🔍 Analogi: urutan tutup toko yang benar — matikan dulu lampu "BUKA"
+	// (ready=false) supaya tak ada pelanggan baru masuk, layani yang masih
+	// di dalam (drain), baru gembok pintu (tutup DB/koneksi). Menggembok
+	// duluan = pelanggan terkunci di dalam.
 	h.ready.Store(false)
 	fmt.Println("== fase 3: shutdown (drain) ==")
 	fmt.Println("  /healthz:", probe("/healthz")) // 200 (masih memproses in-flight)

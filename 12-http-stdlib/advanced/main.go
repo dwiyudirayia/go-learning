@@ -20,6 +20,11 @@ import (
 // ===========================================================================
 // Middleware membungkus handler: kerjakan sesuatu sebelum/sesudah, lalu
 // panggil next. Dirantai agar tiap lapis punya satu tanggung jawab.
+//
+// 🔍 Analogi: middleware itu seperti POS PEMERIKSAAN BERLAPIS di bandara —
+// tiap pos (logging, auth, rate limit) satu tugas, lalu mempersilakan
+// penumpang lanjut ke pos berikutnya (next). Penumpang yang sama pasti
+// melewati semua pos dalam urutan yang sama.
 
 func logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -43,6 +48,10 @@ func main() {
 	// =====================================================================
 	// ServeMux modern bisa mencocokkan method dan menangkap segmen path —
 	// tak perlu router pihak ketiga untuk kasus umum.
+	//
+	// 🔍 Analogi: pattern "GET /users/{id}" itu seperti FORMULIR DENGAN KOLOM
+	// KOSONG — resepsionis (mux) mencocokkan formatnya, lalu isi kolom {id}
+	// tinggal dibaca lewat r.PathValue("id").
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /users/{id}", func(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +62,9 @@ func main() {
 	// =====================================================================
 	// 3. Batasi ukuran body dengan http.MaxBytesReader (cegah abuse memori)
 	// =====================================================================
+	// 🔍 Analogi: MaxBytesReader itu seperti TIMBANGAN BAGASI di check-in —
+	// koper (body) di atas batas langsung ditolak di konter, bukan dibiarkan
+	// masuk sampai pesawat (memori server) kelebihan muatan.
 	mux.HandleFunc("POST /upload", func(w http.ResponseWriter, r *http.Request) {
 		r.Body = http.MaxBytesReader(w, r.Body, 16) // maksimal 16 byte
 		b, err := io.ReadAll(r.Body)
@@ -69,6 +81,9 @@ func main() {
 	// =====================================================================
 	// httptest.Server menjalankan handler di alamat lokal sementara.
 	// =====================================================================
+	// 🔍 Analogi: httptest.Server itu seperti PANGGUNG GLADI RESIK — set
+	// lengkap dan lampu menyala (server sungguhan di port acak), tapi hanya
+	// untuk latihan; selesai gladi, panggung dibongkar (srv.Close).
 	srv := httptest.NewServer(handler)
 	defer srv.Close()
 

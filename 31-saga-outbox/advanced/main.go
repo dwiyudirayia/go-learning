@@ -28,6 +28,12 @@ func main() {
 // Solusi: tulis event ke tabel "outbox" DALAM TRANSAKSI YANG SAMA dengan order.
 // Karena atomik, event pasti ada bila order ada. Relay membaca outbox lalu
 // mem-publish ke broker & menandainya terkirim (idempoten via id).
+//
+// 🔍 Analogi: outbox itu seperti menulis surat dan MENARUHNYA DI KOTAK SURAT
+// RUMAH dalam satu gerakan dengan mencatat di buku harian — dua-duanya pasti
+// terjadi bersama. Tukang pos (relay) lewat berkala mengambil isi kotak dan
+// mengirimkannya; kalau tukang pos telat, surat tetap aman menunggu, tak
+// pernah hilang.
 func outboxDemo() {
 	db, err := sql.Open("sqlite", ":memory:")
 	if err != nil {
@@ -74,6 +80,12 @@ func outboxDemo() {
 // Transaksi terdistribusi lintas service tak bisa 2PC. Saga = rangkaian langkah
 // lokal; bila satu GAGAL, jalankan "undo" (kompensasi) untuk langkah yang sudah
 // sukses, dalam urutan TERBALIK. Mencapai konsistensi eventual tanpa lock global.
+//
+// 🔍 Analogi: saga itu seperti MERENCANAKAN LIBURAN — pesan hotel, pesan
+// pesawat, sewa mobil. Kalau sewa mobil gagal, kamu tak bisa "membatalkan
+// semuanya sekaligus dengan satu tombol" (tak ada 2PC lintas perusahaan);
+// yang bisa: telepon balik MUNDUR satu-satu — batalkan pesawat, lalu batalkan
+// hotel (compensating transaction).
 type langkah struct {
 	nama string
 	maju func() error

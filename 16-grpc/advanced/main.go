@@ -31,6 +31,10 @@ func main() {
 	// =====================================================================
 	// Interceptor membungkus tiap panggilan: logging, auth, recovery, metrics.
 	// Di sini kita baca metadata yang dikirim klien lalu teruskan ke handler.
+	//
+	// 🔍 Analogi: interceptor itu MIDDLEWARE-nya gRPC — seperti resepsionis
+	// yang menyambut SEMUA tamu (RPC): mencatat kedatangan, mengecek tanda
+	// pengenal (metadata), baru mengantar ke ruangan tujuan (handler).
 	logInterceptor := func(ctx context.Context, req any,
 		info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		md, _ := metadata.FromIncomingContext(ctx)
@@ -53,6 +57,11 @@ func main() {
 	// =====================================================================
 	// WithContextDialer mengarahkan koneksi ke listener bufconn (bukan DNS).
 	// Interceptor klien menyisipkan metadata "client" ke setiap request.
+	//
+	// 🔍 Analogi: bufconn itu seperti TELEPON INTERKOM dalam satu gedung —
+	// terasa seperti telepon sungguhan (API sama persis), tapi suaranya tak
+	// pernah keluar gedung (tanpa port/jaringan nyata). Metadata = KOP SURAT
+	// yang otomatis ditempel interceptor klien di tiap pesan.
 	dialer := func(ctx context.Context, _ string) (net.Conn, error) {
 		return lis.DialContext(ctx)
 	}
@@ -75,6 +84,9 @@ func main() {
 	// =====================================================================
 	// 3. Panggilan dengan DEADLINE (selalu batasi waktu RPC)
 	// =====================================================================
+	// 🔍 Analogi: deadline itu seperti MEMESAN OJEK DENGAN BATAS WAKTU —
+	// "kalau 2 detik tak ada yang jemput, batalkan". Tanpa deadline, kamu
+	// bisa menunggu selamanya di pinggir jalan (RPC menggantung).
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
@@ -90,6 +102,11 @@ func main() {
 	// =====================================================================
 	// Meminta service yang tak terdaftar -> server balas codes.NotFound.
 	// status.FromError mengurai kode + pesan terstruktur (bukan sekadar string).
+	//
+	// 🔍 Analogi: status code gRPC itu seperti KODE RESI pengiriman gagal —
+	// bukan sekadar catatan "gagal" (string), tapi kode baku (NotFound,
+	// DeadlineExceeded) yang bisa dibaca MESIN untuk memutuskan: retry,
+	// lapor user, atau menyerah.
 	fmt.Println("== 4. status code pada error ==")
 	_, err = client.Check(ctx, &healthpb.HealthCheckRequest{Service: "cache"})
 	st, _ := status.FromError(err)

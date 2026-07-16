@@ -25,6 +25,10 @@ func main() {
 	// =====================================================================
 	// 1. runtime.ReadMemStats — ukur pertumbuhan heap sebelum vs sesudah
 	// =====================================================================
+	// 🔍 Analogi: ReadMemStats itu seperti MENIMBANG BADAN sebelum & sesudah
+	// makan — selisihnya menunjukkan seberapa "berat" kode di antaranya.
+	// runtime.GC() dulu = menimbang setelah ke kamar mandi, biar angkanya
+	// tak tercampur sisa-sisa yang mestinya sudah dibuang.
 	var m1, m2 runtime.MemStats
 	runtime.GC() // bersihkan dulu agar angka lebih jujur
 	runtime.ReadMemStats(&m1)
@@ -40,6 +44,9 @@ func main() {
 	// 2. runtime/pprof — tangkap HEAP profile ke buffer (bisa ke file utk
 	//    dianalisis `go tool pprof`)
 	// =====================================================================
+	// 🔍 Analogi: heap profile itu seperti FOTO RONTGEN memori — bukan cuma
+	// tahu "berat naik" (MemStats), tapi terlihat PERSIS di organ/fungsi mana
+	// lemaknya menumpuk. go tool pprof = dokter yang membaca hasil rontgennya.
 	var buf bytes.Buffer
 	if err := pprof.WriteHeapProfile(&buf); err != nil {
 		panic(err)

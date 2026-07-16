@@ -46,7 +46,16 @@ func main() {
 	// Pola CACHE-ASIDE: cek cache -> miss -> load DB -> isi cache.
 	// singleflight membungkus bagian miss agar 100 request untuk key yang sama
 	// TIDAK membanjiri DB (thundering herd) — hanya 1 yang query, sisanya nebeng.
+	//
+	// 🔍 Analogi: singleflight itu seperti 50 orang di kantor yang haus kopi
+	// bersamaan — alih-alih semuanya turun ke kafe (query DB), SATU orang
+	// turun membelikan, sisanya menunggu dan menerima gelas dari pesanan yang
+	// sama. TTL + jitter = tanggal kedaluwarsa stok yang sengaja dibuat
+	// berbeda-beda agar tak semua habis (dan diserbu ulang) di menit yang sama.
 	// =====================================================================
+	// 🔍 Analogi: cache-aside itu seperti CONTEKAN DI MEJA — lirik dulu
+	// catatan kecil (cache); kalau tak ada, baru buka buku tebal di
+	// perpustakaan (DB), lalu salin ke catatan agar lirikan berikutnya cepat.
 	getCacheAside := func(key string) (string, error) {
 		if v, err := rdb.Get(ctx, key).Result(); err == nil {
 			return v, nil // HIT

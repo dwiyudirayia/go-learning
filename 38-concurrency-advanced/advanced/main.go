@@ -24,6 +24,11 @@ func main() {
 	// SetLimit(n) membatasi goroutine bersamaan. WithContext membatalkan sisa
 	// pekerjaan begitu SATU tugas mengembalikan error; Wait() mengembalikan
 	// error pertama itu. Jauh lebih ringkas & aman dari WaitGroup manual.
+	//
+	// 🔍 Analogi: errgroup itu seperti TIM SAR dengan komandan — maksimal 2
+	// regu bergerak bersamaan (SetLimit), dan begitu satu regu melapor
+	// "medan berbahaya!" (error), komandan menarik mundur SEMUA regu lain
+	// (cancel) alih-alih membiarkan mereka bekerja sia-sia.
 	fmt.Println("== 1. errgroup (limit 2, cancel on error) ==")
 	g, ctx := errgroup.WithContext(context.Background())
 	g.SetLimit(2)
@@ -51,6 +56,11 @@ func main() {
 	// =====================================================================
 	// Beda dari sekadar "N slot": tiap tugas bisa meminta BOBOT berbeda (mis.
 	// job berat butuh 2 unit memori). Total bobot aktif dibatasi kapasitas.
+	//
+	// 🔍 Analogi: semaphore biasa menghitung KEPALA ("maks 3 kendaraan di
+	// jembatan"); weighted semaphore menghitung TONASE — truk (job berat)
+	// memakan 2 ton dari kapasitas 3 ton, jadi hanya tersisa ruang untuk satu
+	// motor (job ringan), bukan dua truk sekaligus.
 	fmt.Println("== 2. weighted semaphore (kapasitas 3) ==")
 	sem := semaphore.NewWeighted(3)
 	var wg sync.WaitGroup
@@ -73,6 +83,12 @@ func main() {
 	// Pool menyimpan objek yang bisa dipakai ulang antar-goroutine. Cocok untuk
 	// buffer sementara. CATATAN: isi pool bisa di-GC kapan saja -> jangan
 	// menyimpan state penting di sana; selalu reset sebelum pakai.
+	//
+	// 🔍 Analogi: sync.Pool itu seperti KERANJANG BELANJA di supermarket —
+	// selesai dipakai, kembalikan ke rak pintu masuk agar pengunjung lain
+	// memakainya lagi (hemat produksi keranjang baru = alokasi). Petugas
+	// kebersihan (GC) boleh sewaktu-waktu menyingkirkan keranjang menganggur,
+	// jadi JANGAN menitipkan barang pribadi (state) di dalamnya.
 	fmt.Println("== 3. sync.Pool ==")
 	var pool = sync.Pool{New: func() any { return make([]byte, 0, 1024) }}
 	var reused atomic.Int64

@@ -22,6 +22,11 @@ import (
 // Valuer  : cara tipe kita DITULIS ke DB (Go []string -> string "a,b,c").
 // Scanner : cara tipe kita DIBACA dari DB (string -> []string).
 // Pola ini membungkus konversi kolom↔tipe domain di satu tempat.
+//
+// 🔍 Analogi: Valuer/Scanner itu seperti PETUGAS GUDANG KHUSUS — barang
+// (Tags) selalu dilipat dengan cara yang sama saat masuk rak (Value) dan
+// dibuka kembali dengan cara yang sama saat diambil (Scan). Tak ada lagi
+// tiap orang melipat semaunya di sana-sini.
 
 type Tags []string
 
@@ -60,6 +65,12 @@ func main() {
 	// =====================================================================
 	// Batas ini mencegah kehabisan koneksi & koneksi basi di produksi.
 	// (Untuk :memory: nilainya simbolis, tapi API-nya sama seperti Postgres.)
+	//
+	// 🔍 Analogi: connection pool itu seperti ARMADA TAKSI PANGKALAN —
+	// MaxOpenConns = jumlah taksi maksimal yang boleh beroperasi,
+	// MaxIdleConns = berapa yang standby di pangkalan (tak dipulangkan),
+	// ConnMaxLifetime = usia pensiun taksi agar tak ada mobil tua mogok
+	// (koneksi basi) di tengah jalan.
 	db.SetMaxOpenConns(10)   // maksimum koneksi terbuka bersamaan
 	db.SetMaxIdleConns(5)    // koneksi menganggur yang dipertahankan
 	db.SetConnMaxLifetime(0) // 0 = tak dibatasi umur
@@ -77,6 +88,12 @@ func main() {
 	// =====================================================================
 	// Rollback yang dipanggil setelah Commit tidak berefek, jadi defer aman:
 	// bila terjadi error/panic di tengah, perubahan otomatis dibatalkan.
+	//
+	// 🔍 Analogi: transaksi itu seperti MENULIS DI DRAF — semua perubahan
+	// masuk draf dulu; Commit = menekan "publish", Rollback = membuang draf.
+	// defer Rollback = kebiasaan "kalau saya lupa/gagal publish, buang
+	// otomatis drafnya" — dan membuang draf yang sudah terpublish memang
+	// tak berefek apa-apa.
 	if err := simpanArtikel(ctx, db, "Belajar Go", "Budi", Tags{"go", "backend"}); err != nil {
 		panic(err)
 	}
@@ -89,6 +106,11 @@ func main() {
 	// 4. Membaca: sql.NullString untuk kolom NULL + custom Scanner (Tags)
 	// =====================================================================
 	// SELALU pakai QueryContext agar query ikut batal saat context dibatalkan.
+	//
+	// 🔍 Analogi: sql.NullString itu seperti KOLOM FORMULIR OPSIONAL dengan
+	// centang "diisi/tidak" (.Valid) — beda antara "sengaja kosong" (NULL)
+	// dan "berisi string kosong". Membaca NULL langsung ke string biasa =
+	// memaksa membaca kolom yang memang tak pernah diisi.
 	rows, err := db.QueryContext(ctx, `SELECT judul, penulis, tags FROM artikel ORDER BY id`)
 	if err != nil {
 		panic(err)

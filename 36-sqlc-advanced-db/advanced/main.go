@@ -18,6 +18,11 @@ import (
 // DBTX = abstraksi minimal yang dipakai Queries. Baik *sql.DB maupun *sql.Tx
 // memenuhinya -> query yang sama bisa jalan di luar ATAU di dalam transaksi.
 // (Persis pola yang di-generate sqlc.)
+//
+// 🔍 Analogi: DBTX itu seperti MESIN KASIR PORTABEL — bisa dipakai di konter
+// biasa (*sql.DB) maupun di ruang khusus transaksi besar (*sql.Tx). Kasirnya
+// (Queries) tak perlu dilatih ulang; cara memencet tombolnya sama persis di
+// mana pun mesin diletakkan.
 // ===========================================================================
 type DBTX interface {
 	ExecContext(context.Context, string, ...any) (sql.Result, error)
@@ -32,6 +37,11 @@ type Author struct {
 // Queries membungkus DBTX. Method-methodnya TYPE-SAFE: parameter & hasil sudah
 // bertipe konkret, salah kolom/tipe ketahuan saat COMPILE (beda dari string SQL
 // mentah yang baru meledak saat runtime).
+//
+// 🔍 Analogi: sqlc itu seperti FORMULIR CETAK dengan kolom bertipe jelas —
+// salah mengisi (angka di kolom nama) langsung ditolak petugas di loket
+// (compile error). SQL string mentah = surat tulisan tangan: kesalahannya
+// baru ketahuan setelah surat sampai dan gagal diproses (runtime error).
 type Queries struct{ db DBTX }
 
 func New(db DBTX) *Queries { return &Queries{db: db} }

@@ -13,6 +13,12 @@ import (
 // Invariant round-trip: Decode(Encode(x)) HARUS sama dengan x, untuk SEMUA x.
 // Fuzzer mengoceh ribuan input acak (termasuk byte aneh, run panjang, kosong)
 // mencari yang membuat invariant gagal. Bug UTF-8/boundary sering ketahuan di sini.
+//
+// 🔍 Analogi: invariant round-trip itu seperti MENERJEMAHKAN BOLAK-BALIK —
+// kalimat apa pun yang diterjemahkan ke bahasa lain (Encode) lalu
+// diterjemahkan kembali (Decode) harus utuh seperti semula. Fuzzer = penguji
+// iseng yang menyodorkan jutaan kalimat aneh mencari satu yang membuat
+// penerjemahnya keseleo.
 func FuzzRoundTrip(f *testing.F) {
 	f.Add([]byte("aaabbbcccc"))
 	f.Add([]byte(""))
@@ -30,6 +36,11 @@ func FuzzRoundTrip(f *testing.F) {
 // ===========================================================================
 // Alih-alih beberapa contoh tetap, kita generasikan 1000 input acak dan cek
 // properti yang harus SELALU benar. Pelengkap fuzzing yang cepat & deterministik.
+//
+// 🔍 Analogi: contoh tetap itu seperti menguji timbangan dengan 3 batu yang
+// itu-itu saja; property-based test seperti menimbang 1000 benda acak dan
+// memastikan HUKUMNYA selalu berlaku (naik-turun timbangan konsisten).
+// Seed tetap (42) = urutan benda acaknya bisa diulang persis saat debug.
 func TestPropertyRoundTrip(t *testing.T) {
 	rng := rand.New(rand.NewSource(42))
 	for i := 0; i < 1000; i++ {
@@ -49,6 +60,10 @@ func TestPropertyRoundTrip(t *testing.T) {
 // ===========================================================================
 // Test integрasi berat (butuh DB/broker nyata) harus otomatis di-skip bila
 // environment tak tersedia -> `go test ./...` tetap hijau di mesin mana pun.
+//
+// 🔍 Analogi: auto-skip itu seperti KELAS RENANG yang otomatis diliburkan
+// bila kolamnya tutup (env tak ada) — murid lain (unit test) tetap belajar
+// seperti biasa, bukannya seluruh sekolah diliburkan (test suite merah).
 func TestIntegrasiButuhDB(t *testing.T) {
 	dsn := os.Getenv("DB_URL")
 	if dsn == "" {

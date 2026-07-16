@@ -43,6 +43,11 @@ func main() {
 				// MASALAH N+1: resolver ini dipanggil SEKALI PER user. Untuk 3
 				// user -> 3 query terpisah (plus 1 query users = N+1). DataLoader
 				// mengumpulkan semua id lalu meng-query SEKALI (batch).
+				//
+				// 🔍 Analogi: N+1 itu seperti belanja titipan 3 tetangga dengan
+				// PERGI KE PASAR 3 KALI — sekali per tetangga. DataLoader =
+				// kumpulkan dulu semua daftar titipan, pergi ke pasar SEKALI,
+				// pulang bagikan sesuai pemesan (batch by id).
 				Resolve: func(p graphql.ResolveParams) (any, error) {
 					u := p.Source.(User)
 					dbCalls++ // tiap panggilan = satu "hit DB"
@@ -75,6 +80,11 @@ func main() {
 	// =====================================================================
 	// Eksekusi query — client memilih PERSIS field yang diinginkan.
 	// =====================================================================
+	// 🔍 Analogi: REST itu seperti MENU PAKET di restoran cepat saji — dapat
+	// semua isi paket walau cuma mau kentangnya. GraphQL seperti PRASMANAN:
+	// ambil persis lauk yang diinginkan (field), tak lebih. Konsekuensinya
+	// dapur harus siap kombinasi apa pun — termasuk pesanan aneh yang mahal
+	// (query dalam/kompleks perlu dibatasi).
 	query := `{ users { name posts { title } } }`
 	res := graphql.Do(graphql.Params{Schema: schema, RequestString: query})
 	if len(res.Errors) > 0 {

@@ -20,6 +20,12 @@ import (
 // HalfOpen : setelah cooldown, izinkan SATU panggilan percobaan. Sukses -> Closed;
 //
 //	gagal -> Open lagi.
+//
+// 🔍 Analogi: half-open itu seperti MENJENGUK TEMAN YANG SAKIT — setelah masa
+// istirahat (cooldown), kirim SATU orang dulu untuk mengetuk pintu. Kalau ia
+// disambut (sukses), umumkan "sudah sehat, silakan berkunjung" (Closed);
+// kalau pintu tak dibuka, biarkan istirahat lagi (Open). Jangan langsung
+// mengajak serombongan — bisa kambuh.
 type State int
 
 const (
@@ -69,6 +75,12 @@ func (b *Breaker) Call(fn func() error) error {
 // ===========================================================================
 // Tiap dependency dapat "kolam" konkurensi terpisah (semaphore). Bila kolam
 // dependency A penuh, request ke A ditolak/antre TANPA menghabiskan slot untuk B.
+//
+// 🔍 Analogi: bulkhead memang diambil dari SEKAT LAMBUNG KAPAL — lambung
+// dibagi beberapa kompartemen kedap; satu bocor (dependency lambat), air
+// terkurung di kompartemen itu saja dan kapal tetap mengapung. Tanpa sekat,
+// satu kebocoran menenggelamkan semuanya (semua goroutine tersedot menunggu
+// satu dependency).
 type Bulkhead struct{ slot chan struct{} }
 
 func NewBulkhead(n int) *Bulkhead { return &Bulkhead{slot: make(chan struct{}, n)} }

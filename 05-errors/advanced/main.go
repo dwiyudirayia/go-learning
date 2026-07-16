@@ -29,6 +29,10 @@ func main() {
 	// =====================================================================
 	// Cocok untuk validasi banyak field: kumpulkan semua, laporkan sekaligus.
 	// errors.Is/As tetap bisa menelusuri KE DALAM gabungan.
+	//
+	// 🔍 Analogi: errors.Join itu seperti MAP RAPOR — semua nilai merah
+	// dikumpulkan dalam satu map, dan orang tua (errors.Is/As) tetap bisa
+	// membuka lembar per lembar untuk mencari mata pelajaran tertentu.
 	gabung := errors.Join(
 		ErrTidakDitemukan,
 		&ValidasiError{Field: "email", Pesan: "format salah"},
@@ -47,6 +51,10 @@ func main() {
 	// =====================================================================
 	// %w  : membungkus, rantai TETAP bisa ditelusuri errors.Is/As.
 	// %v  : menjadikan teks biasa, rantai TERPUTUS (sengaja sembunyikan detail).
+	//
+	// 🔍 Analogi: verb-w itu seperti MEMBUNGKUS KADO — isi aslinya masih ada
+	// di dalam dan bisa dibuka lapis demi lapis. verb-v seperti MEMFOTO kado
+	// lalu membuang isinya: yang tersisa cuma gambar (teks), isinya hilang.
 	dibungkus := fmt.Errorf("muat profil: %w", ErrTidakDitemukan)
 	disegel := fmt.Errorf("muat profil: %v", ErrTidakDitemukan)
 	fmt.Println("== 2. bungkus (verb-w) vs segel (verb-v) ==")
@@ -58,6 +66,10 @@ func main() {
 	// =====================================================================
 	// Jangan pakai os.IsNotExist (lawas, tak menembus pembungkus). Gunakan
 	// errors.Is(err, fs.ErrNotExist) yang bekerja walau error sudah dibungkus.
+	//
+	// 🔍 Analogi: os.IsNotExist itu seperti satpam yang hanya mengecek KULIT
+	// paket terluar; errors.Is seperti pemindai X-RAY — tetap menemukan barang
+	// yang dicari walau sudah terbungkus berlapis-lapis.
 	_, err := os.Open("/berkas/yang/pasti/tidak/ada")
 	fmt.Println("== 3. errors.Is(err, fs.ErrNotExist) ==")
 	fmt.Println("  berkas tak ada?", errors.Is(err, fs.ErrNotExist))
@@ -67,6 +79,10 @@ func main() {
 	// =====================================================================
 	// panic tak boleh bocor lintas API. Tangkap di boundary (mis. middleware
 	// HTTP) agar satu request bermasalah tak menjatuhkan seluruh server.
+	//
+	// 🔍 Analogi: recover di boundary itu seperti SEKAT KEDAP AIR di kapal —
+	// satu kompartemen (request) boleh kebanjiran, tapi sekatnya menahan air
+	// agar seluruh kapal (server) tidak ikut tenggelam.
 	fmt.Println("== 4. recover di boundary ==")
 	jalankanAman(func() { panic("kode dalam meledak") })
 	fmt.Println("  server tetap hidup setelah panic ditangani")

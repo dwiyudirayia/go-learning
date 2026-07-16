@@ -33,5 +33,8 @@
       "Bash(gofmt -w 16-grpc/real-case/ 33-distributed-tracing/real-case/ 40-llm-integration/real-case/ 44-auth-advanced/real-case/)",
       "Bash(gofmt -l 16-grpc/real-case/ 33-distributed-tracing/real-case/ 40-llm-integration/real-case/ 44-auth-advanced/real-case/)"
     ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
   }
 }

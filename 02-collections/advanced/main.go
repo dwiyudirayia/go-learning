@@ -14,6 +14,10 @@ import (
 // 1. Slice tricks TANPA alokasi baru (reuse backing array)
 // ===========================================================================
 
+// 🔍 Analogi: reuse backing array itu seperti MERAPIKAN RAK BUKU di tempat —
+// buku yang dibuang diambil, sisanya digeser ke kiri di rak yang SAMA. Tidak
+// perlu beli rak baru (alokasi) hanya untuk menghapus satu buku.
+
 // hapusIndex menghapus elemen ke-i. Trik append(s[:i], s[i+1:]...) menggeser
 // elemen setelah i ke kiri lalu memotong panjangnya — tanpa slice baru.
 // Urutan elemen tetap terjaga.
@@ -40,6 +44,10 @@ func filterInPlace(s []int, keep func(int) bool) []int {
 // Slice biasa berbagi backing array dengan induknya; append pada anak bisa
 // menimpa data induk bila cap masih tersisa. Bentuk s[low:high:max] mematok
 // cap=max-low, sehingga append PASTI mengalokasikan array baru => induk aman.
+//
+// 🔍 Analogi: slice biasa itu seperti MEMINJAMKAN SEBAGIAN MEJA KERJA — si
+// peminjam masih bisa "meluber" ke sisa meja dan menimpa barangmu. Three-index
+// slice memasang SEKAT PERMANEN: begitu penuh, ia wajib pindah ke meja baru.
 func demoThreeIndex() {
 	induk := []int{1, 2, 3, 4, 5}
 
@@ -58,6 +66,10 @@ func demoThreeIndex() {
 // ===========================================================================
 // struct{} tidak memakan memori, jadi lebih hemat daripada map[T]bool untuk
 // merepresentasikan himpunan keanggotaan.
+//
+// 🔍 Analogi: set itu seperti DAFTAR TAMU di pintu masuk — yang penting cuma
+// "nama ada di daftar atau tidak". map[T]bool seperti menulis "hadir: ya" di
+// tiap baris (mubazir); map[T]struct{} cukup namanya saja, tanpa kolom nilai.
 func uniqueTerurut(kata []string) []string {
 	set := make(map[string]struct{}, len(kata))
 	for _, k := range kata {
@@ -84,6 +96,9 @@ func main() {
 	// ---------------------------------------------------------------------
 	// 4. clear() builtin (Go 1.21) — kosongkan map/slice di tempat
 	// ---------------------------------------------------------------------
+	// 🔍 Analogi: clear(m) itu seperti MENGOSONGKAN LACI tanpa mengganti
+	// lemarinya — semua isi dibuang, tapi laci (dan siapa pun yang memegang
+	// kuncinya/referensi) tetap yang sama.
 	m := map[string]int{"a": 1, "b": 2}
 	clear(m) // hapus semua entri tanpa mengganti map (referensi tetap sama)
 	fmt.Println("== 4. clear() ==")
@@ -92,6 +107,9 @@ func main() {
 	// ---------------------------------------------------------------------
 	// 5. strings.Builder — konkatenasi hemat (hindari += yang O(n^2))
 	// ---------------------------------------------------------------------
+	// 🔍 Analogi: += pada string itu seperti MENYALIN ULANG SELURUH BUKU tiap
+	// kali menambah satu halaman. strings.Builder seperti BINDER: halaman baru
+	// tinggal diselipkan, dijilid sekali di akhir lewat b.String().
 	var b strings.Builder
 	b.Grow(16) // prealokasi buffer bila perkiraan ukuran diketahui
 	for i := 0; i < 3; i++ {

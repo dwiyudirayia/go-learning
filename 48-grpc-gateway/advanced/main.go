@@ -26,6 +26,12 @@ import (
 // ===========================================================================
 // Pemetaan kode gRPC -> status HTTP (inti sebuah gateway). Konsumen REST tak
 // perlu tahu soal gRPC; mereka menerima semantik HTTP yang lazim.
+//
+// 🔍 Analogi: gateway itu seperti RESEPSIONIS HOTEL BILINGUAL — tamu bicara
+// bahasa umum (REST/JSON), staf dapur bicara bahasa internal (gRPC/protobuf).
+// Resepsionis menerjemahkan dua arah, termasuk nada jawabannya: "kamar tak
+// ada" versi dapur (codes.NotFound) disampaikan ke tamu dengan sopan santun
+// yang mereka pahami (HTTP 404).
 // ===========================================================================
 func grpcKeHTTP(c codes.Code) int {
 	switch c {

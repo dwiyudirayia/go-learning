@@ -17,6 +17,11 @@ import (
 // Hasilnya: binary tunggal tanpa perlu menyertakan file terpisah saat deploy
 // (dipakai untuk template, migrasi SQL, aset web, dsb).
 //
+// 🔍 Analogi: //go:embed itu seperti KOPER YANG SUDAH DIISI DARI RUMAH —
+// semua perlengkapan (file) dijahit ke dalam koper (binary) saat packing
+// (compile), jadi di tempat tujuan (server) tak ada cerita "file-nya
+// ketinggalan".
+//
 //go:embed version.txt
 var versi string
 
@@ -26,6 +31,11 @@ var versi string
 // Alih-alih konstruktor dengan banyak parameter (atau banyak struct config),
 // kita terima daftar "opsi" berupa fungsi. Default masuk akal, pemanggil hanya
 // menimpa yang perlu. Menambah opsi baru tak memecah kode pemanggil lama.
+//
+// 🔍 Analogi: functional options itu seperti MEMESAN KOPI — barista punya
+// resep default (gula normal, susu biasa), dan kamu cukup menyebut yang mau
+// diubah: "less sugar, oat milk" (WithPort, WithTLS). Menu baru boleh
+// ditambah kapan pun tanpa mengubah cara pelanggan lama memesan.
 
 type Server struct {
 	host    string
@@ -72,6 +82,10 @@ func main() {
 	// =====================================================================
 	// ReadBuildInfo() membaca info yang ditanam toolchain: versi Go, path modul,
 	// dan (bila dibangun dari git) revisi/vcs. Berguna untuk endpoint /version.
+	//
+	// 🔍 Analogi: build info itu seperti NOMOR RANGKA MOBIL — dicetak pabrik
+	// (toolchain) langsung di bodinya, bukan ditempel manual. Kapan pun perlu,
+	// tinggal dibaca untuk tahu persis mobil ini dirakit dari apa dan kapan.
 	fmt.Println("== 3. build info ==")
 	if bi, ok := debug.ReadBuildInfo(); ok {
 		fmt.Println("  go version :", bi.GoVersion)

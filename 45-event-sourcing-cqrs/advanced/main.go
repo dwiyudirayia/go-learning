@@ -14,6 +14,11 @@ import (
 // ===========================================================================
 // EVENT = fakta yang SUDAH terjadi (immutable, past tense). State bukan disimpan
 // langsung, melainkan DITURUNKAN dari urutan event.
+//
+// 🔍 Analogi: event sourcing itu persis BUKU TABUNGAN BANK — bank tidak
+// mencoret-coret angka saldo, melainkan mencatat SETIAP setoran/penarikan
+// baris demi baris (append-only). Saldo hanyalah HASIL PENJUMLAHAN semua
+// baris (replay); riwayatnya tak pernah hilang dan bisa diaudit kapan pun.
 // ===========================================================================
 type Event struct {
 	Tipe   string
@@ -42,6 +47,12 @@ func (a *Akun) apply(e Event) {
 // ===========================================================================
 // Append hanya diterima bila versi yang diharapkan cocok dengan versi terkini
 // -> mencegah lost update saat dua penulis bersamaan.
+//
+// 🔍 Analogi: optimistic concurrency itu seperti MENGEDIT DOKUMEN BERSAMA
+// dengan nomor revisi — kamu menyerahkan perubahan sambil bilang "ini
+// berdasarkan revisi 2". Kalau ternyata dokumen sudah di revisi 3 (orang lain
+// menulis duluan), perubahanmu ditolak dan kamu diminta membaca ulang — bukan
+// menimpa buta tulisan orang (lost update).
 type Store struct{ events []Event }
 
 var ErrKonflik = errors.New("konflik versi (optimistic concurrency)")
@@ -94,6 +105,11 @@ func main() {
 	// =====================================================================
 	// Sisi tulis (event) dipisah dari sisi baca (projection). Projection ini
 	// meringkas riwayat -> read cepat tanpa replay tiap kali.
+	//
+	// 🔍 Analogi: projection itu seperti PAPAN KLASEMEN LIGA — hasil setiap
+	// pertandingan (event) dicatat di arsip, tapi penonton cukup melihat
+	// papan ringkasannya (read model), bukan menghitung ulang seluruh musim
+	// tiap kali bertanya "siapa juara?".
 	proj := struct {
 		totalMasuk, totalKeluar, transaksi int
 	}{}

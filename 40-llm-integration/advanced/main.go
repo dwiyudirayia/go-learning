@@ -30,6 +30,11 @@ import (
 // ===========================================================================
 // Kode aplikasi bergantung pada interface, bukan SDK konkret. Saat test, isi
 // dengan MockChatter yang membalas skrip -> deterministik, gratis, cepat.
+//
+// 🔍 Analogi: MockChatter itu seperti LAWAN MAIN LATIHAN DRAMA yang membaca
+// naskah — dialognya sudah pasti, gratis, dan bisa diulang kapan pun. Aktor
+// sungguhan (API Claude) baru dipakai saat pentas (produksi); latihan tiap
+// hari dengannya mahal dan jawabannya berubah-ubah.
 type Chatter interface {
 	Chat(ctx context.Context, prompt string) (string, error)
 }
@@ -54,6 +59,12 @@ func (m *MockChatter) Chat(_ context.Context, _ string) (string, error) {
 // Alur: kirim prompt -> model balas entah JAWABAN atau permintaan TOOL. Bila
 // tool, kode menjalankan fungsi lokal lalu mengumpan hasilnya kembali, ulangi
 // sampai model memberi jawaban final. Batasi iterasi agar tak loop selamanya.
+//
+// 🔍 Analogi: tool-use itu seperti DOKTER DAN LABORATORIUM — dokter (model)
+// tak bisa mengambil darah sendiri; ia menulis surat rujukan lab ("TOOL:
+// cek darah"), petugas lab (kode kita) menjalankannya dan menyerahkan hasil,
+// lalu dokter membaca hasilnya untuk menegakkan diagnosis (jawaban final).
+// Batas iterasi = mencegah dokter meminta tes baru tanpa henti.
 func toolUseLoop(ctx context.Context, llm Chatter, tools map[string]func(string) string) string {
 	prompt := "Cuaca di Jakarta?"
 	for langkah := 0; langkah < 5; langkah++ { // batas iterasi (guard)
@@ -77,6 +88,12 @@ func toolUseLoop(ctx context.Context, llm Chatter, tools map[string]func(string)
 // ===========================================================================
 // Ambil potongan dokumen paling relevan (retrieval) lalu SUNTIKKAN ke prompt
 // sebagai konteks. Kualitas retrieval lebih menentukan daripada ukuran prompt.
+//
+// 🔍 Analogi: RAG itu seperti UJIAN OPEN-BOOK — daripada menyuruh siswa
+// (model) menjawab dari hafalan (bisa ngarang/halusinasi), pengawas
+// (retrieval) membukakan halaman buku yang TEPAT di meja. Kuncinya bukan
+// membawa seluruh perpustakaan (prompt raksasa), tapi membuka halaman yang
+// benar.
 func retrieve(korpus []string, query string) string {
 	for _, dok := range korpus { // di produksi: embedding + vektor similarity
 		if strings.Contains(strings.ToLower(dok), strings.ToLower(query)) {

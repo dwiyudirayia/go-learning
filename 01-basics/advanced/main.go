@@ -15,6 +15,10 @@ import "fmt"
 // Di dalam SATU blok const, iota mulai dari 0 dan bertambah 1 tiap baris.
 // Ini cara idiomatik membuat enum tanpa menulis angka manual (dan tanpa risiko
 // salah ketik nomor). Menambah anggota baru cukup menyisipkan baris.
+//
+// 🔍 Analogi: iota itu seperti MESIN NOMOR ANTRIAN — tiap baris const otomatis
+// "narik tiket" nomor berikutnya. Mau sisip peserta baru di tengah? Tinggal
+// tambah baris, semua nomor di bawahnya bergeser sendiri tanpa diketik ulang.
 
 type Level int
 
@@ -48,6 +52,10 @@ func (l Level) String() string {
 // 1 << iota menghasilkan 1, 2, 4, 8, ... (satu bit menyala per konstanta).
 // Beberapa flag digabung dengan OR (|), dicek dengan AND (&). Pola ini dipakai
 // os.OpenFile (O_RDONLY|O_CREATE), izin file Unix, dsb.
+//
+// 🔍 Analogi: bitmask itu seperti PANEL SAKELAR LAMPU di satu papan — tiap bit
+// adalah satu sakelar on/off. OR (|) = menyalakan beberapa sakelar sekaligus,
+// AND (&) = mengintip apakah sakelar tertentu sedang menyala.
 
 type Perm uint8
 
@@ -66,6 +74,10 @@ func (p Perm) Has(flag Perm) bool { return p&flag != 0 }
 // Return bernama (hasil, err) sudah jadi variabel di dalam fungsi. defer bisa
 // mengubahnya SEBELUM benar-benar dikembalikan. Pola ini dipakai untuk
 // mengubah panic menjadi error yang rapi di batas fungsi.
+//
+// 🔍 Analogi: named return + defer itu seperti PETUGAS QC DI PINTU KELUAR
+// pabrik — barang (nilai return) sudah dikemas, tapi sebelum benar-benar
+// keluar pintu, QC masih boleh menempel label "cacat" (mengubah err).
 
 func bagiAman(a, b int) (hasil int, err error) {
 	defer func() {
@@ -83,6 +95,10 @@ func bagiAman(a, b int) (hasil int, err error) {
 // ===========================================================================
 // Tanpa label, break hanya keluar dari loop terdalam. Label memungkinkan
 // keluar langsung dari loop luar — lebih bersih daripada variabel bendera.
+//
+// 🔍 Analogi: break biasa itu seperti keluar dari SATU RUANGAN saja di gedung
+// bertingkat; labeled break seperti TANGGA DARURAT — sekali lompat langsung
+// keluar gedung (loop terluar) tanpa melewati tiap lantai satu per satu.
 
 func cariPasangan(target int) (int, int, bool) {
 	for i := 1; i <= 9; i++ {
@@ -105,6 +121,10 @@ func cariPasangan(target int) (int, int, bool) {
 // := membuat variabel BARU di scope tempat ia ditulis. Bila namanya sama
 // dengan variabel luar, yang luar "terbayangi" dan perubahan tak terlihat di
 // luar. `go vet` dengan analyzer shadow bisa mendeteksi ini.
+//
+// 🔍 Analogi: shadowing itu seperti DUA ORANG BERNAMA SAMA di rapat — di dalam
+// ruangan kecil kamu memanggil "Budi" yang duduk di situ, bukan Budi di lobi.
+// Apa pun yang kamu titipkan ke Budi-dalam tidak pernah sampai ke Budi-luar.
 
 func demoShadowing() {
 	x := 1

@@ -12,6 +12,11 @@ import "fmt"
 // keduanya nil. Bila kita masukkan pointer nil BERTIPE, tipenya tidak nil,
 // jadi interface != nil meski nilainya nil. Ini bikin "if err != nil" bocor
 // walau errornya "tidak ada".
+//
+// 🔍 Analogi: interface itu seperti AMPLOP BERLABEL. "nil sejati" = tidak ada
+// amplop sama sekali. Typed nil = amplopnya ADA dan berlabel (*myErr), cuma
+// isinya kosong — satpam (if err != nil) tetap melihat "ada amplop!" dan
+// membunyikan alarm padahal isinya tak ada.
 
 type myErr struct{}
 
@@ -41,6 +46,10 @@ func bikinErrorBenar(gagal bool) error {
 // Menaruh method UNEXPORTED (huruf kecil) di interface membuat paket lain tak
 // bisa memenuhinya (mereka tak bisa memanggil/mendeklarasikan method itu).
 // Berguna untuk enum tipe tertutup / sum type ala Go.
+//
+// 🔍 Analogi: sealed interface itu seperti KLUB DENGAN KARTU ANGGOTA yang
+// hanya dicetak di dalam gedung (method unexported) — orang luar tak mungkin
+// membuat kartunya sendiri, jadi daftar anggota sepenuhnya kamu kendalikan.
 
 type Bentuk interface {
 	Luas() float64
@@ -62,6 +71,11 @@ func (Lingkaran) sealed()         {}
 // ===========================================================================
 // Satu case bisa menangani beberapa tipe sekaligus. case nil menangani nilai
 // nil. Assertion bentuk v, ok := x.(T) aman (tak panic) — pakai ok untuk cek.
+//
+// 🔍 Analogi: type switch itu seperti MEJA SORTIR PAKET — tiap paket (any)
+// dicek isinya lalu diarahkan ke jalur yang tepat. Comma-ok assertion seperti
+// membuka paket dengan hati-hati: kalau isinya bukan yang diduga, kamu dapat
+// jawaban "bukan" (ok=false), bukan paketnya meledak (panic).
 func jelaskan(x any) string {
 	switch v := x.(type) {
 	case nil:

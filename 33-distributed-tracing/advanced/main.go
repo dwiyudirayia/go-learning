@@ -20,6 +20,9 @@ func main() {
 	// =====================================================================
 	// SpanRecorder = exporter in-memory untuk test/verifikasi (tanpa Jaeger).
 	// =====================================================================
+	// 🔍 Analogi: SpanRecorder itu seperti KAMERA LATIHAN di studio tari —
+	// merekam semua gerakan (span) untuk diperiksa sendiri, tanpa perlu
+	// menyiarkannya ke stasiun TV (backend Jaeger/Tempo).
 	sr := tracetest.NewSpanRecorder()
 	tp := sdktrace.NewTracerProvider(sdktrace.WithSpanProcessor(sr))
 	defer tp.Shutdown(context.Background())
@@ -31,6 +34,13 @@ func main() {
 	// tracer.Start mengembalikan ctx baru berisi span aktif. Meneruskan ctx itu
 	// ke fungsi berikutnya membuat span di dalamnya menjadi ANAK -> membentuk
 	// pohon trace. Lintas proses, relasi ini dibawa header W3C `traceparent`.
+	//
+	// 🔍 Analogi: trace itu seperti PAKET DENGAN NOMOR RESI TUNGGAL yang
+	// berpindah tangan — tiap kurir (fungsi/service) menempelkan stiker
+	// perjalanannya sendiri (span: kapan diterima, kapan diserahkan), tapi
+	// nomor resinya (TraceID) tak pernah berubah. Menyerahkan ctx = menyerahkan
+	// paket beserta resinya; header traceparent = resi dibacakan lewat telepon
+	// saat paket pindah perusahaan kurir (lintas proses).
 	ctx, root := tracer.Start(context.Background(), "HandleRequest")
 	root.SetAttributes(
 		attribute.String("http.method", "GET"),

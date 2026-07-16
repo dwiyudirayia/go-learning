@@ -24,6 +24,11 @@ var ErrInvalid = errors.New("order tidak valid")
 // PORT: interface DIDEFINISIKAN oleh domain (kebutuhannya), BUKAN oleh infra.
 // Inilah Dependency Inversion — inti bergantung pada abstraksi; adapter di luar
 // yang menyesuaikan diri. Panah ketergantungan mengarah KE DALAM.
+//
+// 🔍 Analogi: port itu seperti STOP KONTAK DI DINDING RUMAH — bentuk lubangnya
+// ditentukan PEMILIK RUMAH (domain), dan produsen alat elektronik (infra:
+// Postgres, Redis) yang wajib membuat colokan sesuai. Bukan sebaliknya rumah
+// dibongkar tiap ganti merek alat.
 type OrderRepo interface {
 	Save(Order) error
 	Get(id string) (Order, bool)
@@ -54,6 +59,11 @@ func (r *memRepo) Get(id string) (Order, bool) { o, ok := r.data[id]; return o, 
 
 // Adapter 2: DECORATOR — membungkus repo lain untuk menambah logging TANPA
 // mengubah domain maupun repo asli (Open/Closed Principle).
+//
+// 🔍 Analogi: decorator itu seperti SARUNG HP — menambah fungsi (pelindung,
+// dudukan kartu) tanpa membongkar mesin HP-nya. Dari luar tetap "HP" (masih
+// memenuhi interface OrderRepo), dan sarung bisa dilapis: anti-air di atas
+// anti-benturan (logging di atas caching di atas repo asli).
 type loggingRepo struct{ next OrderRepo }
 
 func (r loggingRepo) Save(o Order) error {
@@ -66,6 +76,11 @@ func main() {
 	// =====================================================================
 	// COMPOSITION ROOT (di main) — merakit dependency dari luar ke dalam.
 	// Domain & use case tak pernah tahu implementasi mana yang dipakai.
+	//
+	// 🔍 Analogi: composition root itu seperti MEJA PERAKITAN PABRIK — satu
+	// tempat di mana semua komponen (repo, decorator, use case) dipasangkan.
+	// Komponennya sendiri saling buta; hanya perakit (main) yang tahu
+	// rangkaian lengkapnya, jadi mengganti satu suku cadang cukup di sini.
 	// =====================================================================
 	var repo OrderRepo = newMemRepo()
 	repo = loggingRepo{next: repo} // bungkus dgn decorator; use case tak berubah
