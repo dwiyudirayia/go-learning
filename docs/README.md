@@ -6,6 +6,7 @@ Kumpulan dokumen rujukan **ringkas & idiomatik** sebagai **pendamping** modul `0
 |---------|-----|--------------|
 | [IDIOM.md](IDIOM.md) | Idiom inti Go + *kenapa*-nya | saat ingin menulis kode yang "terasa Go" |
 | [CHEATSHEET.md](CHEATSHEET.md) | Sintaks padat (deklarasi, slice, map, goroutine, generics) | saat lupa sintaks |
+| [MEMBACA-TIPE.md](MEMBACA-TIPE.md) | Alur 3 langkah memahami tipe parameter yang tak dikenal | saat fungsi butuh tipe asing (`io.Reader`? `rate.Limit`?) |
 | [PITFALLS.md](PITFALLS.md) | Jebakan umum + solusinya | saat kode "aneh" / bug halus |
 | [CONCURRENCY.md](CONCURRENCY.md) | Pola konkurensi + aturan main | saat kerja dgn goroutine/channel |
 | [TESTING.md](TESTING.md) | Strategi test: table-driven, mock, fuzz, benchmark, integrasi | saat menulis/merancang test |

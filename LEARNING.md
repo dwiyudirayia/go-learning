@@ -29,6 +29,7 @@ Modul mengajarkan **berurutan**; `docs/` untuk **melihat cepat** kapan pun butuh
 |-----------|-------|
 | [docs/CHEATSHEET.md](docs/CHEATSHEET.md) | lupa sintaks (slice, map, goroutine, generics) |
 | [docs/IDIOM.md](docs/IDIOM.md) | ingin menulis kode yang "terasa Go" + *kenapa* |
+| [docs/MEMBACA-TIPE.md](docs/MEMBACA-TIPE.md) | fungsi butuh tipe yang tak kamu kenal (`io.Reader`? `fiber.Config`?) |
 | [docs/PITFALLS.md](docs/PITFALLS.md) | kode berperilaku aneh / bug halus (typed-nil, aliasing, race) |
 | [docs/CONCURRENCY.md](docs/CONCURRENCY.md) | kerja dgn goroutine/channel/context (Fase 2 & modul 38) |
 | [docs/TESTING.md](docs/TESTING.md) | menulis/merancang test (table-driven, mock, fuzz, integrasi) — Fase 3 & modul 08/37 |
