@@ -8,6 +8,8 @@ Kurikulum belajar Go **menyeluruh & bertahap** — dari fundamental, concurrency
 
 > 🧭 **Rujukan cepat Go** ada di **[`docs/`](docs/)** — idiom, cheatsheet sintaks, jebakan umum (pitfalls), konkurensi, tooling, & glosarium. Buka sesuai kebutuhan sambil belajar (tak perlu dihafal).
 
+> 📦 **Library yang sering dipakai** ada di **[`libraries/`](libraries/)** — katalog library Go populer (kapan pakai, alternatif, tautan ke modul) + **23 contoh runnable + test** (uuid, ulid, testify, go-cmp, zerolog, decimal, gjson, jwt, bcrypt, chi, sqlx, gorm, redis, prometheus, env, dll).
+
 ---
 
 ## ⚡ Mulai Cepat (3 langkah)

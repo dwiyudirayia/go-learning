@@ -43,6 +43,7 @@ NN-nama/
 - **Konvensi analogi**: konsep di file materi utama **dan** `advanced/` diberi komentar berpenanda **`// 🔍 Analogi:`** — analogi sehari-hari ramah pemula (mis. circuit breaker = sekring, JWT = gelang konser). **Materi/teknik BARU wajib ikut konvensi ini.**
 - File `*.pb.go` di-**generate** (modul 16, 17, 48) — jangan diedit tangan; regen via `make proto`.
 - Folder pendukung root: `docs/` (9 rujukan: IDIOM, CHEATSHEET, MEMBACA-TIPE, PITFALLS, CONCURRENCY, TESTING, TOOLING, GLOSSARY + README indeks), `REAL-CASE-STACKS.md` (peta double→stack produksi per modul), `41-capstone/workshop/` (capstone guided step-by-step, baru Langkah 1).
+- `libraries/` (DI LUAR modul 01–48, tak menambah hitungan modul): katalog library Go populer (`README.md`) + **23 subfolder contoh runnable + test**, tiap subfolder `package main` mandiri bergaya `// 🔍 Analogi:` (uuid, ulid, testify, gocmp, zerolog, lo, decimal, gjson, cron, resty, validator, cobra, viper, env, jwt, bcrypt, chi, sqlx, errgroup, ratelimit, redis, gorm, prometheus). Ikut `go test ./...` — jaga tetap hijau. Deps baru: testify, zerolog, samber/lo, shopspring/decimal, robfig/cron, go-resty/resty, google/uuid, go-chi/chi, jmoiron/sqlx, oklog/ulid, google/go-cmp, caarlos0/env (semua dipromosikan jadi direct bila perlu). bcrypt pakai x/crypto & gjson/sjson pakai tidwall yang sudah ada.
 
 ## Framework & keputusan yang sudah dikunci
 

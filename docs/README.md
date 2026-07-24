@@ -13,6 +13,8 @@ Kumpulan dokumen rujukan **ringkas & idiomatik** sebagai **pendamping** modul `0
 | [TOOLING.md](TOOLING.md) | Perintah `go`, modules, test, pprof, build tags | saat pakai toolchain |
 | [GLOSSARY.md](GLOSSARY.md) | Definisi istilah Go (ID) | saat ketemu istilah asing |
 
+> 📦 Butuh peta **library pihak ketiga** (kapan pakai apa, contoh runnable)? Lihat [`../libraries/`](../libraries/).
+
 ## Cara pakai
 
 1. **Belajar** ikut urutan modul (lihat [`../LEARNING.md`](../LEARNING.md)).
